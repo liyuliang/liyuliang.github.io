@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+<meta name="google-site-verification" content="phJt8wJDQkOAcEQmqF8UasrF3CVtKMYLBqYLlWfVIOM">
+<title>How To Storage Session By Redis In Symfony2 - Liyuliang&#39;s Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+    <meta name="description" content="Server Environment123456789101112$ cat /etc/issueUbuntu 16.04.2 LTS \n \l$ redis-server --versionRedis server v=3.0.6 sha=00000000:0 malloc=jemalloc-3.6.0 bits=64$ cat composer.json&amp;quot;require&amp;quot;">
+<meta name="keywords" content="Ubuntu,Symfony,Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How To Storage Session By Redis In Symfony2">
+<meta property="og:url" content="https://liyuliang.cc/2018/01/17/How-To-Storage-Session-By-Redis-In-Symfony2/index.html">
+<meta property="og:site_name" content="Liyuliang&#39;s Blog">
+<meta property="og:description" content="Server Environment123456789101112$ cat /etc/issueUbuntu 16.04.2 LTS \n \l$ redis-server --versionRedis server v=3.0.6 sha=00000000:0 malloc=jemalloc-3.6.0 bits=64$ cat composer.json&amp;quot;require&amp;quot;">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2021-06-14T14:02:02.291Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="How To Storage Session By Redis In Symfony2">
+<meta name="twitter:description" content="Server Environment123456789101112$ cat /etc/issueUbuntu 16.04.2 LTS \n \l$ redis-server --versionRedis server v=3.0.6 sha=00000000:0 malloc=jemalloc-3.6.0 bits=64$ cat composer.json&amp;quot;require&amp;quot;">
+
+
+
+
+
+<link rel="icon" href="/images/header.png">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.4.1/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+
+
+<script>
+        if (document.domain != "liyuliang.cc") {
+            window.location.href = "https://liyuliang.cc";
+        }
+        if (top.location != self.location) {
+           top.location = self.location;
+        }
+
+</script>
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                Liyuliang&#39;s Blog
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item" href="/archives">Archives</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/liyuliang">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main"><div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2018-01-17T07:54:37.000Z">2018-01-17</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    6 minutes read (About 893 words)
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                How To Storage Session By Redis In Symfony2
+            
+        </h1>
+        <div class="content">
+            <h3 id="Server-Environment"><a href="#Server-Environment" class="headerlink" title="Server Environment"></a>Server Environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">Ubuntu 16.04.2 LTS \n \l</span><br><span class="line"></span><br><span class="line">$ redis-server --version</span><br><span class="line">Redis server v=3.0.6 sha=00000000:0 malloc=jemalloc-3.6.0 bits=64</span><br><span class="line"></span><br><span class="line">$ cat composer.json</span><br><span class="line">&quot;require&quot;: &#123;</span><br><span class="line">       &quot;php&quot;: &quot;&gt;=5.5.9&quot;,</span><br><span class="line">       &quot;symfony/symfony&quot;: &quot;2.8.*&quot;,</span><br><span class="line">       ...</span><br><span class="line">   &#125;,</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3 id="Using-Redis-instead-of-the-default-PHP-file-storage-session"><a href="#Using-Redis-instead-of-the-default-PHP-file-storage-session" class="headerlink" title="Using Redis instead of the default PHP file storage session"></a>Using Redis instead of the default PHP file storage session</h3><p>For the first preparation, we need to have a running Redis service.</p>
+<p>Then, installing php redis extension. This tutorial bases on the Ubuntu:16.04 system, so i will use command <code>apt install</code>  to do this.<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y php-redis</span><br></pre></td></tr></table></figure></p>
+<p>Next, find the <code>config.yml</code> in your Symfony project and register the session handler which named <code>session_handler_redis</code>.</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim app/config/config.yml</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-attr">framework:</span></span><br><span class="line">    <span class="hljs-string">...</span></span><br><span class="line">    <span class="hljs-attr">session:</span></span><br><span class="line">        <span class="hljs-comment"># handler_id set to null will use default session handler from php.ini</span></span><br><span class="line"><span class="hljs-comment">#        handler_id:  ~</span></span><br><span class="line">        <span class="hljs-attr">handler_id:</span> <span class="hljs-string">session_handler_redis</span></span><br></pre></td></tr></table></figure>
+<p>This configuration uses a new session handler to figure out the session service. </p>
+<p>Now we can declare a Symfony Service in <code>services.yml</code>.</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim app/config/services.yml</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="hljs-attr">services:</span></span><br><span class="line">    <span class="hljs-string">...</span></span><br><span class="line">    <span class="hljs-attr">session_handler_redis:</span></span><br><span class="line">         <span class="hljs-attr">class:</span> <span class="hljs-string">AppBundle\SessionHandler\NativeRedisSessionHandler</span></span><br><span class="line">         <span class="hljs-attr">arguments:</span> <span class="hljs-string">["%session_handler_redis_scheme%","%session_handler_redis_host%","%session_handler_redis_port%","%session_handler_redis_auth%","%session_guest_life_seconds%"]</span></span><br></pre></td></tr></table></figure>
+<p>How can we manage the session in these new  handler <code>AppBundle\SessionHandler\NativeRedisSessionHandler</code> ?<br>There are a lot of tools on github that can do this, but I found that there is already such code in the Symfony source to help us do this.</p>
+<p>So declare a new file named <code>NativeRedisSessionHandler</code> in your project:<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim src/AppBundle/SessionHandler/NativeRedisSessionHandler.php</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight php hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Created by PhpStorm.</span></span><br><span class="line"><span class="hljs-comment"> * User: liang</span></span><br><span class="line"><span class="hljs-comment"> * Date: 18年01月17日</span></span><br><span class="line"><span class="hljs-comment"> * Time: 下午12:07</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">AppBundle</span>\<span class="hljs-title">SessionHandler</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> \<span class="hljs-title">Symfony</span>\<span class="hljs-title">Component</span>\<span class="hljs-title">HttpFoundation</span>\<span class="hljs-title">Session</span>\<span class="hljs-title">Storage</span>\<span class="hljs-title">Handler</span>\<span class="hljs-title">NativeSessionHandler</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * NativeRedisSessionStorage.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * Driver for the redis session &lt;div id="R77EHMs" style="position: absolute; top: -1183px; left: -1358px; width: 243px;"&gt;&lt;/div&gt; save hadlers provided by the redis PHP extension.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@see</span> https://github.com/nicolasff/phpredis</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@author</span> Andrej Hudec &amp;lt;pulzarraider<span class="hljs-doctag">@gmail</span>.com&amp;gt;</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@author</span> Piotr Pelczar &amp;lt;me<span class="hljs-doctag">@athlan</span>.pl&amp;gt;</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NativeRedisSessionHandler</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">NativeSessionHandler</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Constructor.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> string $host Path of redis server.</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> string $scheme</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> int $port</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> null $auth</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> int $saveTime</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">($scheme, $host, $port = <span class="hljs-number">6379</span>, $auth = null, $saveTime = <span class="hljs-number">1440</span>)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">if</span> (!extension_loaded(<span class="hljs-string">'redis'</span>)) &#123;</span><br><span class="line">            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> \RuntimeException(<span class="hljs-string">'PHP does not have "redis" session module registered'</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> ($host) &#123;</span><br><span class="line"></span><br><span class="line">            $savePath = <span class="hljs-string">"&#123;$scheme&#125;://&#123;$host&#125;:&#123;$port&#125;"</span>;</span><br><span class="line">            <span class="hljs-keyword">if</span> ($auth)&#123;</span><br><span class="line">                $savePath = <span class="hljs-string">"&#123;$savePath&#125;?auth=&#123;$auth&#125;"</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            ini_set(<span class="hljs-string">'session.save_handler'</span>, <span class="hljs-string">'redis'</span>);</span><br><span class="line">            ini_set(<span class="hljs-string">'session.save_path'</span>, $savePath);</span><br><span class="line">            ini_set(<span class="hljs-string">'session.gc_maxlifetime'</span>, $saveTime);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>That’s all! How simple it is!</p>
+<h3 id="Restrict-account-logins-by-controlling-sessions"><a href="#Restrict-account-logins-by-controlling-sessions" class="headerlink" title="Restrict account logins by controlling sessions"></a>Restrict account logins by controlling sessions</h3><p>In some business contexts, user accounts should not be allowed to log in to multiple devices at the same time.<br>When an account is logged in to a new device, the old account session should be cleaned up.<br>We can maintain a new key map to control the session. For example, uniqueAccount - sessionId.</p>
+<p>In order to control redis more conveniently, we need to install the package about redis. Here we use the <a href="https://github.com/nrk/predis" target="_blank" rel="noopener">predis</a>.<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&quot;require&quot;: &#123;</span><br><span class="line">    ...</span><br><span class="line">    &quot;snc/redis-bundle&quot;: &quot;2.1&quot;,</span><br><span class="line">    &quot;predis/predis&quot;: &quot;^1.0&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Then we add a new record in redis which key is user unique account and value is the sessionId after login success.<br>However, it should be noted that you need to first find and <code>delete all</code> corresponding sessionIds through the account, and then generate a new session record.</p>
+<figure class="highlight php hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@Route</span>("/login/success",name="login_success")</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">loginSuccessAction</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    $CurrentUser = <span class="hljs-keyword">$this</span>-&gt;getCurrentUser();</span><br><span class="line">    $Client = <span class="hljs-keyword">new</span> \Predis\Client([</span><br><span class="line">        <span class="hljs-string">'scheme'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;getParameter(<span class="hljs-string">'session_handler_redis_scheme'</span>),</span><br><span class="line">        <span class="hljs-string">'host'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;getParameter(<span class="hljs-string">'session_handler_redis_host'</span>),</span><br><span class="line">        <span class="hljs-string">'port'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;getParameter(<span class="hljs-string">'session_handler_redis_port'</span>),</span><br><span class="line">        <span class="hljs-string">'password'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;getParameter(<span class="hljs-string">'session_handler_redis_auth'</span>),</span><br><span class="line">    ]);</span><br><span class="line">    $sessionId = $Client-&gt;get($CurrentUser-&gt;account());</span><br><span class="line">    <span class="hljs-keyword">if</span> ($sessionId) &#123;</span><br><span class="line">        $Client-&gt;del([$CurrentUser-&gt;account(), $sessionId]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    $session = <span class="hljs-keyword">$this</span>-&gt;get(<span class="hljs-string">'session'</span>);</span><br><span class="line">    $session-&gt;start();</span><br><span class="line">    $sessionId = <span class="hljs-string">"PHPREDIS_SESSION:"</span> . $session-&gt;getId();</span><br><span class="line"></span><br><span class="line">    $Client-&gt;set($CurrentUser-&gt;account(), $sessionId);</span><br><span class="line">    $Client-&gt;expire($sessionId, <span class="hljs-keyword">$this</span>-&gt;getParameter(<span class="hljs-string">'session_user_life_seconds'</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Ok, after this step, repeat account login limit is completed too.</p>
+<h3 id="Clear-Session-record-if-logout"><a href="#Clear-Session-record-if-logout" class="headerlink" title="Clear Session record if logout"></a>Clear Session record if logout</h3><p>Default logout method in Symfony is declared in the firewall configuration. When we need to customize the behavior of this account logout, we need to declare a new handler.</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim app/config/security.yml</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="hljs-attr">security:</span></span><br><span class="line">    <span class="hljs-attr">firewalls:</span></span><br><span class="line">        <span class="hljs-string">...</span></span><br><span class="line">        <span class="hljs-attr">main:</span></span><br><span class="line">            <span class="hljs-string">...</span></span><br><span class="line">            <span class="hljs-attr">logout:</span></span><br><span class="line"><span class="hljs-comment">#                path: /logout</span></span><br><span class="line"><span class="hljs-comment">#                target: /</span></span><br><span class="line">                <span class="hljs-attr">handlers:</span> <span class="hljs-string">[app.webservice_logout_listener]</span></span><br></pre></td></tr></table></figure>
+<p>First, we should register a new logout service<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim app/config/services.yml</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight yaml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="hljs-attr">services:</span></span><br><span class="line">    <span class="hljs-string">...</span></span><br><span class="line">    <span class="hljs-attr">app.webservice_logout_listener:</span></span><br><span class="line">        <span class="hljs-attr">class:</span> <span class="hljs-string">AppBundle\Security\LogoutListener</span></span><br><span class="line">        <span class="hljs-attr">arguments:</span> <span class="hljs-string">["%session_handler_redis_scheme%","%session_handler_redis_host%","%session_handler_redis_port%","%session_handler_redis_auth%","%session_guest_life_seconds%"]</span></span><br></pre></td></tr></table></figure>
+<p>And this listener will clear all session by current login user’s account.<br><figure class="highlight php hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Created by PhpStorm.</span></span><br><span class="line"><span class="hljs-comment"> * User: liyuliang</span></span><br><span class="line"><span class="hljs-comment"> * Date: 17/01/2018</span></span><br><span class="line"><span class="hljs-comment"> * Time: 3:17 PM</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">AppBundle</span>\<span class="hljs-title">Security</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">AppBundle</span>\<span class="hljs-title">Controller</span>\<span class="hljs-title">me</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Symfony</span>\<span class="hljs-title">Component</span>\<span class="hljs-title">HttpFoundation</span>\<span class="hljs-title">Request</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Symfony</span>\<span class="hljs-title">Component</span>\<span class="hljs-title">HttpFoundation</span>\<span class="hljs-title">Response</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Symfony</span>\<span class="hljs-title">Component</span>\<span class="hljs-title">Security</span>\<span class="hljs-title">Core</span>\<span class="hljs-title">Authentication</span>\<span class="hljs-title">Token</span>\<span class="hljs-title">TokenInterface</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Symfony</span>\<span class="hljs-title">Component</span>\<span class="hljs-title">Security</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Logout</span>\<span class="hljs-title">LogoutHandlerInterface</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">LogoutListener</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">LogoutHandlerInterface</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">use</span> <span class="hljs-title">me</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">private</span> $scheme;</span><br><span class="line">    <span class="hljs-keyword">private</span> $host;</span><br><span class="line">    <span class="hljs-keyword">private</span> $port;</span><br><span class="line">    <span class="hljs-keyword">private</span> $auth;</span><br><span class="line">    <span class="hljs-keyword">private</span> $saveTime;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">($scheme, $host, $port = <span class="hljs-number">6379</span>, $auth = null, $saveTime = <span class="hljs-number">1440</span>)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;scheme = $scheme;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;host = $host;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;port = $port;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;auth = $auth;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;saveTime = $saveTime;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * This method is called by the LogoutListener when a user has requested</span></span><br><span class="line"><span class="hljs-comment">     * to be logged out. Usually, you would unset session variables, or remove</span></span><br><span class="line"><span class="hljs-comment">     * cookies, etc.</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> Request $request</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> Response $response</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> TokenInterface $token</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">logout</span><span class="hljs-params">(Request $request, Response $response, TokenInterface $token)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        $user = $token-&gt;getUser();</span><br><span class="line"></span><br><span class="line">        $Client = <span class="hljs-keyword">new</span> \Predis\Client([</span><br><span class="line">            <span class="hljs-string">'scheme'</span> =&gt; <span class="hljs-string">'tcp'</span>,</span><br><span class="line">            <span class="hljs-string">'host'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;host,</span><br><span class="line">            <span class="hljs-string">'port'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;port,</span><br><span class="line">            <span class="hljs-string">'password'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;auth,</span><br><span class="line">        ]);</span><br><span class="line"></span><br><span class="line">        $sessionId = $Client-&gt;get($user-&gt;getUsername());</span><br><span class="line">        <span class="hljs-keyword">if</span> ($sessionId) &#123;</span><br><span class="line">            $Client-&gt;del([$user-&gt;getUsername(), $sessionId]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Redis/">Redis</a>, <a class="has-link-grey -link" href="/tags/Symfony/">Symfony</a>, <a class="has-link-grey -link" href="/tags/Ubuntu/">Ubuntu</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+            <p class="is-size-7">
+    <b>
+    Thank you for reading.<br>
+    This post is copyrighted by <a href="https://liyuliang.cc">Liyuliang’s Blog.</a><br>
+    If reproduced, please indicate the source: <a href="https://liyuliang.cc">Liyuliang’s Blog</a><br>
+    This blog uses <a target="_blank" rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-Share-Sharing 4.0 International License Agreement </a> to license.<br>
+    </b>
+    <hr>
+</p>
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">Like this article? Support the author with</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>Alipay</span>
+    <div class="qrcode"><img src="/images/alipay.jpeg" alt="Alipay"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>Wechat</span>
+    <div class="qrcode"><img src="/images/wxpay.jpeg" alt="Wechat"></div>
+</a>
+
+                
+                <!-- Visit https://www.paypal.com/donate/buttons/ to get your donate button -->
+
+<a class="button is-warning donate" onclick="document.getElementById(&#39;paypal-donate-form&#39;).submit()">
+    <span class="icon is-small">
+        <i class="fab fa-paypal"></i>
+    </span>
+    <span>Paypal</span>
+</a>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" id="paypal-donate-form">
+    <input type="hidden" name="cmd" value="_donations">
+    <input type="hidden" name="business" value="D7RUA6PUE8GM2">
+    <input type="hidden" name="currency_code" value="USD">
+</form>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2018/01/19/Vertically-Scrollable-In-Div-Element-Using-CSS/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Vertically Scrollable In Div Element Using CSS </span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2018/01/03/How-to-install-EduSoho-in-Ubuntu/">
+                <span class="level-item">How to install EduSoho in Ubuntu</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+</div>
+                
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-3 column-right is-sticky">
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/09/">
+                <span class="level-start">
+                    <span class="level-item">September 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">8</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">10</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">9</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">7</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">9</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/Alipay/" style="font-size: 10px;">Alipay</a> <a href="/tags/Apache/" style="font-size: 12px;">Apache</a> <a href="/tags/Baidu/" style="font-size: 10px;">Baidu</a> <a href="/tags/Canal/" style="font-size: 10px;">Canal</a> <a href="/tags/Centos/" style="font-size: 10px;">Centos</a> <a href="/tags/CloudDisk/" style="font-size: 10px;">CloudDisk</a> <a href="/tags/Daemon/" style="font-size: 11px;">Daemon</a> <a href="/tags/Elasticsearch/" style="font-size: 13px;">Elasticsearch</a> <a href="/tags/Filebeat/" style="font-size: 11px;">Filebeat</a> <a href="/tags/Glide/" style="font-size: 10px;">Glide</a> <a href="/tags/Iterm/" style="font-size: 10px;">Iterm</a> <a href="/tags/JQuery/" style="font-size: 10px;">JQuery</a> <a href="/tags/Keepalived/" style="font-size: 10px;">Keepalived</a> <a href="/tags/Kibana/" style="font-size: 11px;">Kibana</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Login/" style="font-size: 10px;">Login</a> <a href="/tags/Logstash/" style="font-size: 11px;">Logstash</a> <a href="/tags/Mac/" style="font-size: 14px;">Mac</a> <a href="/tags/Mongodb/" style="font-size: 11px;">Mongodb</a> <a href="/tags/Mycat/" style="font-size: 10px;">Mycat</a> <a href="/tags/Mysql/" style="font-size: 19px;">Mysql</a> <a href="/tags/NFS/" style="font-size: 10px;">NFS</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 10px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 18px;">PHP</a> <a href="/tags/Pagespeed/" style="font-size: 10px;">Pagespeed</a> <a href="/tags/Partition/" style="font-size: 10px;">Partition</a> <a href="/tags/Redis/" style="font-size: 12px;">Redis</a> <a href="/tags/Replica/" style="font-size: 10px;">Replica</a> <a href="/tags/Security/" style="font-size: 10px;">Security</a> <a href="/tags/Slave/" style="font-size: 13px;">Slave</a> <a href="/tags/SlowLog/" style="font-size: 11px;">SlowLog</a> <a href="/tags/Symfony/" style="font-size: 15px;">Symfony</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/Twig/" style="font-size: 11px;">Twig</a> <a href="/tags/Ubuntu/" style="font-size: 20px;">Ubuntu</a> <a href="/tags/Varnish/" style="font-size: 10px;">Varnish</a> <a href="/tags/Vim/" style="font-size: 10px;">Vim</a> <a href="/tags/Virtualbox/" style="font-size: 10px;">Virtualbox</a> <a href="/tags/Wordpress/" style="font-size: 11px;">Wordpress</a> <a href="/tags/auth/" style="font-size: 11px;">auth</a> <a href="/tags/backup/" style="font-size: 10px;">backup</a> <a href="/tags/beanstalkd/" style="font-size: 10px;">beanstalkd</a> <a href="/tags/binlog/" style="font-size: 10px;">binlog</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/brew/" style="font-size: 11px;">brew</a> <a href="/tags/composer/" style="font-size: 10px;">composer</a> <a href="/tags/cookie/" style="font-size: 10px;">cookie</a> <a href="/tags/css/" style="font-size: 10px;">css</a> <a href="/tags/dante/" style="font-size: 10px;">dante</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/domain/" style="font-size: 11px;">domain</a> <a href="/tags/download/" style="font-size: 10px;">download</a> <a href="/tags/file/" style="font-size: 10px;">file</a> <a href="/tags/fork/" style="font-size: 10px;">fork</a> <a href="/tags/git/" style="font-size: 11px;">git</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/golang/" style="font-size: 17px;">golang</a> <a href="/tags/homestead/" style="font-size: 10px;">homestead</a> <a href="/tags/iptable/" style="font-size: 11px;">iptable</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/log/" style="font-size: 10px;">log</a> <a href="/tags/nginx/" style="font-size: 16px;">nginx</a> <a href="/tags/proxy/" style="font-size: 11px;">proxy</a> <a href="/tags/redis-cluster/" style="font-size: 10px;">redis-cluster</a> <a href="/tags/redis-sentinel/" style="font-size: 10px;">redis-sentinel</a> <a href="/tags/sock5/" style="font-size: 10px;">sock5</a> <a href="/tags/supervisor/" style="font-size: 10px;">supervisor</a> <a href="/tags/sync/" style="font-size: 10px;">sync</a> <a href="/tags/tips/" style="font-size: 11px;">tips</a> <a href="/tags/tmux/" style="font-size: 10px;">tmux</a> <a href="/tags/usb/" style="font-size: 10px;">usb</a> <a href="/tags/vagrant/" style="font-size: 10px;">vagrant</a> <a href="/tags/web/" style="font-size: 10px;">web</a>
+    </div>
+</div>
+
+    
+        
+
+
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    Liyuliang&#39;s Blog
+                
+                </a>
+
+                <p class="is-size-7">
+                    <a href="/copyright" target="_blank">Copyright</a>
+                    &copy; 2021 Liyuliang&nbsp;
+
+		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/liyuliang">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="SiteMap for Google" href="https://liyuliang.cc/sitemap.xml">
+                        
+                        <i class="fab fa-google"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="SiteMap for Baidu" href="https://liyuliang.cc/baidusitemap.xml">
+                        
+                        <i class="fab fa-bimobject"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

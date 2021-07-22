@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+<meta name="google-site-verification" content="phJt8wJDQkOAcEQmqF8UasrF3CVtKMYLBqYLlWfVIOM">
+<title>How Mongodb Build The Replica Set - Liyuliang&#39;s Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+    <meta name="description" content="Server environment12345$ cat /etc/issue  Ubuntu 14.04.5 LTS$ mongod -versiondb version v3.0.15">
+<meta name="keywords" content="Ubuntu,Mongodb,Replica">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How Mongodb Build The Replica Set">
+<meta property="og:url" content="https://liyuliang.cc/2017/03/22/How-Mongodb-Build-The-Replica-Set/index.html">
+<meta property="og:site_name" content="Liyuliang&#39;s Blog">
+<meta property="og:description" content="Server environment12345$ cat /etc/issue  Ubuntu 14.04.5 LTS$ mongod -versiondb version v3.0.15">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2021-06-14T14:02:02.291Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="How Mongodb Build The Replica Set">
+<meta name="twitter:description" content="Server environment12345$ cat /etc/issue  Ubuntu 14.04.5 LTS$ mongod -versiondb version v3.0.15">
+
+
+
+
+
+<link rel="icon" href="/images/header.png">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.4.1/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+
+
+<script>
+        if (document.domain != "liyuliang.cc") {
+            window.location.href = "https://liyuliang.cc";
+        }
+        if (top.location != self.location) {
+           top.location = self.location;
+        }
+
+</script>
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                Liyuliang&#39;s Blog
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item" href="/archives">Archives</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/liyuliang">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main"><div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2017-03-22T12:40:36.000Z">2017-03-22</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    7 minutes read (About 979 words)
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                How Mongodb Build The Replica Set
+            
+        </h1>
+        <div class="content">
+            <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">  Ubuntu 14.04.5 LTS</span><br><span class="line"></span><br><span class="line">$ mongod -version</span><br><span class="line">db version v3.0.15</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3 id="Replica-set"><a href="#Replica-set" class="headerlink" title="Replica set"></a>Replica set</h3><p>Replication is a process of synchronizing data across multiple servers.</p>
+<ul>
+<li>mongodb support replica set and master-slave copy, master-slave copy of the official is no longer recommended (does not support automatic failover)</li>
+</ul>
+<h3 id="Migrate-malfunction"><a href="#Migrate-malfunction" class="headerlink" title="Migrate malfunction"></a>Migrate malfunction</h3><p>Replica set can automatically failover. If primary is dropped or no response, but the most of replica members can link to each other, the new primary will be voted.<br>In most cases, when the primary is dropped, unavailable or is not suitable for primary,failover will be automatically start in few seconds without admin intervention.</p>
+<p>There are few reasons if mongodb cannot migrate malfunction:</p>
+<ul>
+<li>The number of remainning members is less than half of the replca set</li>
+<li>no eligible primary member</li>
+</ul>
+<h3 id="Deployment-strategy"><a href="#Deployment-strategy" class="headerlink" title="Deployment strategy"></a>Deployment strategy</h3><p>The minimum replica set recommended for three members of the collection,one for primary and other two for secondary.   </p>
+<p>If there are more than three members in the replica set, it must follow these conditions:</p>
+<ul>
+<li>1、There are an odd number of members participating in the voting. If there are even voting members, deploy an arbiter to change the number to an odd number.</li>
+<li>2、After version 3.0.0 , the max node number is 50. It’s 12 before.</li>
+<li>3、If you do not want some members to become the primary, just set their priority to zero.</li>
+</ul>
+<h3 id="Ready-for-database"><a href="#Ready-for-database" class="headerlink" title="Ready for database"></a>Ready for database</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">27017</span><br><span class="line">27018</span><br><span class="line">27019</span><br></pre></td></tr></table></figure>
+<p>prepare the ports 27017、27018、27019</p>
+<h3 id="Stop-all-mongod"><a href="#Stop-all-mongod" class="headerlink" title="Stop all mongod"></a>Stop all mongod</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service mongod stop</span><br></pre></td></tr></table></figure>
+<h3 id="Create-database-directory"><a href="#Create-database-directory" class="headerlink" title="Create database directory"></a>Create database directory</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo mkdir -p /data/mongodb/log /data/mongodb/rs0-0 /data/mongodb/rs0-1 /data/mongodb/rs0-2</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Dir rs0-0,rs0-1,rs0-2 used to store the database file.</li>
+</ul>
+<h3 id="Create-mongodb-instance"><a href="#Create-mongodb-instance" class="headerlink" title="Create mongodb instance"></a>Create mongodb instance</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo mongod --port 27017 --dbpath /data/mongodb/rs0-0 --replSet rs0 --smallfiles --oplogSize 128 --fork --logpath=/data/mongodb/log/271017.log</span><br><span class="line">$ sudo mongod --port 27018 --dbpath /data/mongodb/rs0-1 --replSet rs0 --smallfiles --oplogSize 128 --fork --logpath=/data/mongodb/log/271018.log</span><br><span class="line">$ sudo mongod --port 27019 --dbpath /data/mongodb/rs0-2 --replSet rs0 --smallfiles --oplogSize 128 --fork --logpath=/data/mongodb/log/271019.log</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Create three nodes belong the replica set named rs0, and the data directory for each node is specified by ‘-dbpath’.<br>‘-smallfiles’ and ‘-oplogSize’ reduce the amount of disk space used by each mongod instance.</li>
+<li>Mongodb also provides a daemon background way to start. Just add a ‘–fork’, but it must have the ‘–logpath’ parameter.</li>
+<li>The unit of ‘–oplogsize’ is M</li>
+</ul>
+<h3 id="Connect-to-database"><a href="#Connect-to-database" class="headerlink" title="Connect to database"></a>Connect to database</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mongo --port 27017</span><br></pre></td></tr></table></figure>
+<h3 id="Init-replica-set"><a href="#Init-replica-set" class="headerlink" title="Init replica set"></a>Init replica set</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&gt; rsconf = &#123;</span><br><span class="line">             &quot;_id&quot; : &quot;rs0&quot;,</span><br><span class="line">             &quot;members&quot; : [</span><br><span class="line">                     &#123;</span><br><span class="line">                             &quot;_id&quot; : 0,</span><br><span class="line">                             &quot;host&quot; : &quot;127.0.0.1:27017&quot;</span><br><span class="line">                     &#125;,</span><br><span class="line">                     &#123;</span><br><span class="line">                             &quot;_id&quot; : 1,</span><br><span class="line">                             &quot;host&quot; : &quot;127.0.0.1:27018&quot;</span><br><span class="line">                     &#125;,</span><br><span class="line">                     &#123;</span><br><span class="line">                             &quot;_id&quot; : 2,</span><br><span class="line">                             &quot;host&quot; : &quot;127.0.0.1:27019&quot;</span><br><span class="line">                     &#125;</span><br><span class="line">             ]</span><br><span class="line"> &#125;</span><br><span class="line">&gt; rs.initiate( rsconf )</span><br><span class="line">&#123; &quot;ok&quot; : 1 &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Check-config-result"><a href="#Check-config-result" class="headerlink" title="Check config result"></a>Check config result</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">rs0:OTHER&gt; rs.conf()</span><br><span class="line">&#123;</span><br><span class="line">    &quot;_id&quot; : &quot;rs0&quot;,</span><br><span class="line">    &quot;version&quot; : 1,</span><br><span class="line">    &quot;members&quot; : [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;_id&quot; : 0,</span><br><span class="line">            &quot;host&quot; : &quot;127.0.0.1:27017&quot;,</span><br><span class="line">            &quot;arbiterOnly&quot; : false,</span><br><span class="line">            &quot;buildIndexes&quot; : true,</span><br><span class="line">            &quot;hidden&quot; : false,</span><br><span class="line">            &quot;priority&quot; : 1,</span><br><span class="line">            &quot;tags&quot; : &#123;</span><br><span class="line">                </span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;slaveDelay&quot; : 0,</span><br><span class="line">            &quot;votes&quot; : 1</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;_id&quot; : 1,</span><br><span class="line">            &quot;host&quot; : &quot;127.0.0.1:27018&quot;,</span><br><span class="line">            &quot;arbiterOnly&quot; : false,</span><br><span class="line">            &quot;buildIndexes&quot; : true,</span><br><span class="line">            &quot;hidden&quot; : false,</span><br><span class="line">            &quot;priority&quot; : 1,</span><br><span class="line">            &quot;tags&quot; : &#123;</span><br><span class="line">                </span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;slaveDelay&quot; : 0,</span><br><span class="line">            &quot;votes&quot; : 1</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;_id&quot; : 2,</span><br><span class="line">            &quot;host&quot; : &quot;127.0.0.1:27019&quot;,</span><br><span class="line">            &quot;arbiterOnly&quot; : false,</span><br><span class="line">            &quot;buildIndexes&quot; : true,</span><br><span class="line">            &quot;hidden&quot; : false,</span><br><span class="line">            &quot;priority&quot; : 1,</span><br><span class="line">            &quot;tags&quot; : &#123;</span><br><span class="line">                </span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;slaveDelay&quot; : 0,</span><br><span class="line">            &quot;votes&quot; : 1</span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    &quot;settings&quot; : &#123;</span><br><span class="line">        &quot;chainingAllowed&quot; : true,</span><br><span class="line">        &quot;heartbeatTimeoutSecs&quot; : 10,</span><br><span class="line">        &quot;getLastErrorModes&quot; : &#123;</span><br><span class="line">            </span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;getLastErrorDefaults&quot; : &#123;</span><br><span class="line">            &quot;w&quot; : 1,</span><br><span class="line">            &quot;wtimeout&quot; : 0</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Check-replica-set-status"><a href="#Check-replica-set-status" class="headerlink" title="Check replica set status"></a>Check replica set status</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">rs0:PRIMARY&gt; rs.status()</span><br><span class="line">&#123;</span><br><span class="line">    &quot;set&quot; : &quot;rs0&quot;,</span><br><span class="line">    &quot;date&quot; : ISODate(&quot;2017-03-23T08:23:05.564Z&quot;),</span><br><span class="line">    &quot;myState&quot; : 1,</span><br><span class="line">    &quot;members&quot; : [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;_id&quot; : 0,</span><br><span class="line">            &quot;name&quot; : &quot;127.0.0.1:27017&quot;,</span><br><span class="line">            &quot;health&quot; : 1,</span><br><span class="line">            &quot;state&quot; : 1,</span><br><span class="line">            &quot;stateStr&quot; : &quot;PRIMARY&quot;,</span><br><span class="line">            &quot;uptime&quot; : 144,</span><br><span class="line">            &quot;optime&quot; : Timestamp(1509438130, 1),</span><br><span class="line">            &quot;optimeDate&quot; : ISODate(&quot;2017-03-23T08:22:10Z&quot;),</span><br><span class="line">            &quot;electionTime&quot; : Timestamp(1509438134, 1),</span><br><span class="line">            &quot;electionDate&quot; : ISODate(&quot;2017-03-23T08:22:14Z&quot;),</span><br><span class="line">            &quot;configVersion&quot; : 1,</span><br><span class="line">            &quot;self&quot; : true</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;_id&quot; : 1,</span><br><span class="line">            &quot;name&quot; : &quot;127.0.0.1:27018&quot;,</span><br><span class="line">            &quot;health&quot; : 1,</span><br><span class="line">            &quot;state&quot; : 2,</span><br><span class="line">            &quot;stateStr&quot; : &quot;SECONDARY&quot;,</span><br><span class="line">            &quot;uptime&quot; : 54,</span><br><span class="line">            &quot;optime&quot; : Timestamp(1509438130, 1),</span><br><span class="line">            &quot;optimeDate&quot; : ISODate(&quot;2017-03-23T08:22:10Z&quot;),</span><br><span class="line">            &quot;lastHeartbeat&quot; : ISODate(&quot;2017-03-23T08:23:04.993Z&quot;),</span><br><span class="line">            &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2017-03-23T08:23:04.993Z&quot;),</span><br><span class="line">            &quot;pingMs&quot; : 0,</span><br><span class="line">            &quot;lastHeartbeatMessage&quot; : &quot;could not find member to sync from&quot;,</span><br><span class="line">            &quot;configVersion&quot; : 1</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;_id&quot; : 2,</span><br><span class="line">            &quot;name&quot; : &quot;127.0.0.1:27019&quot;,</span><br><span class="line">            &quot;health&quot; : 1,</span><br><span class="line">            &quot;state&quot; : 2,</span><br><span class="line">            &quot;stateStr&quot; : &quot;SECONDARY&quot;,</span><br><span class="line">            &quot;uptime&quot; : 54,</span><br><span class="line">            &quot;optime&quot; : Timestamp(1509438130, 1),</span><br><span class="line">            &quot;optimeDate&quot; : ISODate(&quot;2017-03-23T08:22:10Z&quot;),</span><br><span class="line">            &quot;lastHeartbeat&quot; : ISODate(&quot;2017-03-23T08:23:04.994Z&quot;),</span><br><span class="line">            &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2017-03-23T08:23:04.993Z&quot;),</span><br><span class="line">            &quot;pingMs&quot; : 0,</span><br><span class="line">            &quot;lastHeartbeatMessage&quot; : &quot;could not find member to sync from&quot;,</span><br><span class="line">            &quot;configVersion&quot; : 1</span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    &quot;ok&quot; : 1</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>It’s done of building replica set!</p>
+<h3 id="Check-the-sync"><a href="#Check-the-sync" class="headerlink" title="Check the sync"></a>Check the sync</h3><p>Insert data into the Primary （127.0.0.1:27017）<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ mongo --port 27017</span><br><span class="line"></span><br><span class="line">$ show dbs</span><br><span class="line">local  0.000GB</span><br><span class="line"></span><br><span class="line">$ use app</span><br><span class="line"></span><br><span class="line">$ db.test.insert(&#123;&quot;name&quot;:&quot;test data&quot;,&quot;value&quot;:1111&#125;)</span><br><span class="line"></span><br><span class="line">$ db.test.find()</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;57382a2641cff36fe7f3fc30&quot;), &quot;name&quot; : &quot;test data&quot;, &quot;value&quot; : 1111 &#125;</span><br></pre></td></tr></table></figure></p>
+<p>New a terminal connect<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ mongo --port 27018</span><br><span class="line"></span><br><span class="line">$ use app</span><br><span class="line"></span><br><span class="line">$ db.getMongo().setSlaveOk()</span><br><span class="line"></span><br><span class="line">$ db.test.find()</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;57382a2641cff36fe7f3fc30&quot;), &quot;name&quot; : &quot;test data&quot;, &quot;value&quot; : 1111 &#125;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>It cannot use ‘db.test.find()’ to get data. Mongodb reads and writes data on primary node default, it does not allow read on replica node but can be set solve this problem. </li>
+</ul>
+<p>ok,data has been synchronized! </p>
+<h3 id="Check-for-automatic-failover"><a href="#Check-for-automatic-failover" class="headerlink" title="Check for automatic failover"></a>Check for automatic failover</h3><p>Shutdown the main node Primary:<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ mongo --port 27017</span><br><span class="line"></span><br><span class="line">$ use admin</span><br><span class="line">switched to db admin</span><br><span class="line"></span><br><span class="line">$ db.shutdownServer()</span><br><span class="line">2017-03-23T08:24:40.887+0000 I NETWORK  DBClientCursor::init call() failed</span><br><span class="line">server should be down...</span><br><span class="line">2017-03-23T08:24:40.891+0000 I NETWORK  trying reconnect to 127.0.0.1:27017 (127.0.0.1) failed</span><br><span class="line">2017-03-23T08:24:40.892+0000 I NETWORK  reconnect 127.0.0.1:27017 (127.0.0.1) ok</span><br><span class="line">2017-03-23T08:24:41.066+0000 I NETWORK  Socket recv() errno:104 Connection reset by peer 127.0.0.1:27017</span><br><span class="line">2017-03-23T08:24:41.067+0000 I NETWORK  SocketException: remote: 127.0.0.1:27017 error: 9001 socket exception [RECV_ERROR] server [127.0.0.1:27017] </span><br><span class="line">2017-03-23T08:24:41.068+0000 I NETWORK  DBClientCursor::init call() failed</span><br></pre></td></tr></table></figure></p>
+<p>Entry another node:<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">$ mongo --port 27018</span><br><span class="line"></span><br><span class="line">rs0:PRIMARY&gt; rs.status()</span><br><span class="line">&#123;</span><br><span class="line">    &quot;set&quot; : &quot;rs0&quot;,</span><br><span class="line">    &quot;date&quot; : ISODate(&quot;2017-03-23T08:26:22.753Z&quot;),</span><br><span class="line">    &quot;myState&quot; : 1,</span><br><span class="line">    &quot;members&quot; : [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;_id&quot; : 0,</span><br><span class="line">            &quot;name&quot; : &quot;127.0.0.1:27017&quot;,</span><br><span class="line">            &quot;health&quot; : 0,</span><br><span class="line">            &quot;state&quot; : 8,</span><br><span class="line">            &quot;stateStr&quot; : &quot;(not reachable/healthy)&quot;,</span><br><span class="line">            &quot;uptime&quot; : 0,</span><br><span class="line">            &quot;optime&quot; : Timestamp(0, 0),</span><br><span class="line">            &quot;optimeDate&quot; : ISODate(&quot;1970-01-01T00:00:00Z&quot;),</span><br><span class="line">            &quot;lastHeartbeat&quot; : ISODate(&quot;2017-03-23T08:26:21.186Z&quot;),</span><br><span class="line">            &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2017-03-23T08:24:39.063Z&quot;),</span><br><span class="line">            &quot;pingMs&quot; : 0,</span><br><span class="line">            &quot;lastHeartbeatMessage&quot; : &quot;Failed attempt to connect to 127.0.0.1:27017; couldn&apos;t connect to server 127.0.0.1:27017 (127.0.0.1), connection attempt failed&quot;,</span><br><span class="line">            &quot;configVersion&quot; : -1</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;_id&quot; : 1,</span><br><span class="line">            &quot;name&quot; : &quot;127.0.0.1:27018&quot;,</span><br><span class="line">            &quot;health&quot; : 1,</span><br><span class="line">            &quot;state&quot; : 1,</span><br><span class="line">            &quot;stateStr&quot; : &quot;PRIMARY&quot;,</span><br><span class="line">            &quot;uptime&quot; : 312,</span><br><span class="line">            &quot;optime&quot; : Timestamp(1509438230, 2),</span><br><span class="line">            &quot;optimeDate&quot; : ISODate(&quot;2017-03-23T08:23:50Z&quot;),</span><br><span class="line">            &quot;electionTime&quot; : Timestamp(1509438281, 1),</span><br><span class="line">            &quot;electionDate&quot; : ISODate(&quot;2017-03-23T08:24:41Z&quot;),</span><br><span class="line">            &quot;configVersion&quot; : 1,</span><br><span class="line">            &quot;self&quot; : true</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;_id&quot; : 2,</span><br><span class="line">            &quot;name&quot; : &quot;127.0.0.1:27019&quot;,</span><br><span class="line">            &quot;health&quot; : 1,</span><br><span class="line">            &quot;state&quot; : 2,</span><br><span class="line">            &quot;stateStr&quot; : &quot;SECONDARY&quot;,</span><br><span class="line">            &quot;uptime&quot; : 249,</span><br><span class="line">            &quot;optime&quot; : Timestamp(1509438230, 2),</span><br><span class="line">            &quot;optimeDate&quot; : ISODate(&quot;2017-03-23T08:23:50Z&quot;),</span><br><span class="line">            &quot;lastHeartbeat&quot; : ISODate(&quot;2017-03-23T08:26:21.134Z&quot;),</span><br><span class="line">            &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2017-03-23T08:26:21.134Z&quot;),</span><br><span class="line">            &quot;pingMs&quot; : 0,</span><br><span class="line">            &quot;configVersion&quot; : 1</span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    &quot;ok&quot; : 1</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>The node 127.0.0.1:27017 here can’t be reachable.<br>The node 127.0.0.1:27018 has been selected to be the new primary node.So automatic failover is successful.</p>
+<h3 id="Add-a-new-node"><a href="#Add-a-new-node" class="headerlink" title="Add a new node"></a>Add a new node</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo mkdir -p /data/mongodb/rs0-3</span><br><span class="line">$ sudo mongod --port 27020 --dbpath /data/mongodb/rs0-3 --replSet rs0 --smallfiles --oplogSize 128 --fork --logpath=/data/mongodb/log/271020.log</span><br></pre></td></tr></table></figure>
+<p>Entry the primary node<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mongo --port 27018</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rs0:PRIMARY&gt; rs.add(&quot;127.0.0.1:27020&quot;)</span><br><span class="line">&#123; &quot;ok&quot; : 1 &#125;</span><br><span class="line">2017-03-23T08:30:54.755+0000 I NETWORK  reconnect 127.0.0.1:27018 (127.0.0.1) ok</span><br></pre></td></tr></table></figure>
+<p>We can see that node has been added success.</p>
+<h3 id="Remove-a-node"><a href="#Remove-a-node" class="headerlink" title="Remove a node"></a>Remove a node</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rs0:PRIMARY&gt; rs.remove(&quot;127.0.0.1:27020&quot;)</span><br><span class="line">&#123; &quot;ok&quot; : 1 &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Manually-change-the-primary-node"><a href="#Manually-change-the-primary-node" class="headerlink" title="Manually change the primary node"></a>Manually change the primary node</h3><p>To make the node ‘s priority become the maximum, this node will become the primary node: </p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">rs0:PRIMARY&gt; conf = rs.conf()</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">rs0:PRIMARY&gt; conf.members[3].priority = 2</span><br><span class="line">2</span><br><span class="line"></span><br><span class="line">rs0:PRIMARY&gt; rs.reconfig(conf)</span><br></pre></td></tr></table></figure>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Mongodb/">Mongodb</a>, <a class="has-link-grey -link" href="/tags/Replica/">Replica</a>, <a class="has-link-grey -link" href="/tags/Ubuntu/">Ubuntu</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+            <p class="is-size-7">
+    <b>
+    Thank you for reading.<br>
+    This post is copyrighted by <a href="https://liyuliang.cc">Liyuliang’s Blog.</a><br>
+    If reproduced, please indicate the source: <a href="https://liyuliang.cc">Liyuliang’s Blog</a><br>
+    This blog uses <a target="_blank" rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-Share-Sharing 4.0 International License Agreement </a> to license.<br>
+    </b>
+    <hr>
+</p>
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">Like this article? Support the author with</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>Alipay</span>
+    <div class="qrcode"><img src="/images/alipay.jpeg" alt="Alipay"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>Wechat</span>
+    <div class="qrcode"><img src="/images/wxpay.jpeg" alt="Wechat"></div>
+</a>
+
+                
+                <!-- Visit https://www.paypal.com/donate/buttons/ to get your donate button -->
+
+<a class="button is-warning donate" onclick="document.getElementById(&#39;paypal-donate-form&#39;).submit()">
+    <span class="icon is-small">
+        <i class="fab fa-paypal"></i>
+    </span>
+    <span>Paypal</span>
+</a>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" id="paypal-donate-form">
+    <input type="hidden" name="cmd" value="_donations">
+    <input type="hidden" name="business" value="D7RUA6PUE8GM2">
+    <input type="hidden" name="currency_code" value="USD">
+</form>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2017/03/23/How-sentinel-build-Redis-master-slave/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">How sentinel build Redis master-slave</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2017/03/22/Operate-on-Mongodb-3-2/">
+                <span class="level-item">Operate on Mongodb 3.2</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+</div>
+                
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-3 column-right is-sticky">
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/09/">
+                <span class="level-start">
+                    <span class="level-item">September 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">8</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">10</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">9</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">7</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">9</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/Alipay/" style="font-size: 10px;">Alipay</a> <a href="/tags/Apache/" style="font-size: 12px;">Apache</a> <a href="/tags/Baidu/" style="font-size: 10px;">Baidu</a> <a href="/tags/Canal/" style="font-size: 10px;">Canal</a> <a href="/tags/Centos/" style="font-size: 10px;">Centos</a> <a href="/tags/CloudDisk/" style="font-size: 10px;">CloudDisk</a> <a href="/tags/Daemon/" style="font-size: 11px;">Daemon</a> <a href="/tags/Elasticsearch/" style="font-size: 13px;">Elasticsearch</a> <a href="/tags/Filebeat/" style="font-size: 11px;">Filebeat</a> <a href="/tags/Glide/" style="font-size: 10px;">Glide</a> <a href="/tags/Iterm/" style="font-size: 10px;">Iterm</a> <a href="/tags/JQuery/" style="font-size: 10px;">JQuery</a> <a href="/tags/Keepalived/" style="font-size: 10px;">Keepalived</a> <a href="/tags/Kibana/" style="font-size: 11px;">Kibana</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Login/" style="font-size: 10px;">Login</a> <a href="/tags/Logstash/" style="font-size: 11px;">Logstash</a> <a href="/tags/Mac/" style="font-size: 14px;">Mac</a> <a href="/tags/Mongodb/" style="font-size: 11px;">Mongodb</a> <a href="/tags/Mycat/" style="font-size: 10px;">Mycat</a> <a href="/tags/Mysql/" style="font-size: 19px;">Mysql</a> <a href="/tags/NFS/" style="font-size: 10px;">NFS</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 10px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 18px;">PHP</a> <a href="/tags/Pagespeed/" style="font-size: 10px;">Pagespeed</a> <a href="/tags/Partition/" style="font-size: 10px;">Partition</a> <a href="/tags/Redis/" style="font-size: 12px;">Redis</a> <a href="/tags/Replica/" style="font-size: 10px;">Replica</a> <a href="/tags/Security/" style="font-size: 10px;">Security</a> <a href="/tags/Slave/" style="font-size: 13px;">Slave</a> <a href="/tags/SlowLog/" style="font-size: 11px;">SlowLog</a> <a href="/tags/Symfony/" style="font-size: 15px;">Symfony</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/Twig/" style="font-size: 11px;">Twig</a> <a href="/tags/Ubuntu/" style="font-size: 20px;">Ubuntu</a> <a href="/tags/Varnish/" style="font-size: 10px;">Varnish</a> <a href="/tags/Vim/" style="font-size: 10px;">Vim</a> <a href="/tags/Virtualbox/" style="font-size: 10px;">Virtualbox</a> <a href="/tags/Wordpress/" style="font-size: 11px;">Wordpress</a> <a href="/tags/auth/" style="font-size: 11px;">auth</a> <a href="/tags/backup/" style="font-size: 10px;">backup</a> <a href="/tags/beanstalkd/" style="font-size: 10px;">beanstalkd</a> <a href="/tags/binlog/" style="font-size: 10px;">binlog</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/brew/" style="font-size: 11px;">brew</a> <a href="/tags/composer/" style="font-size: 10px;">composer</a> <a href="/tags/cookie/" style="font-size: 10px;">cookie</a> <a href="/tags/css/" style="font-size: 10px;">css</a> <a href="/tags/dante/" style="font-size: 10px;">dante</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/domain/" style="font-size: 11px;">domain</a> <a href="/tags/download/" style="font-size: 10px;">download</a> <a href="/tags/file/" style="font-size: 10px;">file</a> <a href="/tags/fork/" style="font-size: 10px;">fork</a> <a href="/tags/git/" style="font-size: 11px;">git</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/golang/" style="font-size: 17px;">golang</a> <a href="/tags/homestead/" style="font-size: 10px;">homestead</a> <a href="/tags/iptable/" style="font-size: 11px;">iptable</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/log/" style="font-size: 10px;">log</a> <a href="/tags/nginx/" style="font-size: 16px;">nginx</a> <a href="/tags/proxy/" style="font-size: 11px;">proxy</a> <a href="/tags/redis-cluster/" style="font-size: 10px;">redis-cluster</a> <a href="/tags/redis-sentinel/" style="font-size: 10px;">redis-sentinel</a> <a href="/tags/sock5/" style="font-size: 10px;">sock5</a> <a href="/tags/supervisor/" style="font-size: 10px;">supervisor</a> <a href="/tags/sync/" style="font-size: 10px;">sync</a> <a href="/tags/tips/" style="font-size: 11px;">tips</a> <a href="/tags/tmux/" style="font-size: 10px;">tmux</a> <a href="/tags/usb/" style="font-size: 10px;">usb</a> <a href="/tags/vagrant/" style="font-size: 10px;">vagrant</a> <a href="/tags/web/" style="font-size: 10px;">web</a>
+    </div>
+</div>
+
+    
+        
+
+
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    Liyuliang&#39;s Blog
+                
+                </a>
+
+                <p class="is-size-7">
+                    <a href="/copyright" target="_blank">Copyright</a>
+                    &copy; 2021 Liyuliang&nbsp;
+
+		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/liyuliang">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="SiteMap for Google" href="https://liyuliang.cc/sitemap.xml">
+                        
+                        <i class="fab fa-google"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="SiteMap for Baidu" href="https://liyuliang.cc/baidusitemap.xml">
+                        
+                        <i class="fab fa-bimobject"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+<meta name="google-site-verification" content="phJt8wJDQkOAcEQmqF8UasrF3CVtKMYLBqYLlWfVIOM">
+<title>Canal sync data to elasticsearch by Mysql binlog - Liyuliang&#39;s Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+    <meta name="description" content="Server environment12345678910$ cat /etc/issue  Ubuntu 14.04.5 LTS$ java -versionjava version &amp;quot;1.8.0_151&amp;quot;Java(TM) SE Runtime Environment (build 1.8.0_151-b12)Java HotSpot(TM) 64-Bit Server VM">
+<meta name="keywords" content="Mysql,Elasticsearch,Canal,binlog,sync">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Canal sync data to elasticsearch by Mysql binlog">
+<meta property="og:url" content="https://liyuliang.cc/2017/08/21/Canal-sync-data-to-elasticsearch-by-Mysql-binlog/index.html">
+<meta property="og:site_name" content="Liyuliang&#39;s Blog">
+<meta property="og:description" content="Server environment12345678910$ cat /etc/issue  Ubuntu 14.04.5 LTS$ java -versionjava version &amp;quot;1.8.0_151&amp;quot;Java(TM) SE Runtime Environment (build 1.8.0_151-b12)Java HotSpot(TM) 64-Bit Server VM">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2021-06-14T14:02:02.291Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Canal sync data to elasticsearch by Mysql binlog">
+<meta name="twitter:description" content="Server environment12345678910$ cat /etc/issue  Ubuntu 14.04.5 LTS$ java -versionjava version &amp;quot;1.8.0_151&amp;quot;Java(TM) SE Runtime Environment (build 1.8.0_151-b12)Java HotSpot(TM) 64-Bit Server VM">
+
+
+
+
+
+<link rel="icon" href="/images/header.png">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.4.1/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+
+
+<script>
+        if (document.domain != "liyuliang.cc") {
+            window.location.href = "https://liyuliang.cc";
+        }
+        if (top.location != self.location) {
+           top.location = self.location;
+        }
+
+</script>
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                Liyuliang&#39;s Blog
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item" href="/archives">Archives</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/liyuliang">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main"><div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2017-08-21T08:22:36.000Z">2017-08-21</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    7 minutes read (About 1079 words)
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                Canal sync data to elasticsearch by Mysql binlog
+            
+        </h1>
+        <div class="content">
+            <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">  Ubuntu 14.04.5 LTS</span><br><span class="line"></span><br><span class="line">$ java -version</span><br><span class="line">java version &quot;1.8.0_151&quot;</span><br><span class="line">Java(TM) SE Runtime Environment (build 1.8.0_151-b12)</span><br><span class="line">Java HotSpot(TM) 64-Bit Server VM (build 25.151-b12, mixed mode)  </span><br><span class="line"></span><br><span class="line">$ mysqld --version</span><br><span class="line">mysqld  Ver 5.7.20 for Linux on x86_64 (MySQL Community Server (GPL))</span><br></pre></td></tr></table></figure>
+<h3 id="My-computer-develop-environment"><a href="#My-computer-develop-environment" class="headerlink" title="My computer develop environment"></a>My computer develop environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ sw_vers </span><br><span class="line">ProductName:    Mac OS X</span><br><span class="line">ProductVersion: 10.12.6</span><br><span class="line">BuildVersion:   16G29</span><br><span class="line"></span><br><span class="line">$ brew -v</span><br><span class="line">Homebrew 1.3.0</span><br><span class="line">Homebrew/homebrew-core (git revision 83c2; last commit 2017-08-03)</span><br><span class="line"></span><br><span class="line">$ mvn -v</span><br><span class="line">Apache Maven 3.5.2</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3 id="Install-Java8"><a href="#Install-Java8" class="headerlink" title="Install Java8+"></a>Install Java8+</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo add-apt-repository ppa:webupd8team/java</span><br><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install oracle-java8-installer</span><br></pre></td></tr></table></figure>
+<p>or Java9<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install oracle-java9-installer</span><br></pre></td></tr></table></figure></p>
+<h3 id="Set-Mysql-row-binlog-format"><a href="#Set-Mysql-row-binlog-format" class="headerlink" title="Set Mysql row binlog format"></a>Set Mysql row binlog format</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">server_id = 1</span><br><span class="line"></span><br><span class="line">log-bin     = /var/lib/mysql/binlog</span><br><span class="line">log_bin_trust_function_creators=1</span><br><span class="line">binlog_format = ROW</span><br><span class="line">expire_logs_days = 99</span><br><span class="line">sync_binlog = 0</span><br><span class="line"></span><br><span class="line">slow-query-log=1</span><br><span class="line">slow-query-log-file=/var/log/mysql/slow-queries.log</span><br><span class="line">long_query_time = 10</span><br><span class="line">log-queries-not-using-indexes</span><br><span class="line">binlog-row-image=full</span><br></pre></td></tr></table></figure>
+<h3 id="Create-Canal-user-in-Mysql"><a href="#Create-Canal-user-in-Mysql" class="headerlink" title="Create Canal user in Mysql"></a>Create Canal user in Mysql</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; CREATE USER canal IDENTIFIED BY &apos;canal&apos;;    </span><br><span class="line">mysql&gt; GRANT SELECT, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO &apos;canal&apos;@&apos;%&apos;;  </span><br><span class="line">mysql&gt; FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
+<p>or you can give all power<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; CREATE USER canal IDENTIFIED BY &apos;canal&apos;;</span><br><span class="line">mysql&gt; GRANT ALL PRIVILEGES ON *.* TO &apos;canal&apos;@&apos;%&apos; ; </span><br><span class="line">mysql&gt; FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Install-Canal"><a href="#Install-Canal" class="headerlink" title="Install Canal"></a>Install Canal</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ wget https://github.com/alibaba/canal/releases/download/canal-1.0.24/canal.deployer-1.0.24.tar.gz</span><br><span class="line"></span><br><span class="line">$ tar zxvf canal.deployer-1.0.24.tar.gz -C canal</span><br><span class="line"></span><br><span class="line">$ tree canal -L 1</span><br><span class="line">canal</span><br><span class="line">├── bin</span><br><span class="line">├── conf</span><br><span class="line">├── lib</span><br><span class="line">└── logs</span><br></pre></td></tr></table></figure>
+<h3 id="Update-config-instance-properties"><a href="#Update-config-instance-properties" class="headerlink" title="Update config instance.properties"></a>Update config instance.properties</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd canal</span><br><span class="line">$ vim conf/example/instance.properties</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">#################################################</span><br><span class="line">## mysql serverId</span><br><span class="line">canal.instance.mysql.slaveId = 1234</span><br><span class="line"></span><br><span class="line"># position info</span><br><span class="line">canal.instance.master.address = 127.0.0.1:3306</span><br><span class="line">canal.instance.master.journal.name =</span><br><span class="line">canal.instance.master.position =</span><br><span class="line">canal.instance.master.timestamp =</span><br><span class="line"></span><br><span class="line">#canal.instance.standby.address = </span><br><span class="line">#canal.instance.standby.journal.name =</span><br><span class="line">#canal.instance.standby.position = </span><br><span class="line">#canal.instance.standby.timestamp = </span><br><span class="line"></span><br><span class="line"># username/password</span><br><span class="line">canal.instance.dbUsername = canal</span><br><span class="line">canal.instance.dbPassword = canal</span><br><span class="line">canal.instance.defaultDatabaseName = app</span><br><span class="line">canal.instance.connectionCharset = UTF-8</span><br><span class="line"></span><br><span class="line"># table regex</span><br><span class="line">canal.instance.filter.regex = .*\\..*</span><br><span class="line"># table black regex</span><br><span class="line">canal.instance.filter.black.regex =</span><br><span class="line"></span><br><span class="line">#################################################</span><br></pre></td></tr></table></figure>
+<h3 id="Start-Canal"><a href="#Start-Canal" class="headerlink" title="Start Canal"></a>Start Canal</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ./bin/startup.sh</span><br></pre></td></tr></table></figure>
+<h3 id="Check-Canal-running-status-in-log-file"><a href="#Check-Canal-running-status-in-log-file" class="headerlink" title="Check Canal running status in log file"></a>Check Canal running status in log file</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ tail -f logs/canal/canal.log </span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">2017-10-01 15:02:24.591 [main] INFO  com.alibaba.otter.canal.deployer.CanalLauncher - ## start the canal server.</span><br><span class="line">2017-10-01 15:02:24.720 [main] INFO  com.alibaba.otter.canal.deployer.CanalController - ## start the canal server[10.0.2.15:11111]</span><br><span class="line">2017-10-01 15:02:25.541 [main] INFO  com.alibaba.otter.canal.deployer.CanalLauncher - ## the canal server is running now ......</span><br></pre></td></tr></table></figure>
+<p>Ok, Canal server has been started!<br>And now we need the Canal client to sync data to elasticsearch</p>
+<h3 id="Install-Maven"><a href="#Install-Maven" class="headerlink" title="Install Maven"></a>Install Maven</h3><p>My development machine is Mac, so i will install Maven by brew<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ brew install maven</span><br><span class="line"></span><br><span class="line">$ brew info maven</span><br><span class="line">maven: stable 3.5.2</span><br><span class="line">Java-based project management</span><br><span class="line">https://maven.apache.org/</span><br><span class="line">Conflicts with:</span><br><span class="line">  mvnvm (because also installs a &apos;mvn&apos; executable)</span><br><span class="line">/usr/local/Cellar/maven/3.5.2 (104 files, 10.1MB) *</span><br><span class="line">  Built from source on 2017-10-01 at 23:45:23</span><br><span class="line">From: https://github.com/Homebrew/homebrew-core/blob/master/Formula/maven.rb</span><br><span class="line">==&gt; Requirements</span><br><span class="line">Required: java &gt;= 1.7 ✔</span><br></pre></td></tr></table></figure></p>
+<p>Add maven image repository address<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ cd /usr/local/Cellar/maven/3.5.2</span><br><span class="line">$ vim libexec/conf/settings.xml</span><br><span class="line"></span><br><span class="line">  &lt;mirrors&gt;</span><br><span class="line">... </span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">        &lt;id&gt;alimaven&lt;/id&gt;</span><br><span class="line">        &lt;name&gt;aliyun maven&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public/&lt;/url&gt;</span><br><span class="line">        &lt;mirrorOf&gt;central&lt;/mirrorOf&gt;</span><br><span class="line">    &lt;/mirror&gt;</span><br><span class="line">  &lt;/mirrors&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<h3 id="Create-a-Maven-Java-project"><a href="#Create-a-Maven-Java-project" class="headerlink" title="Create a Maven(Java) project"></a>Create a Maven(Java) project</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mvn archetype:generate -DgroupId=com.alibaba.otter -DartifactId=canal.client</span><br></pre></td></tr></table></figure>
+<p>After some information confirm, a empty maven project was create.<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ tree canal.client/ -L 1</span><br><span class="line">canal.client/</span><br><span class="line">├── pom.xml</span><br><span class="line">└── src</span><br><span class="line"></span><br><span class="line">1 directory, 1 file</span><br></pre></td></tr></table></figure></p>
+<h3 id="Add-com-alibaba-otter-dependence"><a href="#Add-com-alibaba-otter-dependence" class="headerlink" title="Add com.alibaba.otter dependence"></a>Add com.alibaba.otter dependence</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cd canal.client/; vim pom.xml</span><br></pre></td></tr></table></figure>
+<figure class="highlight xml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">dependencies</span>&gt;</span></span><br><span class="line">...</span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.alibaba.otter<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>canal.client<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.0.22<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="Full-pom-xml-config-file"><a href="#Full-pom-xml-config-file" class="headerlink" title="Full pom.xml config file"></a>Full pom.xml config file</h3><figure class="highlight xml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">project</span> <span class="hljs-attr">xmlns</span>=<span class="hljs-string">"http://maven.apache.org/POM/4.0.0"</span> <span class="hljs-attr">xmlns:xsi</span>=<span class="hljs-string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="hljs-tag">         <span class="hljs-attr">xsi:schemaLocation</span>=<span class="hljs-string">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">modelVersion</span>&gt;</span>4.0.0<span class="hljs-tag">&lt;/<span class="hljs-name">modelVersion</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.alibaba.otter<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>canal.sample<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.0-SNAPSHOT<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">packaging</span>&gt;</span>jar<span class="hljs-tag">&lt;/<span class="hljs-name">packaging</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>canal.sample<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>http://maven.apache.org<span class="hljs-tag">&lt;/<span class="hljs-name">url</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">properties</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">project.build.sourceEncoding</span>&gt;</span>UTF-8<span class="hljs-tag">&lt;/<span class="hljs-name">project.build.sourceEncoding</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">&lt;!-- base on your java version --&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">maven.compiler.source</span>&gt;</span>1.9<span class="hljs-tag">&lt;/<span class="hljs-name">maven.compiler.source</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">maven.compiler.target</span>&gt;</span>1.9<span class="hljs-tag">&lt;/<span class="hljs-name">maven.compiler.target</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;/<span class="hljs-name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>junit<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>junit<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.8.1<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">scope</span>&gt;</span>test<span class="hljs-tag">&lt;/<span class="hljs-name">scope</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">&lt;!-- canal client --&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.alibaba.otter<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>canal.client<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.0.22<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">&lt;!-- elasticsearch client --&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>io.searchbox<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>jest<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.0.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span></span><br><span class="line">        </span><br><span class="line">    <span class="hljs-tag">&lt;/<span class="hljs-name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">&lt;!-- build executable jar file plugin --&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">build</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">plugins</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span></span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span></span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>maven-shade-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span></span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.2.1<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span></span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">executions</span>&gt;</span></span><br><span class="line">                    <span class="hljs-tag">&lt;<span class="hljs-name">execution</span>&gt;</span></span><br><span class="line">                        <span class="hljs-tag">&lt;<span class="hljs-name">phase</span>&gt;</span>package<span class="hljs-tag">&lt;/<span class="hljs-name">phase</span>&gt;</span></span><br><span class="line">                        <span class="hljs-tag">&lt;<span class="hljs-name">goals</span>&gt;</span></span><br><span class="line">                            <span class="hljs-tag">&lt;<span class="hljs-name">goal</span>&gt;</span>shade<span class="hljs-tag">&lt;/<span class="hljs-name">goal</span>&gt;</span></span><br><span class="line">                        <span class="hljs-tag">&lt;/<span class="hljs-name">goals</span>&gt;</span></span><br><span class="line">                        <span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span></span><br><span class="line">                            <span class="hljs-tag">&lt;<span class="hljs-name">transformers</span>&gt;</span></span><br><span class="line">                                <span class="hljs-tag">&lt;<span class="hljs-name">transformer</span></span></span><br><span class="line"><span class="hljs-tag">                                        <span class="hljs-attr">implementation</span>=<span class="hljs-string">"org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"</span>&gt;</span></span><br><span class="line">                                    <span class="hljs-tag">&lt;<span class="hljs-name">mainClass</span>&gt;</span>com.alibaba.otter.App<span class="hljs-tag">&lt;/<span class="hljs-name">mainClass</span>&gt;</span></span><br><span class="line">                                <span class="hljs-tag">&lt;/<span class="hljs-name">transformer</span>&gt;</span></span><br><span class="line">                            <span class="hljs-tag">&lt;/<span class="hljs-name">transformers</span>&gt;</span></span><br><span class="line">                        <span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span></span><br><span class="line">                    <span class="hljs-tag">&lt;/<span class="hljs-name">execution</span>&gt;</span></span><br><span class="line">                <span class="hljs-tag">&lt;/<span class="hljs-name">executions</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;/<span class="hljs-name">plugin</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;/<span class="hljs-name">plugins</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;/<span class="hljs-name">build</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="Init-the-Maven-project"><a href="#Init-the-Maven-project" class="headerlink" title="Init the Maven project"></a>Init the Maven project</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mvn install</span><br></pre></td></tr></table></figure>
+<h3 id="Add-the-code"><a href="#Add-the-code" class="headerlink" title="Add the code"></a>Add the code</h3><figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> com.alibaba.otter;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> com.alibaba.otter.canal.client.CanalConnector;</span><br><span class="line"><span class="hljs-keyword">import</span> com.alibaba.otter.canal.client.CanalConnectors;</span><br><span class="line"><span class="hljs-keyword">import</span> com.alibaba.otter.canal.common.utils.AddressUtils;</span><br><span class="line"><span class="hljs-keyword">import</span> com.alibaba.otter.canal.protocol.CanalEntry;</span><br><span class="line"><span class="hljs-keyword">import</span> com.alibaba.otter.canal.protocol.Message;</span><br><span class="line"><span class="hljs-keyword">import</span> io.searchbox.client.JestClient;</span><br><span class="line"><span class="hljs-keyword">import</span> io.searchbox.client.JestClientFactory;</span><br><span class="line"><span class="hljs-keyword">import</span> io.searchbox.client.config.HttpClientConfig;</span><br><span class="line"><span class="hljs-keyword">import</span> io.searchbox.core.Delete;</span><br><span class="line"><span class="hljs-keyword">import</span> io.searchbox.core.Index;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="hljs-keyword">import</span> java.net.InetSocketAddress;</span><br><span class="line"><span class="hljs-keyword">import</span> java.util.LinkedHashMap;</span><br><span class="line"><span class="hljs-keyword">import</span> java.util.List;</span><br><span class="line"><span class="hljs-keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Hello world!</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;</span><br><span class="line">        CanalConnector connector = CanalConnectors.newSingleConnector(<span class="hljs-keyword">new</span> InetSocketAddress(AddressUtils.getHostIp(),</span><br><span class="line">                <span class="hljs-number">11111</span>), <span class="hljs-string">"example"</span>, <span class="hljs-string">""</span>, <span class="hljs-string">""</span>);</span><br><span class="line">        <span class="hljs-keyword">int</span> batchSize = <span class="hljs-number">1000</span>;</span><br><span class="line">        <span class="hljs-keyword">try</span> &#123;</span><br><span class="line">            connector.connect();</span><br><span class="line">            connector.subscribe(<span class="hljs-string">".*\\..*"</span>);</span><br><span class="line">            connector.rollback();</span><br><span class="line"></span><br><span class="line">            <span class="hljs-keyword">while</span> (<span class="hljs-keyword">true</span>) &#123;</span><br><span class="line"></span><br><span class="line">                Message message = connector.getWithoutAck(batchSize); <span class="hljs-comment">// get specify size</span></span><br><span class="line">                <span class="hljs-keyword">long</span> batchId = message.getId();</span><br><span class="line">                <span class="hljs-keyword">int</span> size = message.getEntries().size();</span><br><span class="line"></span><br><span class="line">                <span class="hljs-keyword">if</span> (batchId == -<span class="hljs-number">1</span> || size == <span class="hljs-number">0</span>) &#123;</span><br><span class="line">                    <span class="hljs-keyword">try</span> &#123;</span><br><span class="line">                        Thread.sleep(<span class="hljs-number">1000</span>);</span><br><span class="line">                    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                &#125; <span class="hljs-keyword">else</span> &#123;</span><br><span class="line">                    translateDatas(message.getEntries());</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                connector.ack(batchId); <span class="hljs-comment">// commit confirm</span></span><br><span class="line">                <span class="hljs-comment">// connector.rollback(batchId); // rollback if something gets errors</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="hljs-keyword">finally</span> &#123;</span><br><span class="line">            connector.disconnect();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">translateDatas</span><span class="hljs-params">(List&lt;CanalEntry.Entry&gt; entrys)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">for</span> (CanalEntry.Entry entry : entrys) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="hljs-keyword">if</span> (entry.getEntryType() == CanalEntry.EntryType.TRANSACTIONBEGIN || entry.getEntryType() == CanalEntry.EntryType.TRANSACTIONEND) &#123;</span><br><span class="line">                <span class="hljs-keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            CanalEntry.RowChange rowChange = <span class="hljs-keyword">null</span>;</span><br><span class="line"></span><br><span class="line">            <span class="hljs-keyword">try</span> &#123;</span><br><span class="line">                rowChange = CanalEntry.RowChange.parseFrom(entry.getStoreValue());</span><br><span class="line"></span><br><span class="line">            &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> RuntimeException(<span class="hljs-string">"ERROR ## parser of eromanga-event has an error , data:"</span> + entry.toString(),</span><br><span class="line">                        e);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            CanalEntry.EventType eventType = rowChange.getEventType();</span><br><span class="line">            String dbName = entry.getHeader().getSchemaName();</span><br><span class="line">            String tableName = entry.getHeader().getTableName();</span><br><span class="line"></span><br><span class="line">            System.out.println(String.format(<span class="hljs-string">"================&gt; binlog[%s:%s] , name[%s,%s] , eventType : %s"</span>,</span><br><span class="line">                    entry.getHeader().getLogfileName(),</span><br><span class="line">                    entry.getHeader().getLogfileOffset(),</span><br><span class="line">                    entry.getHeader().getSchemaName(),</span><br><span class="line">                    entry.getHeader().getTableName(),</span><br><span class="line">                    eventType));</span><br><span class="line"></span><br><span class="line">            JestClient ESClient = ESClient();</span><br><span class="line"></span><br><span class="line">            <span class="hljs-keyword">for</span> (CanalEntry.RowData rowData : rowChange.getRowDatasList()) &#123;</span><br><span class="line"></span><br><span class="line">                <span class="hljs-keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">                    <span class="hljs-keyword">if</span> (eventType == CanalEntry.EventType.DELETE) &#123;</span><br><span class="line"></span><br><span class="line">                        <span class="hljs-keyword">for</span> (CanalEntry.Column column : rowData.getBeforeColumnsList()) &#123;</span><br><span class="line"></span><br><span class="line">                            <span class="hljs-keyword">if</span> (column.getName().toLowerCase().equals(<span class="hljs-string">"id"</span>)) &#123;</span><br><span class="line"></span><br><span class="line">                                ESClient.execute(<span class="hljs-keyword">new</span> Delete.Builder(column.getValue())</span><br><span class="line">                                        .index(dbName)</span><br><span class="line">                                        .type(tableName)</span><br><span class="line">                                        .build());</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">//                    &#125; else if (eventType == CanalEntry.EventType.INSERT) &#123;</span></span><br><span class="line"></span><br><span class="line">                    &#125; <span class="hljs-keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">                        Map&lt;String, String&gt; mapping = columnToMapping(rowData.getAfterColumnsList());</span><br><span class="line"></span><br><span class="line">                        Index index = <span class="hljs-keyword">new</span> Index.Builder(mapping).index(dbName).type(tableName).id(mapping.get(<span class="hljs-string">"id"</span>)).build();</span><br><span class="line">                        ESClient.execute(index);</span><br><span class="line"></span><br><span class="line">                        System.out.println(<span class="hljs-string">"-------&gt; before"</span>);</span><br><span class="line">                        printColumn(rowData.getBeforeColumnsList());</span><br><span class="line">                        System.out.println(<span class="hljs-string">"-------&gt; after"</span>);</span><br><span class="line"></span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> Map&lt;String, String&gt; <span class="hljs-title">columnToMapping</span><span class="hljs-params">(List&lt;CanalEntry.Column&gt; afterColumnsList)</span> </span>&#123;</span><br><span class="line">        Map&lt;String, String&gt; data = <span class="hljs-keyword">new</span> LinkedHashMap&lt;String, String&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">for</span> (CanalEntry.Column column : afterColumnsList) &#123;</span><br><span class="line">            data.put(column.getName(), column.getValue());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-keyword">return</span> data;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> JestClient ESClient;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> JestClient <span class="hljs-title">ESClient</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> (ESClient == <span class="hljs-keyword">null</span>) &#123;</span><br><span class="line">            JestClientFactory factory = <span class="hljs-keyword">new</span> JestClientFactory();</span><br><span class="line">            factory.setHttpClientConfig(<span class="hljs-keyword">new</span> HttpClientConfig</span><br><span class="line">                    .Builder(<span class="hljs-string">"http://localhost:9200"</span>)</span><br><span class="line">                    .build());</span><br><span class="line"></span><br><span class="line">            ESClient = factory.getObject();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-keyword">return</span> ESClient;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">printColumn</span><span class="hljs-params">(List&lt;CanalEntry.Column&gt; columns)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">for</span> (CanalEntry.Column column : columns) &#123;</span><br><span class="line">            System.out.println(column.getName() + <span class="hljs-string">" : "</span> + column.getValue() + <span class="hljs-string">"    update="</span> + column.getUpdated());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="全量同步"><a href="#全量同步" class="headerlink" title="全量同步"></a>全量同步</h3><p><a href="http://shzhangji.com/cnblogs/2017/08/13/extract-data-from-mysql-with-binlog-and-canal/" target="_blank" rel="noopener">http://shzhangji.com/cnblogs/2017/08/13/extract-data-from-mysql-with-binlog-and-canal/</a></p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Canal/">Canal</a>, <a class="has-link-grey -link" href="/tags/Elasticsearch/">Elasticsearch</a>, <a class="has-link-grey -link" href="/tags/Mysql/">Mysql</a>, <a class="has-link-grey -link" href="/tags/binlog/">binlog</a>, <a class="has-link-grey -link" href="/tags/sync/">sync</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+            <p class="is-size-7">
+    <b>
+    Thank you for reading.<br>
+    This post is copyrighted by <a href="https://liyuliang.cc">Liyuliang’s Blog.</a><br>
+    If reproduced, please indicate the source: <a href="https://liyuliang.cc">Liyuliang’s Blog</a><br>
+    This blog uses <a target="_blank" rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-Share-Sharing 4.0 International License Agreement </a> to license.<br>
+    </b>
+    <hr>
+</p>
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">Like this article? Support the author with</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>Alipay</span>
+    <div class="qrcode"><img src="/images/alipay.jpeg" alt="Alipay"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>Wechat</span>
+    <div class="qrcode"><img src="/images/wxpay.jpeg" alt="Wechat"></div>
+</a>
+
+                
+                <!-- Visit https://www.paypal.com/donate/buttons/ to get your donate button -->
+
+<a class="button is-warning donate" onclick="document.getElementById(&#39;paypal-donate-form&#39;).submit()">
+    <span class="icon is-small">
+        <i class="fab fa-paypal"></i>
+    </span>
+    <span>Paypal</span>
+</a>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" id="paypal-donate-form">
+    <input type="hidden" name="cmd" value="_donations">
+    <input type="hidden" name="business" value="D7RUA6PUE8GM2">
+    <input type="hidden" name="currency_code" value="USD">
+</form>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2017/08/21/Separate-Mysql-Slow-Log-Using-Logrotate-In-Ubuntu/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Separate Mysql Slow Log Using Logrotate In Ubuntu</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2017/08/20/Mysql-Slave-Config-With-Docker/">
+                <span class="level-item">Mysql Slave Config With Docker</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+</div>
+                
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-3 column-right is-sticky">
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/09/">
+                <span class="level-start">
+                    <span class="level-item">September 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">8</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">10</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">9</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">7</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">9</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/Alipay/" style="font-size: 10px;">Alipay</a> <a href="/tags/Apache/" style="font-size: 12px;">Apache</a> <a href="/tags/Baidu/" style="font-size: 10px;">Baidu</a> <a href="/tags/Canal/" style="font-size: 10px;">Canal</a> <a href="/tags/Centos/" style="font-size: 10px;">Centos</a> <a href="/tags/CloudDisk/" style="font-size: 10px;">CloudDisk</a> <a href="/tags/Daemon/" style="font-size: 11px;">Daemon</a> <a href="/tags/Elasticsearch/" style="font-size: 13px;">Elasticsearch</a> <a href="/tags/Filebeat/" style="font-size: 11px;">Filebeat</a> <a href="/tags/Glide/" style="font-size: 10px;">Glide</a> <a href="/tags/Iterm/" style="font-size: 10px;">Iterm</a> <a href="/tags/JQuery/" style="font-size: 10px;">JQuery</a> <a href="/tags/Keepalived/" style="font-size: 10px;">Keepalived</a> <a href="/tags/Kibana/" style="font-size: 11px;">Kibana</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Login/" style="font-size: 10px;">Login</a> <a href="/tags/Logstash/" style="font-size: 11px;">Logstash</a> <a href="/tags/Mac/" style="font-size: 14px;">Mac</a> <a href="/tags/Mongodb/" style="font-size: 11px;">Mongodb</a> <a href="/tags/Mycat/" style="font-size: 10px;">Mycat</a> <a href="/tags/Mysql/" style="font-size: 19px;">Mysql</a> <a href="/tags/NFS/" style="font-size: 10px;">NFS</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 10px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 18px;">PHP</a> <a href="/tags/Pagespeed/" style="font-size: 10px;">Pagespeed</a> <a href="/tags/Partition/" style="font-size: 10px;">Partition</a> <a href="/tags/Redis/" style="font-size: 12px;">Redis</a> <a href="/tags/Replica/" style="font-size: 10px;">Replica</a> <a href="/tags/Security/" style="font-size: 10px;">Security</a> <a href="/tags/Slave/" style="font-size: 13px;">Slave</a> <a href="/tags/SlowLog/" style="font-size: 11px;">SlowLog</a> <a href="/tags/Symfony/" style="font-size: 15px;">Symfony</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/Twig/" style="font-size: 11px;">Twig</a> <a href="/tags/Ubuntu/" style="font-size: 20px;">Ubuntu</a> <a href="/tags/Varnish/" style="font-size: 10px;">Varnish</a> <a href="/tags/Vim/" style="font-size: 10px;">Vim</a> <a href="/tags/Virtualbox/" style="font-size: 10px;">Virtualbox</a> <a href="/tags/Wordpress/" style="font-size: 11px;">Wordpress</a> <a href="/tags/auth/" style="font-size: 11px;">auth</a> <a href="/tags/backup/" style="font-size: 10px;">backup</a> <a href="/tags/beanstalkd/" style="font-size: 10px;">beanstalkd</a> <a href="/tags/binlog/" style="font-size: 10px;">binlog</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/brew/" style="font-size: 11px;">brew</a> <a href="/tags/composer/" style="font-size: 10px;">composer</a> <a href="/tags/cookie/" style="font-size: 10px;">cookie</a> <a href="/tags/css/" style="font-size: 10px;">css</a> <a href="/tags/dante/" style="font-size: 10px;">dante</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/domain/" style="font-size: 11px;">domain</a> <a href="/tags/download/" style="font-size: 10px;">download</a> <a href="/tags/file/" style="font-size: 10px;">file</a> <a href="/tags/fork/" style="font-size: 10px;">fork</a> <a href="/tags/git/" style="font-size: 11px;">git</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/golang/" style="font-size: 17px;">golang</a> <a href="/tags/homestead/" style="font-size: 10px;">homestead</a> <a href="/tags/iptable/" style="font-size: 11px;">iptable</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/log/" style="font-size: 10px;">log</a> <a href="/tags/nginx/" style="font-size: 16px;">nginx</a> <a href="/tags/proxy/" style="font-size: 11px;">proxy</a> <a href="/tags/redis-cluster/" style="font-size: 10px;">redis-cluster</a> <a href="/tags/redis-sentinel/" style="font-size: 10px;">redis-sentinel</a> <a href="/tags/sock5/" style="font-size: 10px;">sock5</a> <a href="/tags/supervisor/" style="font-size: 10px;">supervisor</a> <a href="/tags/sync/" style="font-size: 10px;">sync</a> <a href="/tags/tips/" style="font-size: 11px;">tips</a> <a href="/tags/tmux/" style="font-size: 10px;">tmux</a> <a href="/tags/usb/" style="font-size: 10px;">usb</a> <a href="/tags/vagrant/" style="font-size: 10px;">vagrant</a> <a href="/tags/web/" style="font-size: 10px;">web</a>
+    </div>
+</div>
+
+    
+        
+
+
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    Liyuliang&#39;s Blog
+                
+                </a>
+
+                <p class="is-size-7">
+                    <a href="/copyright" target="_blank">Copyright</a>
+                    &copy; 2021 Liyuliang&nbsp;
+
+		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/liyuliang">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="SiteMap for Google" href="https://liyuliang.cc/sitemap.xml">
+                        
+                        <i class="fab fa-google"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="SiteMap for Baidu" href="https://liyuliang.cc/baidusitemap.xml">
+                        
+                        <i class="fab fa-bimobject"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

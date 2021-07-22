@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+<meta name="google-site-verification" content="phJt8wJDQkOAcEQmqF8UasrF3CVtKMYLBqYLlWfVIOM">
+<title>How to implement login form by Symfony3 - Liyuliang&#39;s Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+    <meta name="description" content="My computer develop environment123456789101112Ubuntu 16.04.1 LTSPHP 7.0.15-0ubuntu0.16.04.4 (cli) ( NTS )Symfony Installer version 1.5.9Composer version 1.3.2 2017-01-27 18:23:41mysql&amp;gt; select versi">
+<meta name="keywords" content="Ubuntu,Symfony,Login,Security">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to implement login form by Symfony3">
+<meta property="og:url" content="https://liyuliang.cc/2017/03/21/How-to-implement-login-form-by-Symfony3/index.html">
+<meta property="og:site_name" content="Liyuliang&#39;s Blog">
+<meta property="og:description" content="My computer develop environment123456789101112Ubuntu 16.04.1 LTSPHP 7.0.15-0ubuntu0.16.04.4 (cli) ( NTS )Symfony Installer version 1.5.9Composer version 1.3.2 2017-01-27 18:23:41mysql&amp;gt; select versi">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2021-06-14T14:02:02.291Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="How to implement login form by Symfony3">
+<meta name="twitter:description" content="My computer develop environment123456789101112Ubuntu 16.04.1 LTSPHP 7.0.15-0ubuntu0.16.04.4 (cli) ( NTS )Symfony Installer version 1.5.9Composer version 1.3.2 2017-01-27 18:23:41mysql&amp;gt; select versi">
+
+
+
+
+
+<link rel="icon" href="/images/header.png">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.4.1/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+
+
+<script>
+        if (document.domain != "liyuliang.cc") {
+            window.location.href = "https://liyuliang.cc";
+        }
+        if (top.location != self.location) {
+           top.location = self.location;
+        }
+
+</script>
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                Liyuliang&#39;s Blog
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item" href="/archives">Archives</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/liyuliang">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main"><div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2017-03-21T14:24:43.000Z">2017-03-21</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    11 minutes read (About 1611 words)
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                How to implement login form by Symfony3
+            
+        </h1>
+        <div class="content">
+            <h3 id="My-computer-develop-environment"><a href="#My-computer-develop-environment" class="headerlink" title="My computer develop environment"></a>My computer develop environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Ubuntu 16.04.1 LTS</span><br><span class="line"></span><br><span class="line">PHP 7.0.15-0ubuntu0.16.04.4 (cli) ( NTS )</span><br><span class="line">Symfony Installer version 1.5.9</span><br><span class="line">Composer version 1.3.2 2017-01-27 18:23:41</span><br><span class="line"></span><br><span class="line">mysql&gt; select version();</span><br><span class="line">+-----------+</span><br><span class="line">| version() |</span><br><span class="line">+-----------+</span><br><span class="line">| 5.7.12    |</span><br><span class="line">+-----------+</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3 id="Create-a-Symfony-project"><a href="#Create-a-Symfony-project" class="headerlink" title="Create a Symfony project"></a>Create a Symfony project</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ composer create-project symfony/framework-standard-edition login 3.2 -vvv</span><br></pre></td></tr></table></figure>
+<p>project name is “login” then wait for symfony download and init this project</p>
+<p>Downloading Symfony…<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">191 KiB/5.3 MiB ▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░    3%</span><br></pre></td></tr></table></figure></p>
+<p>then you will get a project structure such as<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">login/</span><br><span class="line">├── app</span><br><span class="line">├── bin</span><br><span class="line">├── composer.json</span><br><span class="line">├── composer.lock</span><br><span class="line">├── phpunit.xml.dist</span><br><span class="line">├── README.md</span><br><span class="line">├── src</span><br><span class="line">│   └── AppBundle</span><br><span class="line">│       ├── AppBundle.php</span><br><span class="line">│       └── Controller</span><br><span class="line">│           └── DefaultController.php</span><br><span class="line">├── tests</span><br><span class="line">├── var</span><br><span class="line">├── vendor</span><br><span class="line">└── web</span><br></pre></td></tr></table></figure></p>
+<h3 id="Config-the-database"><a href="#Config-the-database" class="headerlink" title="Config the database"></a>Config the database</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim app/config/parameters.yml</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># This file is auto-generated during the composer install</span><br><span class="line">parameters:</span><br><span class="line">    database_host: 127.0.0.1</span><br><span class="line">    database_port: null</span><br><span class="line">    database_name: symfony</span><br><span class="line">    database_user: root</span><br><span class="line">    database_password: root_pwd</span><br><span class="line">    mailer_transport: smtp</span><br><span class="line">    mailer_host: 127.0.0.1</span><br><span class="line">    mailer_user: null</span><br><span class="line">    mailer_password: null</span><br></pre></td></tr></table></figure>
+<p>you should makesure your database connection information is correct in this file.   </p>
+<h3 id="Create-database-in-mysql-by-symfony-command-tool"><a href="#Create-database-in-mysql-by-symfony-command-tool" class="headerlink" title="Create database in mysql by symfony command tool"></a>Create database in mysql by symfony command tool</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cd login; php bin/console doctrine:database:create</span><br></pre></td></tr></table></figure>
+<h4 id="check-database-in-mysql-and-you-can-see-a-new-database-named-symfony-which-based-on-your-config-file-app-config-config-yml-it-loaded-the-other-config-file-app-config-parameters-yml"><a href="#check-database-in-mysql-and-you-can-see-a-new-database-named-symfony-which-based-on-your-config-file-app-config-config-yml-it-loaded-the-other-config-file-app-config-parameters-yml" class="headerlink" title="check database in mysql and you can see a new database named symfony which based on your config file app/config/config.yml, it loaded the other config file app/config/parameters.yml"></a>check database in mysql and you can see a new database named symfony which based on your config file app/config/config.yml, it loaded the other config file app/config/parameters.yml</h4><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show databases;</span><br><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| information_schema |</span><br><span class="line">| symfony            |</span><br><span class="line">+--------------------+</span><br></pre></td></tr></table></figure>
+<h3 id="Create-user-info-entity-and-user-auth-entity-class"><a href="#Create-user-info-entity-and-user-auth-entity-class" class="headerlink" title="Create user_info entity and user_auth entity class"></a>Create user_info entity and user_auth entity class</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ php bin/console doctrine:generate:entity --entity AppBundle:User</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">The Entity shortcut name [AppBundle:User]:</span><br><span class="line">Configuration format (yml, xml, php, or annotation) [annotation]: </span><br><span class="line">New field name (press &lt;return&gt; to stop adding fields): truename</span><br><span class="line">Field type [string]: </span><br><span class="line">Field length [255]: </span><br><span class="line">Is nullable [false]: </span><br><span class="line">Unique [false]: </span><br><span class="line"></span><br><span class="line">New field name (press &lt;return&gt; to stop adding fields): </span><br><span class="line">  Entity generation</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ php bin/console doctrine:generate:entity --entity AppBundle:UserAuth</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">The Entity shortcut name [AppBundle:UserAuth]:</span><br><span class="line">Configuration format (yml, xml, php, or annotation) [annotation]: </span><br><span class="line"></span><br><span class="line">New field name (press &lt;return&gt; to stop adding fields): userId</span><br><span class="line">Field type [string]: integer</span><br><span class="line">Is nullable [false]: </span><br><span class="line">Unique [false]: </span><br><span class="line"></span><br><span class="line">New field name (press &lt;return&gt; to stop adding fields): identifier</span><br><span class="line">Field type [string]: </span><br><span class="line">Field length [255]: </span><br><span class="line">Is nullable [false]: </span><br><span class="line">Unique [false]: </span><br><span class="line"></span><br><span class="line">New field name (press &lt;return&gt; to stop adding fields): credential</span><br><span class="line">Field type [string]: </span><br><span class="line">Field length [255]: </span><br><span class="line">Is nullable [false]: </span><br><span class="line">Unique [false]: </span><br><span class="line"></span><br><span class="line">New field name (press &lt;return&gt; to stop adding fields):                      </span><br><span class="line">  Entity generation</span><br></pre></td></tr></table></figure>
+<p>After that you can see the directory structure was changed.<br>Entity class with mapping information in Symfony help doctrine to build data table in database.<br>After doctrine schema update, doctrine can automatically create all database tables for every entity.<br>Repository was generated for the Doctrine ORM.</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">./src/</span><br><span class="line">└── AppBundle</span><br><span class="line">    ├── AppBundle.php</span><br><span class="line">    ├── Controller</span><br><span class="line">    │   └── DefaultController.php</span><br><span class="line">    ├── Entity</span><br><span class="line">    │   ├── UserAuth.php</span><br><span class="line">    │   └── User.php</span><br><span class="line">    └── Repository</span><br><span class="line">        ├── UserAuthRepository.php</span><br><span class="line">        └── UserRepository.php</span><br></pre></td></tr></table></figure>
+<h3 id="Create-the-database-table-based-on-entity-class"><a href="#Create-the-database-table-based-on-entity-class" class="headerlink" title="Create the database table based on entity class"></a>Create the database table based on entity class</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ php bin/console doctrine:schema:update --force</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show tables;</span><br><span class="line">+-------------------+</span><br><span class="line">| Tables_in_symfony |</span><br><span class="line">+-------------------+</span><br><span class="line">| user              |</span><br><span class="line">| user_auth         |</span><br><span class="line">+-------------------+</span><br></pre></td></tr></table></figure>
+<p>After than we can make a web api method to  create a user account instead of a register form (i’m just want to simplify this tutorial)</p>
+<h3 id="Create-a-Method-to-sign-up-my-user-account"><a href="#Create-a-Method-to-sign-up-my-user-account" class="headerlink" title="Create a Method to sign up my user account"></a>Create a Method to sign up my user account</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim src/AppBundle/Controller/UserController.php</span><br></pre></td></tr></table></figure>
+<figure class="highlight php hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">AppBundle</span>\<span class="hljs-title">Controller</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">AppBundle</span>\<span class="hljs-title">Entity</span>\<span class="hljs-title">User</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">AppBundle</span>\<span class="hljs-title">Entity</span>\<span class="hljs-title">UserAuth</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Sensio</span>\<span class="hljs-title">Bundle</span>\<span class="hljs-title">FrameworkExtraBundle</span>\<span class="hljs-title">Configuration</span>\<span class="hljs-title">Route</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Symfony</span>\<span class="hljs-title">Bundle</span>\<span class="hljs-title">FrameworkBundle</span>\<span class="hljs-title">Controller</span>\<span class="hljs-title">Controller</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Symfony</span>\<span class="hljs-title">Component</span>\<span class="hljs-title">HttpFoundation</span>\<span class="hljs-title">Response</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@Route</span>("/user/create",name="user_create")</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createAction</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        $em = <span class="hljs-keyword">$this</span>-&gt;getDoctrine()-&gt;getManager();</span><br><span class="line"></span><br><span class="line">        $username = <span class="hljs-string">"useraccount"</span>;</span><br><span class="line">        $password = <span class="hljs-string">"userpassword"</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        $User = <span class="hljs-keyword">new</span> User();</span><br><span class="line">        $User-&gt;setTruename($username);</span><br><span class="line"></span><br><span class="line">        $em-&gt;persist($User);</span><br><span class="line">        $em-&gt;flush();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        $UserAuth = <span class="hljs-keyword">new</span> UserAuth();</span><br><span class="line">        $UserAuth-&gt;setUserId($User-&gt;getId());</span><br><span class="line">        $UserAuth-&gt;setIdentifier($username);</span><br><span class="line"></span><br><span class="line">        $password = <span class="hljs-keyword">$this</span>-&gt;get(<span class="hljs-string">'security.password_encoder'</span>)</span><br><span class="line">            -&gt;encodePassword(<span class="hljs-keyword">new</span> \AppBundle\Security\UserAuth($UserAuth), $password);</span><br><span class="line"></span><br><span class="line">        $UserAuth-&gt;setCredential($password);</span><br><span class="line"></span><br><span class="line">        $em-&gt;persist($UserAuth);</span><br><span class="line">        $em-&gt;flush();</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Response(<span class="hljs-string">"success~"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Here, we mapping this controller to “/user/create” route. This method will save a user info and a user auth info.</p>
+<p>At line 34, you can see how Symfony encodered password and we must create a security userauth class to finish this job.  </p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p src/AppBundle/Security</span><br><span class="line">$ vim src/AppBundle/Security/UserAuth.php</span><br></pre></td></tr></table></figure>
+<figure class="highlight php hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">AppBundle</span>\<span class="hljs-title">Security</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Symfony</span>\<span class="hljs-title">Component</span>\<span class="hljs-title">Security</span>\<span class="hljs-title">Core</span>\<span class="hljs-title">User</span>\<span class="hljs-title">UserInterface</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserAuth</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">UserInterface</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">private</span> $UserAuth;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">(\AppBundle\Entity\UserAuth $UserAuth)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;UserAuth = $UserAuth;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Returns the roles granted to the user.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * &lt;code&gt;</span></span><br><span class="line"><span class="hljs-comment">     * public function getRoles()</span></span><br><span class="line"><span class="hljs-comment">     * &#123;</span></span><br><span class="line"><span class="hljs-comment">     *     return array('ROLE_USER');</span></span><br><span class="line"><span class="hljs-comment">     * &#125;</span></span><br><span class="line"><span class="hljs-comment">     * &lt;/code&gt;</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * Alternatively, the roles might be stored on a ``roles`` property,</span></span><br><span class="line"><span class="hljs-comment">     * and populated in any number of different ways when the user object</span></span><br><span class="line"><span class="hljs-comment">     * is created.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> (Role|string)[] The user roles</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getRoles</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> [<span class="hljs-string">'ROLE_ADMIN'</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Returns the password used to authenticate the user.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * This should be the encoded password. On authentication, a plain-text</span></span><br><span class="line"><span class="hljs-comment">     * password will be salted, encoded, and then compared to this value.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> string The password</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getPassword</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;UserAuth-&gt;getCredential();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Returns the salt that was originally used to encode the password.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * This can return null if the password was not encoded using a salt.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> string|null The salt</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getSalt</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Returns the username used to authenticate the user.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> string The username</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getUsername</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;UserAuth-&gt;getIdentifier();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Removes sensitive data from the user.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * This is important if, at any given point, sensitive information like</span></span><br><span class="line"><span class="hljs-comment">     * the plain-text password is stored on this object.</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">eraseCredentials</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The key named ‘ROLE_ADMIN’ in method getRoles() approved this Class can be accessed through the Symfony security roles.</p>
+<p>Then, update the configuration file app/config/security.yml and tell Symfony security component which encryption to be used.</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim app/config/security.yml</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">security:</span><br><span class="line">    ...</span><br><span class="line">    encoders:</span><br><span class="line">        AppBundle\Security\UserAuth: bcrypt</span><br></pre></td></tr></table></figure>
+<p>After the visit <a href="http://localhost:8000/user/create" target="_blank" rel="noopener">http://localhost:8000/user/create</a>, it will be added a user name ‘useraccount’ and password is ‘userpassword’ in database.Of course, the password is stored in encrypted mode.</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from user;</span><br><span class="line">+----+-------------+</span><br><span class="line">| id | truename    |</span><br><span class="line">+----+-------------+</span><br><span class="line">|  3 | useraccount |</span><br><span class="line">+----+-------------+</span><br><span class="line">mysql&gt; select * from user_auth;</span><br><span class="line">+----+-------------+--------------------------------------------------------------+--------+</span><br><span class="line">| id | identifier  | credential                                                   | userId |</span><br><span class="line">+----+-------------+--------------------------------------------------------------+--------+</span><br><span class="line">|  3 | useraccount | $2y$13$dLcFHGIKXZ2gl8VbVchD3OpiSVw923DFcyVaiDVnzf9d0tx5nyUny |      3 |</span><br><span class="line">+----+-------------+--------------------------------------------------------------+--------+</span><br></pre></td></tr></table></figure>
+<h3 id="Create-a-page-that-required-login-to-access"><a href="#Create-a-page-that-required-login-to-access" class="headerlink" title="Create a page that required login to access"></a>Create a page that required login to access</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim src/AppBundle/Controller/UserController.php</span><br></pre></td></tr></table></figure>
+<figure class="highlight php hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@Route</span>("/user/list",name="user_list")</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">listAction</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Response(<span class="hljs-string">"user list ~~~"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Authentication is required when accessing  “/user/list”<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim app/config/security.yml</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">security:</span><br><span class="line">    ...</span><br><span class="line">    access_control:</span><br><span class="line">        - &#123; path: ^/user/list, roles: ROLE_ADMIN &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Tell-the-firewall-in-Symfony-security-component-to-be-verified-by-account-using-the-way-to-submit-a-password-form"><a href="#Tell-the-firewall-in-Symfony-security-component-to-be-verified-by-account-using-the-way-to-submit-a-password-form" class="headerlink" title="Tell the firewall in Symfony security component to be verified by account using the way to submit a password form"></a>Tell the firewall in Symfony security component to be verified by account using the way to submit a password form</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">    providers:</span><br><span class="line">#        in_memory:</span><br><span class="line">#            memory: ~</span><br><span class="line">        webservice:</span><br><span class="line">            id: app.webservice_user_provider</span><br><span class="line"></span><br><span class="line">    firewalls:</span><br><span class="line">        ...</span><br><span class="line">        main:</span><br><span class="line">            anonymous: ~</span><br><span class="line"></span><br><span class="line">#            http_basic: ~</span><br><span class="line">            form_login:</span><br><span class="line">                login_path: login</span><br><span class="line">                check_path: login</span><br><span class="line">                use_referer: true</span><br></pre></td></tr></table></figure>
+<p>Pay attention to line 10, i’m using the “form_login” not “http_basic: ~”, you can customize the page for your login form in this way. </p>
+<ul>
+<li>“login_path”: controller for the route redirect to “/login”</li>
+</ul>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim src/AppBundle/Controller/SecurityController.php</span><br></pre></td></tr></table></figure>
+<figure class="highlight php hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">AppBundle</span>\<span class="hljs-title">Controller</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Sensio</span>\<span class="hljs-title">Bundle</span>\<span class="hljs-title">FrameworkExtraBundle</span>\<span class="hljs-title">Configuration</span>\<span class="hljs-title">Route</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Symfony</span>\<span class="hljs-title">Bundle</span>\<span class="hljs-title">FrameworkBundle</span>\<span class="hljs-title">Controller</span>\<span class="hljs-title">Controller</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Symfony</span>\<span class="hljs-title">Component</span>\<span class="hljs-title">HttpFoundation</span>\<span class="hljs-title">Request</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SecurityController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@Route</span>("/login",name="login")</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> Request $request</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> \Symfony\Component\HttpFoundation\Response</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">loginAction</span><span class="hljs-params">(Request $request)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        $authenticationUtils = <span class="hljs-keyword">$this</span>-&gt;get(<span class="hljs-string">'security.authentication_utils'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// get the login error if there is one </span></span><br><span class="line">        $error = $authenticationUtils-&gt;getLastAuthenticationError();</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// last username entered by the user</span></span><br><span class="line">        $lastUsername = $authenticationUtils-&gt;getLastUsername();</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;render(</span><br><span class="line">            <span class="hljs-string">'security/login.html.twig'</span>,</span><br><span class="line">            <span class="hljs-keyword">array</span>(</span><br><span class="line">                <span class="hljs-comment">// last username entered by the user</span></span><br><span class="line">                <span class="hljs-string">'last_username'</span> =&gt; $lastUsername,</span><br><span class="line">                <span class="hljs-string">'error'</span>         =&gt; $error,</span><br><span class="line">            )</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Just copy this contents in this file and you don’t need any of modification. </p>
+<h3 id="Create-a-Login-form"><a href="#Create-a-Login-form" class="headerlink" title="Create a Login form"></a>Create a Login form</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p app/Resources/views/security/</span><br><span class="line">$ vim app/Resources/views/security/login.html.twig</span><br></pre></td></tr></table></figure>
+<figure class="highlight twig hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-keyword">if</span></span> error %&#125;</span></span><br><span class="line"><span class="hljs-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><span class="hljs-template-variable">&#123;&#123; error.messageKey|trans(error.messageData, 'security') &#125;&#125;</span><span class="hljs-xml"><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span></span><br><span class="line"><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-keyword">endif</span></span> %&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-xml"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">"</span></span></span><span class="hljs-template-variable">&#123;&#123; path('login') &#125;&#125;</span><span class="hljs-xml"><span class="hljs-tag"><span class="hljs-string">"</span> <span class="hljs-attr">method</span>=<span class="hljs-string">"post"</span>&gt;</span></span></span><br><span class="line"><span class="hljs-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">"username"</span>&gt;</span>Username:<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span></span></span><br><span class="line"><span class="hljs-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text"</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"username"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"_username"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"</span></span></span><span class="hljs-template-variable">&#123;&#123; last_username &#125;&#125;</span><span class="hljs-xml"><span class="hljs-tag"><span class="hljs-string">"</span> /&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="hljs-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">"password"</span>&gt;</span>Password:<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span></span></span><br><span class="line"><span class="hljs-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"password"</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"password"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"_password"</span> /&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="hljs-xml">    </span><span class="hljs-comment">&#123;#</span></span><br><span class="line"><span class="hljs-comment">        If you want to control the URL the user</span></span><br><span class="line"><span class="hljs-comment">        is redirected to on success (more details below)</span></span><br><span class="line"><span class="hljs-comment">        &lt;input type="hidden" name="_target_path" value="/account" /&gt;</span></span><br><span class="line"><span class="hljs-comment">    #&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"submit"</span>&gt;</span>login<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span></span><br><span class="line"><span class="hljs-xml"><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<p>Symfony needs “providers” to check the credential submitted in form. </p>
+<h3 id="Create-a-user-auth-service-for-identifying-use-login"><a href="#Create-a-user-auth-service-for-identifying-use-login" class="headerlink" title="Create a user auth service for identifying use login"></a>Create a user auth service for identifying use login</h3><p>The name of this service is the same as the id of providers in security.yml.</p>
+<p>Arguments in this service which offered Symfony doctrine entity manager is the only place missing in official documents.</p>
+<p>Through passing this parameter to “UserAuthProvider”, user can be checked exist or not in database in “loadUserByUsername” method </p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim app/config/services.yml</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">services:</span><br><span class="line">    app.webservice_user_provider:</span><br><span class="line">        class: AppBundle\Security\UserAuthProvider</span><br><span class="line">        arguments:</span><br><span class="line">            - &quot;@doctrine.orm.entity_manager&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="Create-identify-provider-for-password-checking"><a href="#Create-identify-provider-for-password-checking" class="headerlink" title="Create identify provider for password checking"></a>Create identify provider for password checking</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim src/AppBundle/Security/UserAuthProvider.php</span><br></pre></td></tr></table></figure>
+<figure class="highlight php hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">AppBundle</span>\<span class="hljs-title">Security</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">AppBundle</span>\<span class="hljs-title">Entity</span>\<span class="hljs-title">UserAuth</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Doctrine</span>\<span class="hljs-title">ORM</span>\<span class="hljs-title">EntityManager</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Symfony</span>\<span class="hljs-title">Component</span>\<span class="hljs-title">Security</span>\<span class="hljs-title">Core</span>\<span class="hljs-title">Exception</span>\<span class="hljs-title">UnsupportedUserException</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Symfony</span>\<span class="hljs-title">Component</span>\<span class="hljs-title">Security</span>\<span class="hljs-title">Core</span>\<span class="hljs-title">Exception</span>\<span class="hljs-title">UsernameNotFoundException</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Symfony</span>\<span class="hljs-title">Component</span>\<span class="hljs-title">Security</span>\<span class="hljs-title">Core</span>\<span class="hljs-title">User</span>\<span class="hljs-title">UserInterface</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Symfony</span>\<span class="hljs-title">Component</span>\<span class="hljs-title">Security</span>\<span class="hljs-title">Core</span>\<span class="hljs-title">User</span>\<span class="hljs-title">UserProviderInterface</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserAuthProvider</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">UserProviderInterface</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@var</span> EntityManager</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">protected</span> $dm;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">(EntityManager $dm)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;dm = $dm;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">loadUserByUsername</span><span class="hljs-params">($username)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">/** <span class="hljs-doctag">@var</span> UserAuth $UserAuth */</span></span><br><span class="line">        $UserAuth = <span class="hljs-keyword">$this</span>-&gt;dm-&gt;getRepository(<span class="hljs-string">'AppBundle:UserAuth'</span>)-&gt;findOneBy([<span class="hljs-string">'identifier'</span> =&gt; $username]);</span><br><span class="line">        <span class="hljs-keyword">if</span> (!$UserAuth) &#123;</span><br><span class="line">            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> UsernameNotFoundException(<span class="hljs-string">"Username \"&#123;$username&#125;\" does not exist."</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> \AppBundle\Security\UserAuth($UserAuth);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">refreshUser</span><span class="hljs-params">(UserInterface $User)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">if</span> (!$User <span class="hljs-keyword">instanceof</span> \AppBundle\Security\UserAuth) &#123;</span><br><span class="line">            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> UnsupportedUserException(<span class="hljs-string">'Instances of "'</span> . get_class($User) . <span class="hljs-string">'" are not supported.'</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;loadUserByUsername($User-&gt;getUsername());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">supportsClass</span><span class="hljs-params">($class)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> $class === <span class="hljs-string">'AppBundle\Entity\UserAuth'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>OK, after input account and password in <a href="http://localhost:8000/user/list" target="_blank" rel="noopener">http://localhost:8000/user/list</a> ,login success information will be right here!</p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Login/">Login</a>, <a class="has-link-grey -link" href="/tags/Security/">Security</a>, <a class="has-link-grey -link" href="/tags/Symfony/">Symfony</a>, <a class="has-link-grey -link" href="/tags/Ubuntu/">Ubuntu</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+            <p class="is-size-7">
+    <b>
+    Thank you for reading.<br>
+    This post is copyrighted by <a href="https://liyuliang.cc">Liyuliang’s Blog.</a><br>
+    If reproduced, please indicate the source: <a href="https://liyuliang.cc">Liyuliang’s Blog</a><br>
+    This blog uses <a target="_blank" rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-Share-Sharing 4.0 International License Agreement </a> to license.<br>
+    </b>
+    <hr>
+</p>
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">Like this article? Support the author with</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>Alipay</span>
+    <div class="qrcode"><img src="/images/alipay.jpeg" alt="Alipay"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>Wechat</span>
+    <div class="qrcode"><img src="/images/wxpay.jpeg" alt="Wechat"></div>
+</a>
+
+                
+                <!-- Visit https://www.paypal.com/donate/buttons/ to get your donate button -->
+
+<a class="button is-warning donate" onclick="document.getElementById(&#39;paypal-donate-form&#39;).submit()">
+    <span class="icon is-small">
+        <i class="fab fa-paypal"></i>
+    </span>
+    <span>Paypal</span>
+</a>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" id="paypal-donate-form">
+    <input type="hidden" name="cmd" value="_donations">
+    <input type="hidden" name="business" value="D7RUA6PUE8GM2">
+    <input type="hidden" name="currency_code" value="USD">
+</form>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2017/03/22/Operate-on-Mongodb-3-2/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Operate on Mongodb 3.2</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2017/03/19/Install-Beanstalkd-in-Ubuntu14/">
+                <span class="level-item">Install Beanstalkd in Ubuntu14</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+</div>
+                
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-3 column-right is-sticky">
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/09/">
+                <span class="level-start">
+                    <span class="level-item">September 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">8</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">10</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">9</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">7</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">9</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/Alipay/" style="font-size: 10px;">Alipay</a> <a href="/tags/Apache/" style="font-size: 12px;">Apache</a> <a href="/tags/Baidu/" style="font-size: 10px;">Baidu</a> <a href="/tags/Canal/" style="font-size: 10px;">Canal</a> <a href="/tags/Centos/" style="font-size: 10px;">Centos</a> <a href="/tags/CloudDisk/" style="font-size: 10px;">CloudDisk</a> <a href="/tags/Daemon/" style="font-size: 11px;">Daemon</a> <a href="/tags/Elasticsearch/" style="font-size: 13px;">Elasticsearch</a> <a href="/tags/Filebeat/" style="font-size: 11px;">Filebeat</a> <a href="/tags/Glide/" style="font-size: 10px;">Glide</a> <a href="/tags/Iterm/" style="font-size: 10px;">Iterm</a> <a href="/tags/JQuery/" style="font-size: 10px;">JQuery</a> <a href="/tags/Keepalived/" style="font-size: 10px;">Keepalived</a> <a href="/tags/Kibana/" style="font-size: 11px;">Kibana</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Login/" style="font-size: 10px;">Login</a> <a href="/tags/Logstash/" style="font-size: 11px;">Logstash</a> <a href="/tags/Mac/" style="font-size: 14px;">Mac</a> <a href="/tags/Mongodb/" style="font-size: 11px;">Mongodb</a> <a href="/tags/Mycat/" style="font-size: 10px;">Mycat</a> <a href="/tags/Mysql/" style="font-size: 19px;">Mysql</a> <a href="/tags/NFS/" style="font-size: 10px;">NFS</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 10px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 18px;">PHP</a> <a href="/tags/Pagespeed/" style="font-size: 10px;">Pagespeed</a> <a href="/tags/Partition/" style="font-size: 10px;">Partition</a> <a href="/tags/Redis/" style="font-size: 12px;">Redis</a> <a href="/tags/Replica/" style="font-size: 10px;">Replica</a> <a href="/tags/Security/" style="font-size: 10px;">Security</a> <a href="/tags/Slave/" style="font-size: 13px;">Slave</a> <a href="/tags/SlowLog/" style="font-size: 11px;">SlowLog</a> <a href="/tags/Symfony/" style="font-size: 15px;">Symfony</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/Twig/" style="font-size: 11px;">Twig</a> <a href="/tags/Ubuntu/" style="font-size: 20px;">Ubuntu</a> <a href="/tags/Varnish/" style="font-size: 10px;">Varnish</a> <a href="/tags/Vim/" style="font-size: 10px;">Vim</a> <a href="/tags/Virtualbox/" style="font-size: 10px;">Virtualbox</a> <a href="/tags/Wordpress/" style="font-size: 11px;">Wordpress</a> <a href="/tags/auth/" style="font-size: 11px;">auth</a> <a href="/tags/backup/" style="font-size: 10px;">backup</a> <a href="/tags/beanstalkd/" style="font-size: 10px;">beanstalkd</a> <a href="/tags/binlog/" style="font-size: 10px;">binlog</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/brew/" style="font-size: 11px;">brew</a> <a href="/tags/composer/" style="font-size: 10px;">composer</a> <a href="/tags/cookie/" style="font-size: 10px;">cookie</a> <a href="/tags/css/" style="font-size: 10px;">css</a> <a href="/tags/dante/" style="font-size: 10px;">dante</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/domain/" style="font-size: 11px;">domain</a> <a href="/tags/download/" style="font-size: 10px;">download</a> <a href="/tags/file/" style="font-size: 10px;">file</a> <a href="/tags/fork/" style="font-size: 10px;">fork</a> <a href="/tags/git/" style="font-size: 11px;">git</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/golang/" style="font-size: 17px;">golang</a> <a href="/tags/homestead/" style="font-size: 10px;">homestead</a> <a href="/tags/iptable/" style="font-size: 11px;">iptable</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/log/" style="font-size: 10px;">log</a> <a href="/tags/nginx/" style="font-size: 16px;">nginx</a> <a href="/tags/proxy/" style="font-size: 11px;">proxy</a> <a href="/tags/redis-cluster/" style="font-size: 10px;">redis-cluster</a> <a href="/tags/redis-sentinel/" style="font-size: 10px;">redis-sentinel</a> <a href="/tags/sock5/" style="font-size: 10px;">sock5</a> <a href="/tags/supervisor/" style="font-size: 10px;">supervisor</a> <a href="/tags/sync/" style="font-size: 10px;">sync</a> <a href="/tags/tips/" style="font-size: 11px;">tips</a> <a href="/tags/tmux/" style="font-size: 10px;">tmux</a> <a href="/tags/usb/" style="font-size: 10px;">usb</a> <a href="/tags/vagrant/" style="font-size: 10px;">vagrant</a> <a href="/tags/web/" style="font-size: 10px;">web</a>
+    </div>
+</div>
+
+    
+        
+
+
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    Liyuliang&#39;s Blog
+                
+                </a>
+
+                <p class="is-size-7">
+                    <a href="/copyright" target="_blank">Copyright</a>
+                    &copy; 2021 Liyuliang&nbsp;
+
+		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/liyuliang">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="SiteMap for Google" href="https://liyuliang.cc/sitemap.xml">
+                        
+                        <i class="fab fa-google"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="SiteMap for Baidu" href="https://liyuliang.cc/baidusitemap.xml">
+                        
+                        <i class="fab fa-bimobject"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>
