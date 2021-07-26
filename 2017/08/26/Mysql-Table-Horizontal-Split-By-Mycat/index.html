@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+<meta name="google-site-verification" content="phJt8wJDQkOAcEQmqF8UasrF3CVtKMYLBqYLlWfVIOM">
+<title>Mysql Table Horizontal Split By Mycat - Liyuliang&#39;s Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+    <meta name="description" content="Server environment12345678$ cat /etc/issueUbuntu 14.04.5 LTS$ mysqld -Vmysqld  Ver 5.5.58-0ubuntu0.14.04.1 for debian-linux-gnu on x86_64 ((Ubuntu))$ java -versionjava version &amp;quot;1.7.0_151&amp;quot;">
+<meta name="keywords" content="Ubuntu,Mysql,Mycat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql Table Horizontal Split By Mycat">
+<meta property="og:url" content="https://liyuliang.cc/2017/08/26/Mysql-Table-Horizontal-Split-By-Mycat/index.html">
+<meta property="og:site_name" content="Liyuliang&#39;s Blog">
+<meta property="og:description" content="Server environment12345678$ cat /etc/issueUbuntu 14.04.5 LTS$ mysqld -Vmysqld  Ver 5.5.58-0ubuntu0.14.04.1 for debian-linux-gnu on x86_64 ((Ubuntu))$ java -versionjava version &amp;quot;1.7.0_151&amp;quot;">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2021-06-14T14:02:02.291Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mysql Table Horizontal Split By Mycat">
+<meta name="twitter:description" content="Server environment12345678$ cat /etc/issueUbuntu 14.04.5 LTS$ mysqld -Vmysqld  Ver 5.5.58-0ubuntu0.14.04.1 for debian-linux-gnu on x86_64 ((Ubuntu))$ java -versionjava version &amp;quot;1.7.0_151&amp;quot;">
+
+
+
+
+
+<link rel="icon" href="/images/header.png">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.4.1/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+
+
+<script>
+        if (document.domain != "liyuliang.cc") {
+            window.location.href = "https://liyuliang.cc";
+        }
+        if (top.location != self.location) {
+           top.location = self.location;
+        }
+
+</script>
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                Liyuliang&#39;s Blog
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item" href="/archives">Archives</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/liyuliang">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main"><div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2017-08-26T14:13:49.000Z">2017-08-26</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    10 minutes read (About 1514 words)
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                Mysql Table Horizontal Split By Mycat
+            
+        </h1>
+        <div class="content">
+            <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">Ubuntu 14.04.5 LTS</span><br><span class="line"></span><br><span class="line">$ mysqld -V</span><br><span class="line">mysqld  Ver 5.5.58-0ubuntu0.14.04.1 for debian-linux-gnu on x86_64 ((Ubuntu))</span><br><span class="line"></span><br><span class="line">$ java -version</span><br><span class="line">java version &quot;1.7.0_151&quot;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3 id="Install-Java7"><a href="#Install-Java7" class="headerlink" title="Install Java7+"></a>Install Java7+</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y openjdk-7-jre</span><br></pre></td></tr></table></figure>
+<h3 id="Install-Mycat"><a href="#Install-Mycat" class="headerlink" title="Install Mycat"></a>Install Mycat</h3><p>Download the zip file from <a href="https://github.com/MyCATApache/Mycat-download" target="_blank" rel="noopener">github</a></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://dl.mycat.io/1.6-RELEASE/Mycat-server-1.6-RELEASE-20161028204710-linux.tar.gz</span><br><span class="line">$ tar zxvf Mycat-server-1.6-RELEASE-20161028204710-linux.tar.gz</span><br><span class="line">$ cd mycat/</span><br><span class="line">$ tree -L 1 .</span><br><span class="line">.</span><br><span class="line">├── bin</span><br><span class="line">├── catlet</span><br><span class="line">├── conf</span><br><span class="line">├── lib</span><br><span class="line">├── logs</span><br><span class="line">└── version.txt</span><br></pre></td></tr></table></figure>
+<h3 id="Set-up-Mysql-account"><a href="#Set-up-Mysql-account" class="headerlink" title="Set up Mysql account"></a>Set up Mysql account</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim conf/server.xml</span><br></pre></td></tr></table></figure>
+<figure class="highlight xml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">user</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"user1"</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"password"</span>&gt;</span>password1<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"schemas"</span>&gt;</span>virtual_database<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;/<span class="hljs-name">user</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">user</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"user2"</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"password"</span>&gt;</span>password2<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"schemas"</span>&gt;</span>virtual_database<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"readOnly"</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;/<span class="hljs-name">user</span>&gt;</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>There are 2 users, user1 and user2, passwords are password1 and password2, user2 users are read-only</p>
+<h3 id="Set-up-Mysql-nodes"><a href="#Set-up-Mysql-nodes" class="headerlink" title="Set up Mysql nodes"></a>Set up Mysql nodes</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim conf/schema.xml</span><br></pre></td></tr></table></figure>
+<figure class="highlight xml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?xml version="1.0"?&gt;</span></span><br><span class="line"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">mycat</span>:schema <span class="hljs-meta-keyword">SYSTEM</span> <span class="hljs-meta-string">"schema.dtd"</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">mycat:schema</span> <span class="hljs-attr">xmlns:mycat</span>=<span class="hljs-string">"http://io.mycat/"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">schema</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"virtual_database"</span> <span class="hljs-attr">checkSQLschema</span>=<span class="hljs-string">"false"</span> <span class="hljs-attr">sqlMaxLimit</span>=<span class="hljs-string">"100"</span>&gt;</span></span><br><span class="line">                </span><br><span class="line">                <span class="hljs-comment">&lt;!-- auto sharding by id (long) --&gt;</span></span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"travelrecord"</span> <span class="hljs-attr">dataNode</span>=<span class="hljs-string">"dn1,dn2,dn3"</span> <span class="hljs-attr">rule</span>=<span class="hljs-string">"auto-sharding-long"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">                <span class="hljs-comment">&lt;!-- global table is auto cloned to all defined data nodes ,so can join with any table whose sharding node is in the same data node --&gt;</span></span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"company"</span> <span class="hljs-attr">primaryKey</span>=<span class="hljs-string">"ID"</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"global"</span> <span class="hljs-attr">dataNode</span>=<span class="hljs-string">"dn1,dn2,dn3"</span> /&gt;</span></span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"goods"</span> <span class="hljs-attr">primaryKey</span>=<span class="hljs-string">"ID"</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"global"</span> <span class="hljs-attr">dataNode</span>=<span class="hljs-string">"dn1,dn2"</span> /&gt;</span></span><br><span class="line">                </span><br><span class="line">                <span class="hljs-comment">&lt;!-- random sharding using mod sharind rule --&gt;</span></span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"hotnews"</span> <span class="hljs-attr">primaryKey</span>=<span class="hljs-string">"ID"</span> <span class="hljs-attr">autoIncrement</span>=<span class="hljs-string">"true"</span> <span class="hljs-attr">dataNode</span>=<span class="hljs-string">"dn1,dn2,dn3"</span> <span class="hljs-attr">rule</span>=<span class="hljs-string">"mod-long"</span> /&gt;</span></span><br><span class="line">                </span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"employee"</span> <span class="hljs-attr">primaryKey</span>=<span class="hljs-string">"ID"</span> <span class="hljs-attr">dataNode</span>=<span class="hljs-string">"dn1,dn2"</span> <span class="hljs-attr">rule</span>=<span class="hljs-string">"sharding-by-intfile"</span> /&gt;</span></span><br><span class="line">                </span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"customer"</span> <span class="hljs-attr">primaryKey</span>=<span class="hljs-string">"ID"</span> <span class="hljs-attr">dataNode</span>=<span class="hljs-string">"dn1,dn2"</span> <span class="hljs-attr">rule</span>=<span class="hljs-string">"sharding-by-intfile"</span>&gt;</span></span><br><span class="line">                        <span class="hljs-tag">&lt;<span class="hljs-name">childTable</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"orders"</span> <span class="hljs-attr">primaryKey</span>=<span class="hljs-string">"ID"</span> <span class="hljs-attr">joinKey</span>=<span class="hljs-string">"customer_id"</span> <span class="hljs-attr">parentKey</span>=<span class="hljs-string">"id"</span>&gt;</span></span><br><span class="line">                                <span class="hljs-tag">&lt;<span class="hljs-name">childTable</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"order_items"</span> <span class="hljs-attr">joinKey</span>=<span class="hljs-string">"order_id"</span> <span class="hljs-attr">parentKey</span>=<span class="hljs-string">"id"</span> /&gt;</span></span><br><span class="line">                        <span class="hljs-tag">&lt;/<span class="hljs-name">childTable</span>&gt;</span></span><br><span class="line">                        <span class="hljs-tag">&lt;<span class="hljs-name">childTable</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"customer_addr"</span> <span class="hljs-attr">primaryKey</span>=<span class="hljs-string">"ID"</span> <span class="hljs-attr">joinKey</span>=<span class="hljs-string">"customer_id"</span> <span class="hljs-attr">parentKey</span>=<span class="hljs-string">"id"</span> /&gt;</span></span><br><span class="line">                <span class="hljs-tag">&lt;/<span class="hljs-name">table</span>&gt;</span></span><br><span class="line">               </span><br><span class="line">        <span class="hljs-tag">&lt;/<span class="hljs-name">schema</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">dataNode</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dn1"</span> <span class="hljs-attr">dataHost</span>=<span class="hljs-string">"devdb"</span> <span class="hljs-attr">database</span>=<span class="hljs-string">"app1"</span> /&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">dataNode</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dn2"</span> <span class="hljs-attr">dataHost</span>=<span class="hljs-string">"devdb"</span> <span class="hljs-attr">database</span>=<span class="hljs-string">"app2"</span> /&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">dataNode</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dn3"</span> <span class="hljs-attr">dataHost</span>=<span class="hljs-string">"devdb"</span> <span class="hljs-attr">database</span>=<span class="hljs-string">"app3"</span> /&gt;</span></span><br><span class="line">        </span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">dataHost</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"devdb"</span> <span class="hljs-attr">maxCon</span>=<span class="hljs-string">"1000"</span> <span class="hljs-attr">minCon</span>=<span class="hljs-string">"10"</span> <span class="hljs-attr">balance</span>=<span class="hljs-string">"0"</span> <span class="hljs-attr">writeType</span>=<span class="hljs-string">"0"</span> <span class="hljs-attr">dbType</span>=<span class="hljs-string">"mysql"</span> <span class="hljs-attr">dbDriver</span>=<span class="hljs-string">"native"</span> <span class="hljs-attr">switchType</span>=<span class="hljs-string">"1"</span>  <span class="hljs-attr">slaveThreshold</span>=<span class="hljs-string">"100"</span>&gt;</span></span><br><span class="line">                </span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">heartbeat</span>&gt;</span>select user()<span class="hljs-tag">&lt;/<span class="hljs-name">heartbeat</span>&gt;</span></span><br><span class="line">                </span><br><span class="line">                <span class="hljs-comment">&lt;!-- can have multi write hosts --&gt;</span></span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">writeHost</span> <span class="hljs-attr">host</span>=<span class="hljs-string">"hostM1"</span> <span class="hljs-attr">url</span>=<span class="hljs-string">"localhost:3306"</span> <span class="hljs-attr">user</span>=<span class="hljs-string">"user1"</span> <span class="hljs-attr">password</span>=<span class="hljs-string">"password1"</span>&gt;</span></span><br><span class="line">                        <span class="hljs-comment">&lt;!-- can have multi read hosts --&gt;</span></span><br><span class="line">                        <span class="hljs-comment">&lt;!--&lt;readHost host="hostS2" url="127.0.0.1:3306" user="user1" password="password1" /&gt;--&gt;</span></span><br><span class="line">                <span class="hljs-tag">&lt;/<span class="hljs-name">writeHost</span>&gt;</span></span><br><span class="line">                </span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">writeHost</span> <span class="hljs-attr">host</span>=<span class="hljs-string">"hostS1"</span> <span class="hljs-attr">url</span>=<span class="hljs-string">"localhost:3306"</span> <span class="hljs-attr">user</span>=<span class="hljs-string">"user2"</span> <span class="hljs-attr">password</span>=<span class="hljs-string">"password2"</span> /&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;/<span class="hljs-name">dataHost</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">mycat:schema</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>There are three main parts:<br>The first is schema block, which describe the tables in schema of virtual database. Which nodes or algorithms are using on these table.  </p>
+<ul>
+<li>For example <table name="travelrecord" datanode="dn1,dn2,dn3" rule="auto-sharding-long"> It means that travelrecord table is distributed in dn1,dn2,dn3 these three nodes and used auto-sharding-long algorithm.   </table></li>
+</ul>
+<p>The second is the data nodes. It tells Mycat Which nodes are included in database and mapping the actual data server and database.<br>I am going to configure three nodes dn1, dn2, dn3 which are in local server and databases ‘s names are app1, app2, app3.</p>
+<p>The third is data host. This part is the actual server configuration.<br>I will config two Mysql database, hostM1 and hostS1, address is “localhost:3306” and username are “user1”,”user1” and password are “password1”,”password2”.</p>
+<p>Then specify the heart beat method “select user()”.</p>
+<h3 id="Change-the-log-level-from-info-to-debug"><a href="#Change-the-log-level-from-info-to-debug" class="headerlink" title="Change the log level from info to debug"></a>Change the log level from info to debug</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim conf/log4j2.xml</span><br></pre></td></tr></table></figure>
+<figure class="highlight xml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">asyncRoot</span> <span class="hljs-attr">level</span>=<span class="hljs-string">"debug"</span> <span class="hljs-attr">includeLocation</span>=<span class="hljs-string">"true"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">"Console"</span> /&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">"RollingFile"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">asyncRoot</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="Create-three-database"><a href="#Create-three-database" class="headerlink" title="Create three database"></a>Create three database</h3><p>In this tutorial, just one database, so hostM1 and hostS1 are the same machine </p>
+<p>hostM1:<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create database app1;</span><br><span class="line">mysql&gt; create database app2;</span><br><span class="line">mysql&gt; create database app3;</span><br></pre></td></tr></table></figure></p>
+<p>hostS1:<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create database app1;</span><br><span class="line">mysql&gt; create database app2;</span><br><span class="line">mysql&gt; create database app3;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Create-two-database-user"><a href="#Create-two-database-user" class="headerlink" title="Create two database user"></a>Create two database user</h3><p>hostM1:<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; CREATE USER user1 IDENTIFIED BY &apos;password1&apos;;</span><br><span class="line">mysql&gt; GRANT ALL PRIVILEGES ON *.* TO &apos;user1&apos;@&apos;%&apos; ;</span><br><span class="line">mysql&gt; FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure></p>
+<p>hostS1:<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; CREATE USER user2 IDENTIFIED BY &apos;password2&apos;;</span><br><span class="line">mysql&gt; GRANT ALL PRIVILEGES ON *.* TO &apos;user2&apos;@&apos;%&apos; ;</span><br><span class="line">mysql&gt; FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Start-Mycat"><a href="#Start-Mycat" class="headerlink" title="Start Mycat"></a>Start Mycat</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ./bin/mycat start</span><br><span class="line">Starting Mycat-server...</span><br></pre></td></tr></table></figure>
+<h3 id="Track-the-log-for-connecting-info"><a href="#Track-the-log-for-connecting-info" class="headerlink" title="Track the log for connecting info"></a>Track the log for connecting info</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tail -f logs/mycat.log</span><br></pre></td></tr></table></figure>
+<h3 id="Login-Mycat"><a href="#Login-Mycat" class="headerlink" title="Login Mycat"></a>Login Mycat</h3><ul>
+<li>Mycat default port is 8066</li>
+</ul>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -uuser1 -ppassword1 -h127.0.0.1 -P8066 -Dvirtual_database</span><br></pre></td></tr></table></figure>
+<h3 id="Check-databases"><a href="#Check-databases" class="headerlink" title="Check databases"></a>Check databases</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show databases;</span><br><span class="line">+------------------+</span><br><span class="line">| DATABASE         |</span><br><span class="line">+------------------+</span><br><span class="line">| virtual_database |</span><br><span class="line">+------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<h3 id="Create-a-table-in-schema-rule"><a href="#Create-a-table-in-schema-rule" class="headerlink" title="Create a table in schema rule"></a>Create a table in schema rule</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain create table travelrecord (id bigint not null primary key,user_id varchar(100),traveldate DATE, fee decimal,days int);</span><br><span class="line">+-----------+-----------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">| DATA_NODE | SQL                                                                                                                   |</span><br><span class="line">+-----------+-----------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">| dn1       | create table travelrecord (id bigint not null primary key,user_id varchar(100),traveldate DATE, fee decimal,days int) |</span><br><span class="line">| dn2       | create table travelrecord (id bigint not null primary key,user_id varchar(100),traveldate DATE, fee decimal,days int) |</span><br><span class="line">| dn3       | create table travelrecord (id bigint not null primary key,user_id varchar(100),traveldate DATE, fee decimal,days int) |</span><br><span class="line">+-----------+-----------------------------------------------------------------------------------------------------------------------+</span><br><span class="line">3 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; create table travelrecord (id bigint not null primary key,user_id varchar(100),traveldate DATE, fee decimal,days int);</span><br><span class="line">Query OK, 0 rows affected (0.02 sec)</span><br></pre></td></tr></table></figure>
+<p>Ok, Mycat is working. Table will be create in three different node. </p>
+<h3 id="Create-a-table-that-not-include-in-schema-rule"><a href="#Create-a-table-that-not-include-in-schema-rule" class="headerlink" title="Create a table that not include in schema rule"></a>Create a table that not include in schema rule</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create table my_table_not_in_rule (id bigint not null primary key, name varchar(100));</span><br><span class="line">ERROR 1064 (HY000): op table not in schema----MY_TABLE_NOT_IN_RULE</span><br></pre></td></tr></table></figure>
+<h3 id="Add-three-records-which-id-are-1000000-5000001-10000001"><a href="#Add-three-records-which-id-are-1000000-5000001-10000001" class="headerlink" title="Add three records which id are 1000000, 5000001, 10000001"></a>Add three records which id are 1000000, 5000001, 10000001</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain insert into travelrecord (id,user_id,traveldate,fee,days) values(1000000,&apos;liang&apos;,&apos;2017-08-01&apos;,96.05,3);</span><br><span class="line">+-----------+-------------------------------------------------------------------------------------------------------+</span><br><span class="line">| DATA_NODE | SQL                                                                                                   |</span><br><span class="line">+-----------+-------------------------------------------------------------------------------------------------------+</span><br><span class="line">| dn1       | insert into travelrecord (id,user_id,traveldate,fee,days) values(1000000,&apos;liang&apos;,&apos;2017-08-01&apos;,96.05,3) |</span><br><span class="line">+-----------+-------------------------------------------------------------------------------------------------------+</span><br><span class="line">1 row in set (0.08 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; explain insert into travelrecord (id,user_id,traveldate,fee,days) values(5000001,&apos;liang&apos;,&apos;2017-08-01&apos;,96.05,3);</span><br><span class="line">+-----------+-------------------------------------------------------------------------------------------------------+</span><br><span class="line">| DATA_NODE | SQL                                                                                                   |</span><br><span class="line">+-----------+-------------------------------------------------------------------------------------------------------+</span><br><span class="line">| dn2       | insert into travelrecord (id,user_id,traveldate,fee,days) values(5000001,&apos;liang&apos;,&apos;2017-08-01&apos;,96.05,3) |</span><br><span class="line">+-----------+-------------------------------------------------------------------------------------------------------+</span><br><span class="line">1 row in set (0.01 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; explain insert into travelrecord (id,user_id,traveldate,fee,days) values(10000001,&apos;liang&apos;,&apos;2017-08-01&apos;,96.05,3);</span><br><span class="line">+-----------+---------------------------------------------------------------------------------------------------------+</span><br><span class="line">| DATA_NODE | SQL                                                                                                     |</span><br><span class="line">+-----------+---------------------------------------------------------------------------------------------------------+</span><br><span class="line">| dn3       | insert into travelrecord (id,user_id,traveldate,fee,days) values(10000001,&apos;liang&apos;,&apos;2017-08-01&apos;,96.05,3) |</span><br><span class="line">+-----------+---------------------------------------------------------------------------------------------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>Auto sharding into different node by id </p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; insert into travelrecord (id,user_id,traveldate,fee,days) values(1000000,&apos;liang&apos;,&apos;2017-08-01&apos;,96.05,3);</span><br><span class="line">Query OK, 1 row affected, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; insert into travelrecord (id,user_id,traveldate,fee,days) values(5000001,&apos;liang&apos;,&apos;2017-08-01&apos;,96.05,3);</span><br><span class="line">Query OK, 1 row affected, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; insert into travelrecord (id,user_id,traveldate,fee,days) values(10000001,&apos;liang&apos;,&apos;2017-08-01&apos;,96.05,3);</span><br><span class="line">Query OK, 1 row affected, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+<h3 id="Find-the-data"><a href="#Find-the-data" class="headerlink" title="Find the data"></a>Find the data</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from travelrecord where id &gt;= 2000000;</span><br><span class="line">+-----------+----------------------------------------------------------+</span><br><span class="line">| DATA_NODE | SQL                                                      |</span><br><span class="line">+-----------+----------------------------------------------------------+</span><br><span class="line">| dn1       | SELECT * FROM travelrecord WHERE id &gt;= 2000000 LIMIT 100 |</span><br><span class="line">| dn2       | SELECT * FROM travelrecord WHERE id &gt;= 2000000 LIMIT 100 |</span><br><span class="line">| dn3       | SELECT * FROM travelrecord WHERE id &gt;= 2000000 LIMIT 100 |</span><br><span class="line">+-----------+----------------------------------------------------------+</span><br><span class="line">3 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>It’s easy to know that it is querying on each database and limit 100 default </p>
+<h3 id="Add-New-Table-Rule"><a href="#Add-New-Table-Rule" class="headerlink" title="Add New Table Rule"></a>Add New Table Rule</h3><p>MyCAT ‘s schema.xml can be loaded dynamically </p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim conf/schema.xml</span><br></pre></td></tr></table></figure>
+<figure class="highlight xml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">schema</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"virtual_database"</span> <span class="hljs-attr">checkSQLschema</span>=<span class="hljs-string">"false"</span> <span class="hljs-attr">sqlMaxLimit</span>=<span class="hljs-string">"100"</span>&gt;</span></span><br><span class="line">                ...</span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"t_order"</span> <span class="hljs-attr">primaryKey</span>=<span class="hljs-string">"id"</span> <span class="hljs-attr">autoIncrement</span>=<span class="hljs-string">"true"</span> <span class="hljs-attr">dataNode</span>=<span class="hljs-string">"dn1,dn2,dn3"</span> <span class="hljs-attr">rule</span>=<span class="hljs-string">"sharding-by-month"</span> /&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">schema</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>Add new table t_order and use “sharding-by-month” rule. It is Mycat configured rule for the field “create_time” to splitting monthly which in file “conf/rule.xml”.   </p>
+<h3 id="Use-Mycat-manage-port-for-real-time-refresh-rules"><a href="#Use-Mycat-manage-port-for-real-time-refresh-rules" class="headerlink" title="Use Mycat manage port for real-time refresh rules"></a>Use Mycat manage port for real-time refresh rules</h3><ul>
+<li>Mycat admin port default is 9066</li>
+</ul>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -uuser1 -ppassword1 -h127.0.0.1 -P9066 -Dvirtual_database</span><br></pre></td></tr></table></figure>
+<p>Refresh Mycat config in admin<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; reload @@config;</span><br><span class="line">Query OK, 1 row affected (0.04 sec)</span><br><span class="line">Reload config success</span><br></pre></td></tr></table></figure></p>
+<p>Access Mycat, you can see a new t_order table which is just a virtual table for mapping management</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -uuser1 -ppassword1 -h127.0.0.1 -P8066 -Dvirtual_database</span><br><span class="line">...</span><br><span class="line">mysql&gt; show tables;</span><br><span class="line">+----------------------------+</span><br><span class="line">| Tables in virtual_database |</span><br><span class="line">+----------------------------+</span><br><span class="line">| company                    |</span><br><span class="line">| customer                   |</span><br><span class="line">| customer_addr              |</span><br><span class="line">| employee                   |</span><br><span class="line">| goods                      |</span><br><span class="line">| hotnews                    |</span><br><span class="line">| orders                     |</span><br><span class="line">| order_items                |</span><br><span class="line">| travelrecord               |</span><br><span class="line">| t_order                    |</span><br><span class="line">+----------------------------+</span><br><span class="line">10 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>Create table t_order</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `t_order` (</span><br><span class="line">  `id` varchar(32) NOT NULL,</span><br><span class="line">  `order_id` varchar(64) DEFAULT NULL,</span><br><span class="line">  `create_time` datetime</span><br><span class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; insert into t_order(id,order_id,create_time) values(&apos;11&apos;,&apos;order_1001&apos;,&apos;2017-01-01 10:00:00&apos;);</span><br><span class="line">ERROR 1064 (HY000): Can&apos;t find a valid data node for specified node index :T_ORDER -&gt; CREATE_TIME -&gt; 2017-01-01 10:00:00 -&gt; Index : 24</span><br><span class="line"></span><br><span class="line">mysql&gt; insert into t_order(id,order_id,create_time) values(&apos;12&apos;,&apos;order_1002&apos;,&apos;2017-02-01 10:00:00&apos;);</span><br><span class="line">ERROR 1064 (HY000): Can&apos;t find a valid data node for specified node index :T_ORDER -&gt; CREATE_TIME -&gt; 2017-02-01 10:00:00 -&gt; Index : 25</span><br><span class="line"></span><br><span class="line">mysql&gt; insert into t_order(id,order_id,create_time) values(&apos;13&apos;,&apos;order_1003&apos;,&apos;2017-03-01 00:00:00&apos;);</span><br><span class="line">ERROR 1064 (HY000): Can&apos;t find a valid data node for specified node index :T_ORDER -&gt; CREATE_TIME -&gt; 2017-03-01 00:00:00 -&gt; Index : 26</span><br></pre></td></tr></table></figure>
+<p>Because the rule “sharding-by-month” in file conf/rule.xml, the start time is defined as 2015-01-1, need to be modified to 2017-01-01</p>
+<figure class="highlight xml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">tableRule</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"sharding-by-month"</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">rule</span>&gt;</span></span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">columns</span>&gt;</span>create_time<span class="hljs-tag">&lt;/<span class="hljs-name">columns</span>&gt;</span></span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">algorithm</span>&gt;</span>partbymonth<span class="hljs-tag">&lt;/<span class="hljs-name">algorithm</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;/<span class="hljs-name">rule</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">tableRule</span>&gt;</span></span><br><span class="line">...</span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">function</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"partbymonth"</span></span></span><br><span class="line"><span class="hljs-tag">        <span class="hljs-attr">class</span>=<span class="hljs-string">"io.mycat.route.function.PartitionByMonth"</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dateFormat"</span>&gt;</span>yyyy-MM-dd<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span></span><br><span class="line">        <span class="hljs-comment">&lt;!-- &lt;property name="sBeginDate"&gt;2015-01-01&lt;/property&gt; --&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"sBeginDate"</span>&gt;</span>2017-01-01<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">function</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="Increase-the-number-of-nodes-to-12"><a href="#Increase-the-number-of-nodes-to-12" class="headerlink" title="Increase the number of nodes to 12"></a>Increase the number of nodes to 12</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim conf/schema.xml</span><br></pre></td></tr></table></figure>
+<figure class="highlight xml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">schema</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"virtual_database"</span> <span class="hljs-attr">checkSQLschema</span>=<span class="hljs-string">"false"</span> <span class="hljs-attr">sqlMaxLimit</span>=<span class="hljs-string">"100"</span>&gt;</span></span><br><span class="line">        ...</span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"t_order"</span> <span class="hljs-attr">primaryKey</span>=<span class="hljs-string">"id"</span> <span class="hljs-attr">autoIncrement</span>=<span class="hljs-string">"true"</span> <span class="hljs-attr">dataNode</span>=<span class="hljs-string">"dn$1-12"</span> <span class="hljs-attr">rule</span>=<span class="hljs-string">"sharding-by-month"</span> /&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">schema</span>&gt;</span></span><br><span class="line">...</span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">dataNode</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dn1"</span> <span class="hljs-attr">dataHost</span>=<span class="hljs-string">"devdb"</span> <span class="hljs-attr">database</span>=<span class="hljs-string">"app1"</span> /&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">dataNode</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dn2"</span> <span class="hljs-attr">dataHost</span>=<span class="hljs-string">"devdb"</span> <span class="hljs-attr">database</span>=<span class="hljs-string">"app2"</span> /&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">dataNode</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dn3"</span> <span class="hljs-attr">dataHost</span>=<span class="hljs-string">"devdb"</span> <span class="hljs-attr">database</span>=<span class="hljs-string">"app3"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">dataNode</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dn4"</span> <span class="hljs-attr">dataHost</span>=<span class="hljs-string">"devdb"</span> <span class="hljs-attr">database</span>=<span class="hljs-string">"app1"</span> /&gt;</span> <span class="hljs-comment">&lt;!-- new --&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">dataNode</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dn5"</span> <span class="hljs-attr">dataHost</span>=<span class="hljs-string">"devdb"</span> <span class="hljs-attr">database</span>=<span class="hljs-string">"app2"</span> /&gt;</span> <span class="hljs-comment">&lt;!-- new --&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">dataNode</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dn6"</span> <span class="hljs-attr">dataHost</span>=<span class="hljs-string">"devdb"</span> <span class="hljs-attr">database</span>=<span class="hljs-string">"app3"</span> /&gt;</span> <span class="hljs-comment">&lt;!-- new --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">dataNode</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dn7"</span> <span class="hljs-attr">dataHost</span>=<span class="hljs-string">"devdb"</span> <span class="hljs-attr">database</span>=<span class="hljs-string">"app1"</span> /&gt;</span> <span class="hljs-comment">&lt;!-- new --&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">dataNode</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dn8"</span> <span class="hljs-attr">dataHost</span>=<span class="hljs-string">"devdb"</span> <span class="hljs-attr">database</span>=<span class="hljs-string">"app2"</span> /&gt;</span> <span class="hljs-comment">&lt;!-- new --&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">dataNode</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dn9"</span> <span class="hljs-attr">dataHost</span>=<span class="hljs-string">"devdb"</span> <span class="hljs-attr">database</span>=<span class="hljs-string">"app3"</span> /&gt;</span> <span class="hljs-comment">&lt;!-- new --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">dataNode</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dn10"</span> <span class="hljs-attr">dataHost</span>=<span class="hljs-string">"devdb"</span> <span class="hljs-attr">database</span>=<span class="hljs-string">"app1"</span> /&gt;</span> <span class="hljs-comment">&lt;!-- new --&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">dataNode</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dn11"</span> <span class="hljs-attr">dataHost</span>=<span class="hljs-string">"devdb"</span> <span class="hljs-attr">database</span>=<span class="hljs-string">"app2"</span> /&gt;</span> <span class="hljs-comment">&lt;!-- new --&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">dataNode</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dn12"</span> <span class="hljs-attr">dataHost</span>=<span class="hljs-string">"devdb"</span> <span class="hljs-attr">database</span>=<span class="hljs-string">"app3"</span> /&gt;</span> <span class="hljs-comment">&lt;!-- new --&gt;</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h3 id="Refresh-Mycat-config"><a href="#Refresh-Mycat-config" class="headerlink" title="Refresh Mycat config"></a>Refresh Mycat config</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; reload @@config_all;</span><br><span class="line">Query OK, 1 row affected (0.03 sec)</span><br><span class="line">Reload config success</span><br></pre></td></tr></table></figure>
+<h3 id="Add-New-records"><a href="#Add-New-records" class="headerlink" title="Add New records"></a>Add New records</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; insert into t_order(id,order_id,create_time) values(&apos;11&apos;,&apos;order_1001&apos;,&apos;2017-01-01 10:00:00&apos;);</span><br><span class="line">mysql&gt; insert into t_order(id,order_id,create_time) values(&apos;12&apos;,&apos;order_1002&apos;,&apos;2017-02-01 10:00:00&apos;);</span><br><span class="line">mysql&gt; insert into t_order(id,order_id,create_time) values(&apos;13&apos;,&apos;order_1003&apos;,&apos;2017-03-01 00:00:00&apos;);</span><br><span class="line">mysql&gt; insert into t_order(id,order_id,create_time) values(&apos;14&apos;,&apos;order_1003&apos;,&apos;2017-04-01 00:00:00&apos;);</span><br><span class="line">mysql&gt; insert into t_order(id,order_id,create_time) values(&apos;15&apos;,&apos;order_1003&apos;,&apos;2017-05-01 00:00:00&apos;);</span><br><span class="line">mysql&gt; insert into t_order(id,order_id,create_time) values(&apos;16&apos;,&apos;order_1003&apos;,&apos;2017-06-01 00:00:00&apos;);</span><br></pre></td></tr></table></figure>
+<p>Mycat monthly division can only be scheduled within a year!!!!!<br>I do not know if there is any other way</p>
+<h3 id="Meet-some-errors"><a href="#Meet-some-errors" class="headerlink" title="Meet some errors"></a>Meet some errors</h3><ul>
+<li><h5 id="Unknown-database"><a href="#Unknown-database" class="headerlink" title="Unknown database"></a>Unknown database</h5>  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -uuser1 -ppassword1 -h127.0.0.1 -P8066 -Dvirtual_database</span><br><span class="line">ERROR 1049 (42000): Unknown database &apos;virtual_database&apos;</span><br></pre></td></tr></table></figure>
+<p>  The solution is to specify the ip address…</p>
+  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -uuser1 -ppassword1 -h127.0.0.1 -P8066 -Dvirtual_database</span><br><span class="line"></span><br><span class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</span><br><span class="line">Server version: 5.6.29-mycat-1.6-RELEASE-20161028204710 MyCat Server (OpenCloundDB)</span><br><span class="line"></span><br><span class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</span><br><span class="line">mysql&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><h5 id="After-dynamically-loading-scheme-NullPointerException-occurs"><a href="#After-dynamically-loading-scheme-NullPointerException-occurs" class="headerlink" title="After dynamically loading scheme, NullPointerException occurs"></a>After dynamically loading scheme, NullPointerException occurs</h5>  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR 3009 (HY000): java.lang.NullPointerException</span><br></pre></td></tr></table></figure>
+<p>  adjusting nodes, you should use config_all</p>
+  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; reload @@config_all;</span><br><span class="line">Query OK, 1 row affected (0.03 sec)</span><br><span class="line">Reload config success</span><br></pre></td></tr></table></figure>
+</li>
+<li><h5 id="Can’t-find-table-define-in-schema"><a href="#Can’t-find-table-define-in-schema" class="headerlink" title="Can’t find table define in schema"></a>Can’t find table define in schema</h5>  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.sql.SQLNonTransientException: can&apos;t find table define in schema &quot;USERS&quot; schema:virtual_database</span><br></pre></td></tr></table></figure>
+<p>  Many sql syntax errors will be reported this error…<br>  I’m using this library <a href="https://github.com/catfan/Medoo" target="_blank" rel="noopener">catfan/Medoo</a> then show this error</p>
+</li>
+<li><h5 id="please-make-sure-the-primaryKey’s-config-is-not-null-in-schemal-xml"><a href="#please-make-sure-the-primaryKey’s-config-is-not-null-in-schemal-xml" class="headerlink" title="please make sure the primaryKey’s config is not null in schemal.xml"></a>please make sure the primaryKey’s config is not null in schemal.xml</h5><p>  Make sure the schema.xml ‘s configuration is right: primaryKey=”ID” autoIncrement=”true”</p>
+  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;table name=&quot;users&quot; primaryKey=&quot;ID&quot; autoIncrement=&quot;true&quot; dataNode=&quot;dn1,dn2,dn3&quot; rule=&quot;auto-sharding-long&quot; /&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><h5 id="can’t-find-any-valid-datanode-USERS-gt-ID-gt-947870356817973248"><a href="#can’t-find-any-valid-datanode-USERS-gt-ID-gt-947870356817973248" class="headerlink" title="can’t find any valid datanode :USERS -&gt; ID -&gt; 947870356817973248"></a>can’t find any valid datanode :USERS -&gt; ID -&gt; 947870356817973248</h5><p>  If sharding rule is auto-sharding-long, it will limit the id range.<br>  Datanode1: 1~5000001<br>  Datanode2: 5000001~10000001<br>  Datanode3: 10000001~15000001</p>
+<p>  When id is more than 15000001, it will show this error:<br>  [Err] 1064 - can’t find any valid datanode :TB_ITEM -&gt; ID -&gt; 15000002<br>  At this point you need to add a new node.</p>
+</li>
+</ul>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Mycat/">Mycat</a>, <a class="has-link-grey -link" href="/tags/Mysql/">Mysql</a>, <a class="has-link-grey -link" href="/tags/Ubuntu/">Ubuntu</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+            <p class="is-size-7">
+    <b>
+    Thank you for reading.<br>
+    This post is copyrighted by <a href="https://liyuliang.cc">Liyuliang’s Blog.</a><br>
+    If reproduced, please indicate the source: <a href="https://liyuliang.cc">Liyuliang’s Blog</a><br>
+    This blog uses <a target="_blank" rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-Share-Sharing 4.0 International License Agreement </a> to license.<br>
+    </b>
+    <hr>
+</p>
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">Like this article? Support the author with</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>Alipay</span>
+    <div class="qrcode"><img src="/images/alipay.jpeg" alt="Alipay"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>Wechat</span>
+    <div class="qrcode"><img src="/images/wxpay.jpeg" alt="Wechat"></div>
+</a>
+
+                
+                <!-- Visit https://www.paypal.com/donate/buttons/ to get your donate button -->
+
+<a class="button is-warning donate" onclick="document.getElementById(&#39;paypal-donate-form&#39;).submit()">
+    <span class="icon is-small">
+        <i class="fab fa-paypal"></i>
+    </span>
+    <span>Paypal</span>
+</a>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" id="paypal-donate-form">
+    <input type="hidden" name="cmd" value="_donations">
+    <input type="hidden" name="business" value="D7RUA6PUE8GM2">
+    <input type="hidden" name="currency_code" value="USD">
+</form>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2017/08/27/Mysql-data-optimization/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Mysql data optimization</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2017/08/26/About-Mysql-Partition/">
+                <span class="level-item">About Mysql Partition</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+</div>
+                
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-3 column-right is-sticky">
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/09/">
+                <span class="level-start">
+                    <span class="level-item">September 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">8</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">10</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">9</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">7</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">9</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/Alipay/" style="font-size: 10px;">Alipay</a> <a href="/tags/Apache/" style="font-size: 12px;">Apache</a> <a href="/tags/Baidu/" style="font-size: 10px;">Baidu</a> <a href="/tags/Canal/" style="font-size: 10px;">Canal</a> <a href="/tags/Centos/" style="font-size: 10px;">Centos</a> <a href="/tags/CloudDisk/" style="font-size: 10px;">CloudDisk</a> <a href="/tags/Daemon/" style="font-size: 11px;">Daemon</a> <a href="/tags/Elasticsearch/" style="font-size: 13px;">Elasticsearch</a> <a href="/tags/Filebeat/" style="font-size: 11px;">Filebeat</a> <a href="/tags/Glide/" style="font-size: 10px;">Glide</a> <a href="/tags/Iterm/" style="font-size: 10px;">Iterm</a> <a href="/tags/JQuery/" style="font-size: 10px;">JQuery</a> <a href="/tags/Keepalived/" style="font-size: 10px;">Keepalived</a> <a href="/tags/Kibana/" style="font-size: 11px;">Kibana</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Login/" style="font-size: 10px;">Login</a> <a href="/tags/Logstash/" style="font-size: 11px;">Logstash</a> <a href="/tags/Mac/" style="font-size: 14px;">Mac</a> <a href="/tags/Mongodb/" style="font-size: 11px;">Mongodb</a> <a href="/tags/Mycat/" style="font-size: 10px;">Mycat</a> <a href="/tags/Mysql/" style="font-size: 19px;">Mysql</a> <a href="/tags/NFS/" style="font-size: 10px;">NFS</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 10px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 18px;">PHP</a> <a href="/tags/Pagespeed/" style="font-size: 10px;">Pagespeed</a> <a href="/tags/Partition/" style="font-size: 10px;">Partition</a> <a href="/tags/Redis/" style="font-size: 12px;">Redis</a> <a href="/tags/Replica/" style="font-size: 10px;">Replica</a> <a href="/tags/Security/" style="font-size: 10px;">Security</a> <a href="/tags/Slave/" style="font-size: 13px;">Slave</a> <a href="/tags/SlowLog/" style="font-size: 11px;">SlowLog</a> <a href="/tags/Symfony/" style="font-size: 15px;">Symfony</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/Twig/" style="font-size: 11px;">Twig</a> <a href="/tags/Ubuntu/" style="font-size: 20px;">Ubuntu</a> <a href="/tags/Varnish/" style="font-size: 10px;">Varnish</a> <a href="/tags/Vim/" style="font-size: 10px;">Vim</a> <a href="/tags/Virtualbox/" style="font-size: 10px;">Virtualbox</a> <a href="/tags/Wordpress/" style="font-size: 11px;">Wordpress</a> <a href="/tags/auth/" style="font-size: 11px;">auth</a> <a href="/tags/backup/" style="font-size: 10px;">backup</a> <a href="/tags/beanstalkd/" style="font-size: 10px;">beanstalkd</a> <a href="/tags/binlog/" style="font-size: 10px;">binlog</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/brew/" style="font-size: 11px;">brew</a> <a href="/tags/composer/" style="font-size: 10px;">composer</a> <a href="/tags/cookie/" style="font-size: 10px;">cookie</a> <a href="/tags/css/" style="font-size: 10px;">css</a> <a href="/tags/dante/" style="font-size: 10px;">dante</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/domain/" style="font-size: 11px;">domain</a> <a href="/tags/download/" style="font-size: 10px;">download</a> <a href="/tags/file/" style="font-size: 10px;">file</a> <a href="/tags/fork/" style="font-size: 10px;">fork</a> <a href="/tags/git/" style="font-size: 11px;">git</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/golang/" style="font-size: 17px;">golang</a> <a href="/tags/homestead/" style="font-size: 10px;">homestead</a> <a href="/tags/iptable/" style="font-size: 11px;">iptable</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/log/" style="font-size: 10px;">log</a> <a href="/tags/nginx/" style="font-size: 16px;">nginx</a> <a href="/tags/proxy/" style="font-size: 11px;">proxy</a> <a href="/tags/redis-cluster/" style="font-size: 10px;">redis-cluster</a> <a href="/tags/redis-sentinel/" style="font-size: 10px;">redis-sentinel</a> <a href="/tags/sock5/" style="font-size: 10px;">sock5</a> <a href="/tags/supervisor/" style="font-size: 10px;">supervisor</a> <a href="/tags/sync/" style="font-size: 10px;">sync</a> <a href="/tags/tips/" style="font-size: 11px;">tips</a> <a href="/tags/tmux/" style="font-size: 10px;">tmux</a> <a href="/tags/usb/" style="font-size: 10px;">usb</a> <a href="/tags/vagrant/" style="font-size: 10px;">vagrant</a> <a href="/tags/web/" style="font-size: 10px;">web</a>
+    </div>
+</div>
+
+    
+        
+
+
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    Liyuliang&#39;s Blog
+                
+                </a>
+
+                <p class="is-size-7">
+                    <a href="/copyright" target="_blank">Copyright</a>
+                    &copy; 2021 Liyuliang&nbsp;
+
+		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/liyuliang">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="SiteMap for Google" href="https://liyuliang.cc/sitemap.xml">
+                        
+                        <i class="fab fa-google"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="SiteMap for Baidu" href="https://liyuliang.cc/baidusitemap.xml">
+                        
+                        <i class="fab fa-bimobject"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

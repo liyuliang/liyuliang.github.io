@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+<meta name="google-site-verification" content="phJt8wJDQkOAcEQmqF8UasrF3CVtKMYLBqYLlWfVIOM">
+<title>Compile and install LAMP in Ubuntu - Liyuliang&#39;s Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+    <meta name="description" content="Server environment12$ cat /etc/issueUbuntu 14.04.5 LTS">
+<meta name="keywords" content="PHP,Ubuntu,Mysql,Apache">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Compile and install LAMP in Ubuntu">
+<meta property="og:url" content="https://liyuliang.cc/2017/04/04/Compile-and-install-LAMP-in-Ubuntu/index.html">
+<meta property="og:site_name" content="Liyuliang&#39;s Blog">
+<meta property="og:description" content="Server environment12$ cat /etc/issueUbuntu 14.04.5 LTS">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2021-06-14T14:02:02.291Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Compile and install LAMP in Ubuntu">
+<meta name="twitter:description" content="Server environment12$ cat /etc/issueUbuntu 14.04.5 LTS">
+
+
+
+
+
+<link rel="icon" href="/images/header.png">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.4.1/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+
+
+<script>
+        if (document.domain != "liyuliang.cc") {
+            window.location.href = "https://liyuliang.cc";
+        }
+        if (top.location != self.location) {
+           top.location = self.location;
+        }
+
+</script>
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                Liyuliang&#39;s Blog
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item" href="/archives">Archives</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/liyuliang">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main"><div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2017-04-04T04:17:56.000Z">2017-04-04</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    8 minutes read (About 1205 words)
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                Compile and install LAMP in Ubuntu
+            
+        </h1>
+        <div class="content">
+            <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">Ubuntu 14.04.5 LTS</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p><em>Some errors encountered during the installation at the bottom of this page</em></p>
+<p><strong>Using root account</strong><br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo -s</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p /download</span><br><span class="line">$ cd /download</span><br></pre></td></tr></table></figure>
+<h3 id="Install-dependence-package"><a href="#Install-dependence-package" class="headerlink" title="Install dependence package"></a>Install dependence package</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y make gcc automake bison cmake libtool wget gcc unzip \</span><br><span class="line">    openssl libssl-dev libxml2 curl build-essential ruby zlib1g zlib1g.dev libncurses5-dev \</span><br><span class="line">    libxml2-dev libcurl4-gnutls-dev libjpeg-dev libpng-dev libxpm-dev \</span><br><span class="line">    libfreetype6-dev libt1-dev libmcrypt-dev libmysql++-dev libxslt1-dev</span><br></pre></td></tr></table></figure>
+<h3 id="Install-Apr"><a href="#Install-Apr" class="headerlink" title="Install Apr"></a>Install Apr</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ cd /download</span><br><span class="line">$ wget http://mirror.bit.edu.cn/apache/apr/apr-1.6.3.tar.gz</span><br><span class="line">$ tar zxvf apr-1.6.3.tar.gz</span><br><span class="line">$ cd apr-1.6.3</span><br><span class="line">$ autoreconf --force --install</span><br><span class="line">$ libtoolize --automake --force</span><br><span class="line">$ ./configure -with-apr=/usr/local/apr</span><br><span class="line">$ make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+<h3 id="Install-Pcre"><a href="#Install-Pcre" class="headerlink" title="Install Pcre"></a>Install Pcre</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cd /download</span><br><span class="line">$ wget http://ftp.exim.llorien.org/pcre/pcre-8.36.tar.gz</span><br><span class="line">$ tar zxvf pcre-8.36.tar.gz</span><br><span class="line">$ cd pcre-8.36</span><br><span class="line">$ ./configure --prefix=/usr/pcre</span><br><span class="line">$ make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+<h3 id="Install-Apache"><a href="#Install-Apache" class="headerlink" title="Install Apache"></a>Install Apache</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">$ cd /download</span><br><span class="line">$ wget http://ftp.itu.edu.tr/Mirror/Apache//httpd/httpd-2.2.34.tar.gz</span><br><span class="line">$ tar zxvf httpd-2.2.34.tar.gz</span><br><span class="line">$ cd httpd-2.2.34</span><br><span class="line">$ ./configure \</span><br><span class="line">        &quot;--prefix=/etc/httpd&quot; \</span><br><span class="line">        &quot;--exec-prefix=/etc/httpd&quot; \</span><br><span class="line">        &quot;--bindir=/usr/bin&quot; \</span><br><span class="line">        &quot;--sbindir=/usr/sbin&quot; \</span><br><span class="line">        &quot;--sysconfdir=/etc/httpd/conf&quot; \</span><br><span class="line">        &quot;--enable-so&quot; \</span><br><span class="line">        &quot;--enable-dav&quot; \</span><br><span class="line">        &quot;--enable-dav-fs&quot; \</span><br><span class="line">        &quot;--enable-dav-lock&quot; \</span><br><span class="line">        &quot;--enable-suexec&quot; \</span><br><span class="line">        &quot;--enable-deflate&quot; \</span><br><span class="line">        &quot;--enable-unique-id&quot; \</span><br><span class="line">        &quot;--enable-mods-static=most&quot; \</span><br><span class="line">        &quot;--enable-reqtimeout&quot; \</span><br><span class="line">        &quot;--with-mpm=prefork&quot; \</span><br><span class="line">        &quot;--with-suexec-caller=apache&quot; \</span><br><span class="line">        &quot;--with-suexec-docroot=/&quot; \</span><br><span class="line">        &quot;--with-suexec-gidmin=100&quot; \</span><br><span class="line">        &quot;--with-suexec-logfile=/var/log/httpd/suexec_log&quot; \</span><br><span class="line">        &quot;--with-suexec-uidmin=100&quot; \</span><br><span class="line">        &quot;--with-suexec-userdir=public_html&quot; \</span><br><span class="line">        &quot;--with-suexec-bin=/usr/sbin/suexec&quot; \</span><br><span class="line">        &quot;--with-included-apr&quot; \</span><br><span class="line">        &quot;--with-pcre=/usr/pcre&quot; \</span><br><span class="line">        &quot;--includedir=/usr/include/apache&quot; \</span><br><span class="line">        &quot;--libexecdir=/usr/lib/apache&quot; \</span><br><span class="line">        &quot;--datadir=/var/www&quot; \</span><br><span class="line">        &quot;--localstatedir=/var&quot; \</span><br><span class="line">        &quot;--enable-logio&quot; \</span><br><span class="line">        &quot;--enable-ssl&quot; \</span><br><span class="line">        &quot;--enable-rewrite&quot; \</span><br><span class="line">        &quot;--enable-proxy&quot; \</span><br><span class="line">        &quot;--enable-expires&quot; \</span><br><span class="line">        &quot;--with-ssl=/usr&quot; \</span><br><span class="line">        &quot;--enable-headers&quot;</span><br><span class="line">        </span><br><span class="line">$ make &amp;&amp; make install</span><br><span class="line">$ sed -i &quot;s/&lt;Directory \&quot;\/var\/www\/htdocs\&quot;&gt;/&lt;Directory \&quot;\/var\/www\&quot;&gt;/g&quot; /etc/httpd/conf/httpd.conf</span><br><span class="line">$ sed -i &quot;s/DocumentRoot \&quot;\/var\/www\/htdocs\&quot;/DocumentRoot \&quot;\/var\/www\&quot;/g&quot; /etc/httpd/conf/httpd.conf</span><br><span class="line">$ sed -i &quot;s/DirectoryIndex index.html/DirectoryIndex index.html index.php/g&quot; /etc/httpd/conf/httpd.conf</span><br></pre></td></tr></table></figure>
+<h3 id="Install-Mysql"><a href="#Install-Mysql" class="headerlink" title="Install Mysql"></a>Install Mysql</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ cd /download</span><br><span class="line">$ wget http://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.14.tar.gz</span><br><span class="line">$ tar zxvf mysql-5.6.14.tar.gz </span><br><span class="line">$ cd mysql-5.6.14</span><br><span class="line">$ groupadd mysql</span><br><span class="line">$ useradd -g mysql mysql -s /bin/false</span><br><span class="line">$ mkdir -p /data/mysql /usr/local/mysql</span><br><span class="line">$ chown -R mysql:mysql /data/mysql</span><br><span class="line">$ cmake -DMYSQL_UNIX_ADDR=/var/lib/mysql/mysql.sock</span><br><span class="line">$ make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cd /usr/local/mysql/</span><br><span class="line">$ chown -R mysql:mysql .</span><br><span class="line">$ scripts/mysql_install_db --user=mysql --datadir=/data/mysql</span><br><span class="line"></span><br><span class="line">$ cp ./support-files/my-default.cnf /etc/my.cnf</span><br><span class="line">  datadir = /data/mysql</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ cp support-files/mysql.server /etc/init.d/mysqld</span><br><span class="line">$ chmod 755 /etc/init.d/mysqld</span><br><span class="line">$ update-rc.d mysqld defaults</span><br><span class="line"></span><br><span class="line"># Add Mysql service in system environment</span><br><span class="line">$ vim /etc/profile </span><br><span class="line">  export PATH=$PATH:/usr/local/mysql/bin</span><br><span class="line">$ source /etc/profile</span><br><span class="line"></span><br><span class="line">$ service mysqld start</span><br><span class="line"></span><br><span class="line"># change mysql password</span><br><span class="line">$ ./bin/mysqladmin -u root password &apos;new-password&apos;</span><br></pre></td></tr></table></figure>
+<h3 id="Install-libmcrypt"><a href="#Install-libmcrypt" class="headerlink" title="Install libmcrypt"></a>Install libmcrypt</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cd /download</span><br><span class="line">$ wget http://sourceforge.net/projects/mcrypt/files/Libmcrypt/2.5.8/libmcrypt-2.5.8.tar.gz</span><br><span class="line">$ tar zxvf libmcrypt-2.5.8.tar.gz</span><br><span class="line">$ cd libmcrypt-2.5.8</span><br><span class="line">$ ./configure</span><br><span class="line">$ make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+<h3 id="Install-PHP-5-5-5"><a href="#Install-PHP-5-5-5" class="headerlink" title="Install PHP 5.5.5"></a>Install PHP 5.5.5</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">$ cd /download</span><br><span class="line">$ wget -O php-5.5.5.tar.gz http://us2.php.net/get/php-5.5.5.tar.gz/from/this/mirror </span><br><span class="line">$ tar zxvf php-5.5.5.tar.gz</span><br><span class="line">$ cd php-5.5.5</span><br><span class="line">$ ./configure \</span><br><span class="line">        --with-apxs2 \</span><br><span class="line">        --with-curl=/usr \</span><br><span class="line">        --with-gd \</span><br><span class="line">        --with-gettext \</span><br><span class="line">        --with-jpeg-dir=/usr \</span><br><span class="line">        --with-freetype-dir=/usr \</span><br><span class="line">        --with-kerberos \</span><br><span class="line">        --with-openssl \</span><br><span class="line">        --with-mcrypt=/usr/local/lib \</span><br><span class="line">        --with-mhash \</span><br><span class="line">        --with-mysql=mysqlnd \</span><br><span class="line">        --with-mysqli=mysqlnd \</span><br><span class="line">        --with-pcre-regex \</span><br><span class="line">        --with-pear \</span><br><span class="line">        --with-png-dir=/usr \</span><br><span class="line">        --with-xsl \</span><br><span class="line">        --with-zlib \</span><br><span class="line">        --with-zlib-dir=/usr \</span><br><span class="line">        --with-iconv \</span><br><span class="line">        --enable-bcmath \</span><br><span class="line">        --enable-calendar \</span><br><span class="line">        --enable-exif \</span><br><span class="line">        --enable-ftp \</span><br><span class="line">        --enable-gd-native-ttf \</span><br><span class="line">        --enable-soap \</span><br><span class="line">        --enable-sockets \</span><br><span class="line">        --enable-mbstring \</span><br><span class="line">        --enable-zip \</span><br><span class="line">        --enable-wddx</span><br><span class="line">        </span><br><span class="line">$ make &amp;&amp; make install</span><br><span class="line">$ libtool --finish ./libs</span><br><span class="line">$ cp php.ini-production /usr/local/lib/php.ini</span><br><span class="line">$ sed -i &apos;s/;date.timezone =.*/  date.timezone \= &quot;Europe\/Istanbul&quot;/&apos; /usr/local/lib/php.ini</span><br></pre></td></tr></table></figure>
+<h3 id="Install-phpmyadmin"><a href="#Install-phpmyadmin" class="headerlink" title="Install phpmyadmin"></a>Install phpmyadmin</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cd /download</span><br><span class="line">$ wget https://files.phpmyadmin.net/phpMyAdmin/4.7.7/phpMyAdmin-4.7.7-all-languages.tar.gz</span><br><span class="line">$ tar zxvf phpMyAdmin-4.7.7-all-languages.tar.gz</span><br><span class="line">$ mv phpMyAdmin-4.7.7-all-languages /var/www/phpMyAdmin</span><br><span class="line">$ cd /var/www/phpMyAdmin</span><br><span class="line">$ cp config.sample.inc.php config.inc.php</span><br></pre></td></tr></table></figure>
+<p>###<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ echo &quot;&lt;?PHP phpInfo();?&gt;&quot; &gt; /var/www/index.php</span><br><span class="line"></span><br><span class="line">$ echo &quot;AddType application/x-httpd-php .php&quot; &gt;&gt; /etc/httpd/conf/extra/httpd-php.conf</span><br><span class="line">$ echo &quot;AddType application/x-httpd-php-source .phps&quot; &gt;&gt; /etc/httpd/conf/extra/httpd-php.conf</span><br><span class="line">$ echo &quot;Include conf/extra/httpd-php.conf&quot; &gt;&gt; /etc/httpd/conf/httpd.conf</span><br></pre></td></tr></table></figure></p>
+<h3 id="Restart-Apache"><a href="#Restart-Apache" class="headerlink" title="Restart Apache"></a>Restart Apache</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apachectl restart</span><br></pre></td></tr></table></figure>
+<p>Ok! Open you browser and visit <a href="http://localhost" target="_blank" rel="noopener">http://localhost</a> and <a href="http://localhost/phpMyAdmin/" target="_blank" rel="noopener">http://localhost/phpMyAdmin/</a> with mysql root account</p>
+<h3 id="Meet-some-errors"><a href="#Meet-some-errors" class="headerlink" title="Meet some errors"></a>Meet some errors</h3><ul>
+<li><h5 id="configure-error-Did-not-find-pcre-config-script-at-usr"><a href="#configure-error-Did-not-find-pcre-config-script-at-usr" class="headerlink" title="configure: error: Did not find pcre-config script at /usr"></a>configure: error: Did not find pcre-config script at /usr</h5><p>  You should install the apr package first</p>
+</li>
+<li><h5 id="cannot-remove-‘libtoolT’-No-such-file-or-directory"><a href="#cannot-remove-‘libtoolT’-No-such-file-or-directory" class="headerlink" title="cannot remove ‘libtoolT’: No such file or directory"></a>cannot remove ‘libtoolT’: No such file or directory</h5><p>  During installing apr package. </p>
+  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim apr-1.6.3/configure</span><br></pre></td></tr></table></figure>
+  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#    $RM &quot;$cfgfile&quot;</span><br></pre></td></tr></table></figure>
+<p>  then re-configure</p>
+</li>
+</ul>
+<ul>
+<li><h5 id="configure-error-You-need-a-C-compiler-for-C-support"><a href="#configure-error-You-need-a-C-compiler-for-C-support" class="headerlink" title="configure: error: You need a C++ compiler for C++ support."></a>configure: error: You need a C++ compiler for C++ support.</h5>  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y build-essential</span><br></pre></td></tr></table></figure>
+</li>
+<li><h5 id="checking-whether-to-enable-mod-deflate…-configure-error-mod-deflate-has-been-requested-but-can-not-be-built-due-to-prerequisite-failures"><a href="#checking-whether-to-enable-mod-deflate…-configure-error-mod-deflate-has-been-requested-but-can-not-be-built-due-to-prerequisite-failures" class="headerlink" title="checking whether to enable mod_deflate… configure: error: mod_deflate has been requested but can not be built due to prerequisite failures"></a>checking whether to enable mod_deflate… configure: error: mod_deflate has been requested but can not be built due to prerequisite failures</h5>  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y ruby zlib1g zlib1g.dev</span><br></pre></td></tr></table></figure>
+</li>
+<li><h5 id="configure-error-…No-recognized-SSL-TLS-toolkit-detected"><a href="#configure-error-…No-recognized-SSL-TLS-toolkit-detected" class="headerlink" title="configure: error: …No recognized SSL/TLS toolkit detected"></a>configure: error: …No recognized SSL/TLS toolkit detected</h5>  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y openssl libssl-dev</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><h5 id="Couldn’t-find-MySQL-server-usr-bin-mysqld-safe"><a href="#Couldn’t-find-MySQL-server-usr-bin-mysqld-safe" class="headerlink" title="Couldn’t find MySQL server (/usr/bin/mysqld_safe)"></a>Couldn’t find MySQL server (/usr/bin/mysqld_safe)</h5>  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rm /etc/mysql/my.cnf</span><br></pre></td></tr></table></figure>
+</li>
+<li><h5 id="The-server-quit-without-updating-PID-file-usr-local-mysql-data-vagrant-ubuntu-trusty-64-pid"><a href="#The-server-quit-without-updating-PID-file-usr-local-mysql-data-vagrant-ubuntu-trusty-64-pid" class="headerlink" title="The server quit without updating PID file (/usr/local/mysql/data/vagrant-ubuntu-trusty-64.pid)."></a>The server quit without updating PID file (/usr/local/mysql/data/vagrant-ubuntu-trusty-64.pid).</h5>  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rm /etc/mysql/my.cnf</span><br></pre></td></tr></table></figure>
+</li>
+<li><h5 id="mysql-cmake-Curses-library-not-found-Please-install-appropriate-package"><a href="#mysql-cmake-Curses-library-not-found-Please-install-appropriate-package" class="headerlink" title="mysql cmake:  Curses library not found. Please install appropriate package,"></a>mysql cmake:  Curses library not found. Please install appropriate package,</h5>  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y libncurses5-dev</span><br><span class="line">$ rm -f CMakeCache.txt</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><h5 id="mysql-ERROR-Can’t-open-the-mysql-plugin-table-Please-run-mysql-upgrade-to-create-it"><a href="#mysql-ERROR-Can’t-open-the-mysql-plugin-table-Please-run-mysql-upgrade-to-create-it" class="headerlink" title="mysql [ERROR] Can’t open the mysql.plugin table. Please run mysql_upgrade to create it."></a>mysql [ERROR] Can’t open the mysql.plugin table. Please run mysql_upgrade to create it.</h5>  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysqld_safe Starting mysqld daemon with databases from /usr/local/mysql/data</span><br><span class="line">Killed</span><br><span class="line">mysqld_safe mysqld from pid file /usr/local/mysql/data/vagrant-ubuntu-trusty-64.pid ended</span><br></pre></td></tr></table></figure>
+<p>  Remove the data directory and </p>
+  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ rm /etc/mysql/my.cnf</span><br><span class="line">$ rm -rf /data/mysql/</span><br><span class="line">$ mkdir -p /data/mysql </span><br><span class="line">$ chown -R mysql:mysql /data/mysql</span><br><span class="line">$ cd /usr/local/mysql/</span><br><span class="line">$ scripts/mysql_install_db --user=mysql --datadir=/data/mysql</span><br><span class="line">$ service mysqld restart</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><h5 id="configure-error-xml2-config-not-found-Please-check-your-libxml2-installation"><a href="#configure-error-xml2-config-not-found-Please-check-your-libxml2-installation" class="headerlink" title="configure: error: xml2-config not found. Please check your libxml2 installation."></a>configure: error: xml2-config not found. Please check your libxml2 installation.</h5>  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y libxml2-dev</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><h5 id="configure-error-Please-reinstall-the-libcurl-distribution"><a href="#configure-error-Please-reinstall-the-libcurl-distribution" class="headerlink" title="configure: error: Please reinstall the libcurl distribution"></a>configure: error: Please reinstall the libcurl distribution</h5>  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y libcurl4-gnutls-dev</span><br></pre></td></tr></table></figure>
+</li>
+<li><h5 id="configure-error-jpeglib-h-not-found"><a href="#configure-error-jpeglib-h-not-found" class="headerlink" title="configure: error: jpeglib.h not found."></a>configure: error: jpeglib.h not found.</h5>  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y libjpeg-dev</span><br></pre></td></tr></table></figure>
+</li>
+<li><h5 id="configure-error-png-h-not-found"><a href="#configure-error-png-h-not-found" class="headerlink" title="configure: error: png.h not found."></a>configure: error: png.h not found.</h5>  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y libpng-dev</span><br></pre></td></tr></table></figure>
+</li>
+<li><h5 id="configure-error-freetype-h-not-found"><a href="#configure-error-freetype-h-not-found" class="headerlink" title="configure: error: freetype.h not found."></a>configure: error: freetype.h not found.</h5>  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y freetype-dev</span><br></pre></td></tr></table></figure>
+<p>  If you have installed this. Find out the freetype.sh realy path and change the configure file.</p>
+  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ ls /usr/include/freetype2/freetype.h</span><br><span class="line">/usr/include/freetype2/freetype.h</span><br><span class="line"></span><br><span class="line">$ vim php-5.5.5/configure</span><br></pre></td></tr></table></figure>
+  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">if test &quot;$PHP_FREETYPE_DIR&quot; != &quot;no&quot;; then</span><br><span class="line">    </span><br><span class="line">   for i in $PHP_FREETYPE_DIR /usr/local /usr; do</span><br><span class="line">     if test -f &quot;$i/include/freetype2/freetype/freetype.h&quot;; then</span><br><span class="line">       FREETYPE2_DIR=$i</span><br><span class="line">       FREETYPE2_INC_DIR=$i/include/freetype2</span><br><span class="line">       break</span><br><span class="line">     fi</span><br><span class="line">   done</span><br></pre></td></tr></table></figure>
+<p>  Change <code>if test -f &quot;$i/include/freetype2/freetype/freetype.h&quot;;</code> to <code>if test -f &quot;$i/include/freetype2/freetype.h&quot;;</code></p>
+</li>
+<li><h5 id="configure-error-Cannot-find-OpenSSL’s-libraries"><a href="#configure-error-Cannot-find-OpenSSL’s-libraries" class="headerlink" title="configure: error: Cannot find OpenSSL’s libraries"></a>configure: error: Cannot find OpenSSL’s libraries</h5>  <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ find / -name libssl.so</span><br><span class="line">  /usr/lib/x86_64-linux-gnu/libssl.so</span><br><span class="line">$ sudo ln -s /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Apache/">Apache</a>, <a class="has-link-grey -link" href="/tags/Mysql/">Mysql</a>, <a class="has-link-grey -link" href="/tags/PHP/">PHP</a>, <a class="has-link-grey -link" href="/tags/Ubuntu/">Ubuntu</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+            <p class="is-size-7">
+    <b>
+    Thank you for reading.<br>
+    This post is copyrighted by <a href="https://liyuliang.cc">Liyuliang’s Blog.</a><br>
+    If reproduced, please indicate the source: <a href="https://liyuliang.cc">Liyuliang’s Blog</a><br>
+    This blog uses <a target="_blank" rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-Share-Sharing 4.0 International License Agreement </a> to license.<br>
+    </b>
+    <hr>
+</p>
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">Like this article? Support the author with</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>Alipay</span>
+    <div class="qrcode"><img src="/images/alipay.jpeg" alt="Alipay"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>Wechat</span>
+    <div class="qrcode"><img src="/images/wxpay.jpeg" alt="Wechat"></div>
+</a>
+
+                
+                <!-- Visit https://www.paypal.com/donate/buttons/ to get your donate button -->
+
+<a class="button is-warning donate" onclick="document.getElementById(&#39;paypal-donate-form&#39;).submit()">
+    <span class="icon is-small">
+        <i class="fab fa-paypal"></i>
+    </span>
+    <span>Paypal</span>
+</a>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" id="paypal-donate-form">
+    <input type="hidden" name="cmd" value="_donations">
+    <input type="hidden" name="business" value="D7RUA6PUE8GM2">
+    <input type="hidden" name="currency_code" value="USD">
+</form>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2017/04/05/Operate-on-Elasticsearch-2-2/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Operate on Elasticsearch 2.2</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2017/04/02/Install-Homebrew-Slow-On-Mac/">
+                <span class="level-item">Install Homebrew Slow On Mac</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+</div>
+                
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-3 column-right is-sticky">
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/09/">
+                <span class="level-start">
+                    <span class="level-item">September 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">8</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">10</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/06/">
+                <span class="level-start">
+                    <span class="level-item">June 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">9</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">7</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">9</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/Alipay/" style="font-size: 10px;">Alipay</a> <a href="/tags/Apache/" style="font-size: 12px;">Apache</a> <a href="/tags/Baidu/" style="font-size: 10px;">Baidu</a> <a href="/tags/Canal/" style="font-size: 10px;">Canal</a> <a href="/tags/Centos/" style="font-size: 10px;">Centos</a> <a href="/tags/CloudDisk/" style="font-size: 10px;">CloudDisk</a> <a href="/tags/Daemon/" style="font-size: 11px;">Daemon</a> <a href="/tags/Elasticsearch/" style="font-size: 13px;">Elasticsearch</a> <a href="/tags/Filebeat/" style="font-size: 11px;">Filebeat</a> <a href="/tags/Glide/" style="font-size: 10px;">Glide</a> <a href="/tags/Iterm/" style="font-size: 10px;">Iterm</a> <a href="/tags/JQuery/" style="font-size: 10px;">JQuery</a> <a href="/tags/Keepalived/" style="font-size: 10px;">Keepalived</a> <a href="/tags/Kibana/" style="font-size: 11px;">Kibana</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Login/" style="font-size: 10px;">Login</a> <a href="/tags/Logstash/" style="font-size: 11px;">Logstash</a> <a href="/tags/Mac/" style="font-size: 14px;">Mac</a> <a href="/tags/Mongodb/" style="font-size: 11px;">Mongodb</a> <a href="/tags/Mycat/" style="font-size: 10px;">Mycat</a> <a href="/tags/Mysql/" style="font-size: 19px;">Mysql</a> <a href="/tags/NFS/" style="font-size: 10px;">NFS</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 10px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 18px;">PHP</a> <a href="/tags/Pagespeed/" style="font-size: 10px;">Pagespeed</a> <a href="/tags/Partition/" style="font-size: 10px;">Partition</a> <a href="/tags/Redis/" style="font-size: 12px;">Redis</a> <a href="/tags/Replica/" style="font-size: 10px;">Replica</a> <a href="/tags/Security/" style="font-size: 10px;">Security</a> <a href="/tags/Slave/" style="font-size: 13px;">Slave</a> <a href="/tags/SlowLog/" style="font-size: 11px;">SlowLog</a> <a href="/tags/Symfony/" style="font-size: 15px;">Symfony</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/Twig/" style="font-size: 11px;">Twig</a> <a href="/tags/Ubuntu/" style="font-size: 20px;">Ubuntu</a> <a href="/tags/Varnish/" style="font-size: 10px;">Varnish</a> <a href="/tags/Vim/" style="font-size: 10px;">Vim</a> <a href="/tags/Virtualbox/" style="font-size: 10px;">Virtualbox</a> <a href="/tags/Wordpress/" style="font-size: 11px;">Wordpress</a> <a href="/tags/auth/" style="font-size: 11px;">auth</a> <a href="/tags/backup/" style="font-size: 10px;">backup</a> <a href="/tags/beanstalkd/" style="font-size: 10px;">beanstalkd</a> <a href="/tags/binlog/" style="font-size: 10px;">binlog</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/brew/" style="font-size: 11px;">brew</a> <a href="/tags/composer/" style="font-size: 10px;">composer</a> <a href="/tags/cookie/" style="font-size: 10px;">cookie</a> <a href="/tags/css/" style="font-size: 10px;">css</a> <a href="/tags/dante/" style="font-size: 10px;">dante</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/domain/" style="font-size: 11px;">domain</a> <a href="/tags/download/" style="font-size: 10px;">download</a> <a href="/tags/file/" style="font-size: 10px;">file</a> <a href="/tags/fork/" style="font-size: 10px;">fork</a> <a href="/tags/git/" style="font-size: 11px;">git</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/golang/" style="font-size: 17px;">golang</a> <a href="/tags/homestead/" style="font-size: 10px;">homestead</a> <a href="/tags/iptable/" style="font-size: 11px;">iptable</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/log/" style="font-size: 10px;">log</a> <a href="/tags/nginx/" style="font-size: 16px;">nginx</a> <a href="/tags/proxy/" style="font-size: 11px;">proxy</a> <a href="/tags/redis-cluster/" style="font-size: 10px;">redis-cluster</a> <a href="/tags/redis-sentinel/" style="font-size: 10px;">redis-sentinel</a> <a href="/tags/sock5/" style="font-size: 10px;">sock5</a> <a href="/tags/supervisor/" style="font-size: 10px;">supervisor</a> <a href="/tags/sync/" style="font-size: 10px;">sync</a> <a href="/tags/tips/" style="font-size: 11px;">tips</a> <a href="/tags/tmux/" style="font-size: 10px;">tmux</a> <a href="/tags/usb/" style="font-size: 10px;">usb</a> <a href="/tags/vagrant/" style="font-size: 10px;">vagrant</a> <a href="/tags/web/" style="font-size: 10px;">web</a>
+    </div>
+</div>
+
+    
+        
+
+
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    Liyuliang&#39;s Blog
+                
+                </a>
+
+                <p class="is-size-7">
+                    <a href="/copyright" target="_blank">Copyright</a>
+                    &copy; 2021 Liyuliang&nbsp;
+
+		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/liyuliang">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="SiteMap for Google" href="https://liyuliang.cc/sitemap.xml">
+                        
+                        <i class="fab fa-google"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="SiteMap for Baidu" href="https://liyuliang.cc/baidusitemap.xml">
+                        
+                        <i class="fab fa-bimobject"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>
