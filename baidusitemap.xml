@@ -53,6 +53,10 @@
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
+    <loc>https://liyuliang.cc/2018/01/25/How-Symfony-create-entity-class-from-mysql-database/</loc>
+    <lastmod>2021-06-14</lastmod>
+  </url>
+  <url>
     <loc>https://liyuliang.cc/2018/04/03/How-To-Change-Tmux-Prefix-Keymap-In-Iterm2/</loc>
     <lastmod>2021-06-14</lastmod>
   </url>
@@ -101,11 +105,11 @@
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
-    <loc>https://liyuliang.cc/2017/07/20/How-to-inject-global-variable-into-Twig/</loc>
+    <loc>https://liyuliang.cc/2017/06/09/How-to-install-Go1-8-in-ubuntu14-04/</loc>
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
-    <loc>https://liyuliang.cc/2017/09/12/How-to-install-ELK-and-Filebeat/</loc>
+    <loc>https://liyuliang.cc/2017/09/03/How-to-install-Homestead-for-laravel-in-Mac/</loc>
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
@@ -145,11 +149,11 @@
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
-    <loc>https://liyuliang.cc/2017/10/11/Install-Supervisor-For-A-PHP-Script/</loc>
+    <loc>https://liyuliang.cc/2017/05/06/About-include-and-require-in-PHP/</loc>
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
-    <loc>https://liyuliang.cc/2017/05/06/About-include-and-require-in-PHP/</loc>
+    <loc>https://liyuliang.cc/2017/06/14/JQuery-file-upload-plugins-work-with-Symfony3/</loc>
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
@@ -201,7 +205,11 @@
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
-    <loc>https://liyuliang.cc/2017/06/14/JQuery-file-upload-plugins-work-with-Symfony3/</loc>
+    <loc>https://liyuliang.cc/2017/10/11/Install-Supervisor-For-A-PHP-Script/</loc>
+    <lastmod>2021-06-14</lastmod>
+  </url>
+  <url>
+    <loc>https://liyuliang.cc/2017/08/26/About-Mysql-Partition/</loc>
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
@@ -245,14 +253,6 @@
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
-    <loc>https://liyuliang.cc/2017/05/18/Get-real-client-IP-from-Nginx-to-Apache/</loc>
-    <lastmod>2021-06-14</lastmod>
-  </url>
-  <url>
-    <loc>https://liyuliang.cc/2017/08/26/About-Mysql-Partition/</loc>
-    <lastmod>2021-06-14</lastmod>
-  </url>
-  <url>
     <loc>https://liyuliang.cc/2017/08/21/Canal-sync-data-to-elasticsearch-by-Mysql-binlog/</loc>
     <lastmod>2021-06-14</lastmod>
   </url>
@@ -277,7 +277,11 @@
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
-    <loc>https://liyuliang.cc/2018/02/22/Golang-meet-float64bits-redeclared-in-this-block/</loc>
+    <loc>https://liyuliang.cc/2017/05/18/Get-real-client-IP-from-Nginx-to-Apache/</loc>
+    <lastmod>2021-06-14</lastmod>
+  </url>
+  <url>
+    <loc>https://liyuliang.cc/2017/09/12/How-to-install-ELK-and-Filebeat/</loc>
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
@@ -285,15 +289,15 @@
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
-    <loc>https://liyuliang.cc/2017/06/09/How-to-install-Go1-8-in-ubuntu14-04/</loc>
-    <lastmod>2021-06-14</lastmod>
-  </url>
-  <url>
-    <loc>https://liyuliang.cc/2017/09/03/How-to-install-Homestead-for-laravel-in-Mac/</loc>
+    <loc>https://liyuliang.cc/2017/07/20/How-to-inject-global-variable-into-Twig/</loc>
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
     <loc>https://liyuliang.cc/2017/08/26/Mysql-Table-Horizontal-Split-By-Mycat/</loc>
+    <lastmod>2021-06-14</lastmod>
+  </url>
+  <url>
+    <loc>https://liyuliang.cc/2018/02/22/Golang-meet-float64bits-redeclared-in-this-block/</loc>
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
@@ -306,10 +310,6 @@
   </url>
   <url>
     <loc>https://liyuliang.cc/2017/05/04/How-PHP-Connect-to-Mysql/</loc>
-    <lastmod>2021-06-14</lastmod>
-  </url>
-  <url>
-    <loc>https://liyuliang.cc/2018/01/25/How-Symfony-create-entity-class-from-mysql-database/</loc>
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
