@@ -161,7 +161,10 @@
         </h1>
         <div class="content">
             <h3 id="My-computer-develop-environment"><a href="#My-computer-develop-environment" class="headerlink" title="My computer develop environment"></a>My computer develop environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">Ubuntu 14.04 LTS</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
+
 <p>Today, a friend found me. The employee responsible for maintaining the official website of his company left.<br>He did not record the Wordpress administrator account when he left. Can’t be reached in a short time.<br>My friend asked for my help, hoping to optimize the loading speed of Wordpress.<br>I searched for several plugins that can provide caching function, but it is very troublesome to enable and configure the plugin without logging in to the background without an administrator account.</p>
 <p>Well,let’s try the function of recovering the password.</p>
 <blockquote>
@@ -173,7 +176,9 @@
 <p>Generally speaking, the administrator account of Wordpress is which ID is 1 or the first account of the table wp_users.<br>The password is encrypted with <code>MD5</code>, we only need to generate an <code>MD5</code> encrypted password to replace the original password.</p>
 <p>But! After trying these, I found out that the first three accounts are not administrator accounts!<br>I think we should look for better way.</p>
 <p>Finally, I found that Wordpress has a user level, and the level 10 is the administrator.<br>Find the <code>meta_key</code> attribute <code>wp_user_level</code> in table <code>wp_usermeta</code>. The <code>meta_value</code> value is 10. The corresponding <code>user_id</code> is a number, and this number is the administrator ID.</p>
-<p>Then let’s take a look at this SQL.<br><figure class="highlight sql hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from wp_usermeta where meta_value = 10;</span><br><span class="line">+<span class="hljs-comment">----------+---------+---------------+------------+</span></span><br><span class="line">| umeta_id | user_id | meta_key      | meta_value |</span><br><span class="line">+<span class="hljs-comment">----------+---------+---------------+------------+</span></span><br><span class="line">|       98 |       8 | wp_user_level | 10         |</span><br><span class="line">+<span class="hljs-comment">----------+---------+---------------+------------+</span></span><br><span class="line">2 rows in <span class="hljs-keyword">set</span> (<span class="hljs-number">0.01</span> sec)</span><br></pre></td></tr></table></figure></p>
+<p>Then let’s take a look at this SQL.</p>
+<figure class="highlight sql hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from wp_usermeta where meta_value = 10;</span><br><span class="line">+<span class="hljs-comment">----------+---------+---------------+------------+</span></span><br><span class="line">| umeta_id | user_id | meta_key      | meta_value |</span><br><span class="line">+<span class="hljs-comment">----------+---------+---------------+------------+</span></span><br><span class="line">|       98 |       8 | wp_user_level | 10         |</span><br><span class="line">+<span class="hljs-comment">----------+---------+---------------+------------+</span></span><br><span class="line">2 rows in <span class="hljs-keyword">set</span> (<span class="hljs-number">0.01</span> sec)</span><br></pre></td></tr></table></figure>
+
 <p>Ok! I found them! Easily solve! </p>
 
         </div>
@@ -504,7 +509,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

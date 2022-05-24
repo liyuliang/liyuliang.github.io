@@ -161,20 +161,32 @@
         </h1>
         <div class="content">
             <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">  Ubuntu 14.04.5 LTS</span><br><span class="line"></span><br><span class="line">$ docker -v</span><br><span class="line">  Docker version 1.6.2</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <p>Before using docker in ubuntu, open ports are usually be limited by iptable and it’s safe and reliable.<br>I’m also very confident to use this tool to configure the firewall.<br>Like Mysql,Redis,Elasticsearch, service machines are usually been deployed in internal network. So i have never consider about the problem that ports will exposed without authentication.</p>
 <p>One day after deploying a picture storage service by docker container.<br>I ban its port in iptable list on test server machine which can be visit in external network. </p>
 <p>It looks like this: </p>
 <h3 id="Running-redis-docker-container-as-service"><a href="#Running-redis-docker-container-as-service" class="headerlink" title="Running redis docker container as service"></a>Running redis docker container as service</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker run --name=redis-app  -d -p 6379:6379 redis:3.2.1</span><br></pre></td></tr></table></figure>
+
 <p>Docker will start a single redis container and binds its port to the host.<br>At this time, redis can be connected anywhere.</p>
 <h3 id="Try-to-ban-the-6379-port-by-iptable"><a href="#Try-to-ban-the-6379-port-by-iptable" class="headerlink" title="Try to ban the 6379 port by iptable"></a>Try to ban the 6379 port by iptable</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># Reject all request to the 6379 port </span><br><span class="line">$ sudo iptables -I INPUT -p tcp --dport 6379 -j DROP</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># Just allow local access</span><br><span class="line">$ sudo iptables -I INPUT -s 127.0.0.1 -p tcp --dport 6379 -j ACCEPT</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># Save the change</span><br><span class="line">$ sudo iptables-save</span><br></pre></td></tr></table></figure>
-<p>You will find that iptable doesn’t work for this port !!<br>Anyone can still connect to this redis !!<br>Let’s check the iptable.<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo iptables -L DOCKER</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line">ACCEPT     tcp  --  anywhere             172.17.0.2           tcp dpt:6379</span><br></pre></td></tr></table></figure></p>
-<h3 id="Go-ahead-How-to-fix-it"><a href="#Go-ahead-How-to-fix-it" class="headerlink" title="Go ahead, How to fix it"></a>Go ahead, How to fix it</h3><p>Cancel the docker to modify iptables permissions<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/default/docker</span><br></pre></td></tr></table></figure></p>
-<p>Add this option at the bottom<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DOCKER_OPTS=&quot;--iptables=false&quot;</span><br></pre></td></tr></table></figure></p>
-<p>Restart docker<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service docker restart</span><br></pre></td></tr></table></figure></p>
 
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># Just allow local access</span><br><span class="line">$ sudo iptables -I INPUT -s 127.0.0.1 -p tcp --dport 6379 -j ACCEPT</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># Save the change</span><br><span class="line">$ sudo iptables-save</span><br></pre></td></tr></table></figure>
+
+<p>You will find that iptable doesn’t work for this port !!<br>Anyone can still connect to this redis !!<br>Let’s check the iptable.</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo iptables -L DOCKER</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line">ACCEPT     tcp  --  anywhere             172.17.0.2           tcp dpt:6379</span><br></pre></td></tr></table></figure>
+
+<h3 id="Go-ahead-How-to-fix-it"><a href="#Go-ahead-How-to-fix-it" class="headerlink" title="Go ahead, How to fix it"></a>Go ahead, How to fix it</h3><p>Cancel the docker to modify iptables permissions</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/default/docker</span><br></pre></td></tr></table></figure>
+
+<p>Add this option at the bottom</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DOCKER_OPTS=&quot;--iptables=false&quot;</span><br></pre></td></tr></table></figure>
+
+<p>Restart docker</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service docker restart</span><br></pre></td></tr></table></figure>
         </div>
         
         <div class="level is-size-7 is-uppercase">
@@ -503,7 +515,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

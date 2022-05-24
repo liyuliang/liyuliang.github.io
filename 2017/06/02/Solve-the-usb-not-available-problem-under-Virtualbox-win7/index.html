@@ -161,12 +161,16 @@
         </h1>
         <div class="content">
             <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">  Ubuntu 14.04.5 LTS</span><br><span class="line"></span><br><span class="line">$ virtualbox --help</span><br><span class="line">  Oracle VM VirtualBox Manager 5.1.30_Ubuntu</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <h3 id="Install-Virtualbox-Extension-Pack"><a href="#Install-Virtualbox-Extension-Pack" class="headerlink" title="Install Virtualbox Extension Pack"></a>Install Virtualbox Extension Pack</h3><p>Base on your Virtualbox version to download <a href="http://www.oracle.com/technetwork/server-storage/virtualbox/downloads/index.html#extpack" target="_blank" rel="noopener">Oracle VM VirtualBox Extension Pack</a>. My ExtPack version is 5.1.0.</p>
 <p>After Download.Double Click the execute package “Oracle_VM_VirtualBox_Extension_Pack-5.1.0-xx.vbox-extpack” and Install.<br>Then restart the Virtualbox.</p>
 <h3 id="If-USB-still-can-not-be-identified"><a href="#If-USB-still-can-not-be-identified" class="headerlink" title="If USB still can not be identified."></a>If USB still can not be identified.</h3><h3 id="Add-User-Group"><a href="#Add-User-Group" class="headerlink" title="Add User Group"></a>Add User Group</h3><p>If USB still can not be identified.<br>Add usbfs user group. (It will have the group vboxusers and group vboxsf after Virtualbox installed)</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo groupadd usbfs</span><br></pre></td></tr></table></figure>
+
 <h3 id="Add-username-to-group"><a href="#Add-username-to-group" class="headerlink" title="Add username to group"></a>Add username to group</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo adduser liang vboxusers  </span><br><span class="line">$ sudo adduser liang usbfs</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>My computer username is ‘liang’.</li>
 </ul>
@@ -177,7 +181,10 @@
 <p>If you have upgraded VirtualBox recently, please make sure you have terminated all VMs and upgraded any extension packs. If this error persists, try re-installing VirtualBox. (VERR_PDM_DEVHLPR3_VERSION_MISMATCH).</p>
 <p>Result Code: NS_ERROR_FAILURE (0x80004005) Component: Console<br>Interface: IConsole {db7ab4ca-2a3f-4183-9243-c1208da92392}</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get --reinstall install virtualbox-ext-pack</span><br></pre></td></tr></table></figure>
-<p>It should looks like this:<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Successfully installed &quot;Oracle VM VirtualBox Extension Pack&quot;.</span><br></pre></td></tr></table></figure></p>
+
+<p>It should looks like this:</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Successfully installed &quot;Oracle VM VirtualBox Extension Pack&quot;.</span><br></pre></td></tr></table></figure>
+
 <p>Entry Windows and Install some drive soft to finish it. I’m using the <a href="http://www.360.cn/qudongdashi/" target="_blank" rel="noopener">360 drive</a></p>
 
         </div>
@@ -508,7 +515,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

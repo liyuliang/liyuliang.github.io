@@ -161,14 +161,21 @@
         </h1>
         <div class="content">
             <h3 id="My-computer-develop-environment"><a href="#My-computer-develop-environment" class="headerlink" title="My computer develop environment"></a>My computer develop environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">Ubuntu 14.04 LTS</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
-<p>Open the “nginx.conf” file (usually located : /etc/nginx folder) or the Nginx config file for a particular site, for which you wish to turn off nginx logs (usually located in : /etc/nginx/sites-available folder).</p>
-<p>Find the line :<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">error_log    /var/log/nginx/error.log;</span><br></pre></td></tr></table></figure></p>
+
+
+<p>Open the “nginx.conf” file (usually located : &#x2F;etc&#x2F;nginx folder) or the Nginx config file for a particular site, for which you wish to turn off nginx logs (usually located in : &#x2F;etc&#x2F;nginx&#x2F;sites-available folder).</p>
+<p>Find the line :</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">error_log    /var/log/nginx/error.log;</span><br></pre></td></tr></table></figure>
+
 <p>Some people simply change the line to the following :</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">error_log    off;</span><br></pre></td></tr></table></figure>
-<p>Please note that this will not stop the nginx logs from being created on the server.<br>This will just create the logs in : “/usr/share/nginx/off” file.</p>
+
+<p>Please note that this will not stop the nginx logs from being created on the server.<br>This will just create the logs in : “&#x2F;usr&#x2F;share&#x2F;nginx&#x2F;off” file.</p>
 <p>If you wish to turn off the Nginx error logs completely, you need to change the line to :</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">error_log   /dev/null   crit;</span><br></pre></td></tr></table></figure>
+
 <p>This will completely turn off the Nginx error logs on your server.</p>
 
         </div>
@@ -499,7 +506,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

@@ -161,11 +161,19 @@
         </h1>
         <div class="content">
             <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">  Ubuntu 14.04.5 LTS</span><br><span class="line"></span><br><span class="line">$ nginx -v</span><br><span class="line">  nginx version: nginx/1.4.6 (Ubuntu)</span><br><span class="line"></span><br><span class="line">$ apachectl -v</span><br><span class="line">  Server version: Apache/2.4.7 (Ubuntu)</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <p>If you have already tried another article from my <a href="/2017/05/18/Get-real-client-IP-from-Nginx-to-Apache/">blog</a> but still not work for you.<br>Please read this article patiently, maybe it can help you.</p>
-<p>Apache2.4 provides its own remoteip module to get client real ip. So you just need to join the configuration and enable this module.<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim /etc/apache2/mods-enabled/remoteip.load</span><br></pre></td></tr></table></figure></p>
-<p>The add this code at the end<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RemoteIPHeader X-Forwarded-For</span><br><span class="line">RemoteIPProxiesHeader X-Forwarded-By</span><br></pre></td></tr></table></figure></p>
-<p>Save the configuration and restart Apache.<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ a2enmod remoteip</span><br></pre></td></tr></table></figure></p>
+<p>Apache2.4 provides its own remoteip module to get client real ip. So you just need to join the configuration and enable this module.</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim /etc/apache2/mods-enabled/remoteip.load</span><br></pre></td></tr></table></figure>
+
+<p>The add this code at the end</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RemoteIPHeader X-Forwarded-For</span><br><span class="line">RemoteIPProxiesHeader X-Forwarded-By</span><br></pre></td></tr></table></figure>
+
+<p>Save the configuration and restart Apache.</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ a2enmod remoteip</span><br></pre></td></tr></table></figure>
+
 <p>Now I think the ip which you need is already been found in you website project!</p>
 
         </div>
@@ -496,7 +504,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

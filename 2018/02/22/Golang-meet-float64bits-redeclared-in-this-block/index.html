@@ -161,10 +161,16 @@
         </h1>
         <div class="content">
             <h3 id="My-computer-develop-environment"><a href="#My-computer-develop-environment" class="headerlink" title="My computer develop environment"></a>My computer develop environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">Ubuntu 14.04 LTS</span><br><span class="line"></span><br><span class="line">$ go version</span><br><span class="line">go version go1.8 linux/amd64</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
+
 <p>I have meet this error <code>usr/local/go/src/runtime/float.go:45: float64bits redeclared in this block</code><br>after update golang version from 1.8 to 1.9</p>
-<p>Don’t worry, delete the go directory and re-install golang, problem will be fixed.<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo rm -rf /usr/local/go</span><br></pre></td></tr></table></figure></p>
+<p>Don’t worry, delete the go directory and re-install golang, problem will be fixed.</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo rm -rf /usr/local/go</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ curl -s https://storage.googleapis.com/golang/go$&#123;GO_VERSION&#125;.linux-amd64.tar.gz | tar -v -C /usr/local -xz</span><br></pre></td></tr></table></figure>
+
 
         </div>
         
@@ -494,7 +500,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

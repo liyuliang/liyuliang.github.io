@@ -161,26 +161,34 @@
         </h1>
         <div class="content">
             <h3 id="My-computer-develop-environment"><a href="#My-computer-develop-environment" class="headerlink" title="My computer develop environment"></a>My computer develop environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ sw_vers </span><br><span class="line">ProductName:    Mac OS X</span><br><span class="line">ProductVersion: 10.12.6</span><br><span class="line">BuildVersion:   16G29</span><br><span class="line"></span><br><span class="line">$ go version</span><br><span class="line">go version go1.8.3 darwin/amd64</span><br><span class="line"></span><br><span class="line">$ glide -v</span><br><span class="line">glide version 0.12.3</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <h3 id="Use-glide-to-import-dependence-packages"><a href="#Use-glide-to-import-dependence-packages" class="headerlink" title="Use glide to import dependence packages"></a>Use glide to import dependence packages</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ glide get &quot;github.com/sirupsen/logrus&quot;</span><br></pre></td></tr></table></figure>
-<p>Because the package github.com/sirupsen/logrus has imported the golang office package golang.org/x/crypto,<br>which has been moved to <a href="github.com/golang/crypto">github</a> anymore </p>
+
+<p>Because the package github.com&#x2F;sirupsen&#x2F;logrus has imported the golang office package golang.org&#x2F;x&#x2F;crypto,<br>which has been moved to <a href="github.com/golang/crypto">github</a> anymore </p>
 <p>When updating the project ‘s dependence packages, it always notice that the crypto package cannot been found then interrupted update </p>
 <p>The old way is to download the package below the $GOPATH directory,<br>then running update to skip this package </p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p $GOPATH/src/golang.org/x/</span><br><span class="line">$ git clone https://github.com/golang/crypto.git $GOPATH/src/golang.org/x/crypto</span><br><span class="line">$ git clone https://github.com/golang/sys.git $GOPATH/src/golang.org/x/sys</span><br><span class="line"></span><br><span class="line">$ glide up</span><br></pre></td></tr></table></figure>
+
 <p>This method is quiet convenient, but each deployment of a server, the workload will increase, so there is a new way.</p>
 <ul>
-<li>Fork the project github.com/sirupsen/logrus to my own github, update the github repo address in my project</li>
+<li>Fork the project github.com&#x2F;sirupsen&#x2F;logrus to my own github, update the github repo address in my project</li>
 <li>Replace the github repo in project glide config file</li>
 <li>Update the dependency package glide up</li>
 </ul>
-<p>But in the process of updating ,package golang.org/x/crypto still be prompted to import in a new git warehouse </p>
+<p>But in the process of updating ,package golang.org&#x2F;x&#x2F;crypto still be prompted to import in a new git warehouse </p>
 <p>In order to exclude the influence of other third party packages, so I created a new project</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ cd $GOPATH/src/</span><br><span class="line">$ mkdir test;cd test</span><br><span class="line">$ glide init</span><br><span class="line">$ glide get https://github.com/liyuliang2013/logrus.git</span><br></pre></td></tr></table></figure>
+
 <p>After check the code in the new repository, I found the code does not been modify !!<br>But git clone this new warehouse, the code is indeed modified, why is this??</p>
 <p>Check glide’s explanation:<br><a href="https://github.com/Masterminds/glide/issues/330" target="_blank" rel="noopener">issue 330</a><br><a href="https://github.com/Masterminds/glide/issues/726" target="_blank" rel="noopener">issue 726</a> </p>
 <p>ok,we changed the glide configuration file</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import:</span><br><span class="line">- package: github.com/sirupsen/logrus</span><br></pre></td></tr></table></figure>
-<p>to<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">import:</span><br><span class="line">- package: github.com/sirupsen/logrus</span><br><span class="line">  repo: https://github.com/liyuliang2013/logrus.git</span><br><span class="line">  vcs: git</span><br><span class="line">  version: master</span><br></pre></td></tr></table></figure></p>
+
+<p>to</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">import:</span><br><span class="line">- package: github.com/sirupsen/logrus</span><br><span class="line">  repo: https://github.com/liyuliang2013/logrus.git</span><br><span class="line">  vcs: git</span><br><span class="line">  version: master</span><br></pre></td></tr></table></figure>
+
 <p>Then the glide will download the package basing on the repo actual address </p>
 
         </div>
@@ -511,7 +519,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

@@ -161,77 +161,101 @@
         </h1>
         <div class="content">
             <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">  Ubuntu 14.04.5 LTS</span><br><span class="line"></span><br><span class="line">$ nginx -v</span><br><span class="line">  nginx version: nginx/1.4.6 (Ubuntu)</span><br><span class="line">  </span><br><span class="line">$ apachectl -V</span><br><span class="line">  Server version: Apache/2.4.7 (Ubuntu)</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
+
 <table>
 <thead>
 <tr>
-<th style="text-align:left">Server</th>
-<th style="text-align:center">Keepalived</th>
-<th style="text-align:center">Virtual IP</th>
-<th style="text-align:center">Upstream</th>
-<th style="text-align:center">IP</th>
-<th style="text-align:center">Web Port</th>
+<th align="left">Server</th>
+<th align="center">Keepalived</th>
+<th align="center">Virtual IP</th>
+<th align="center">Upstream</th>
+<th align="center">IP</th>
+<th align="center">Web Port</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td style="text-align:left">Nginx 1</td>
-<td style="text-align:center">Master</td>
-<td style="text-align:center">192.168.33.150</td>
-<td style="text-align:center">WebSite 1、WebSite 2</td>
-<td style="text-align:center">192.168.33.1</td>
-<td style="text-align:center">9001</td>
+<tbody><tr>
+<td align="left">Nginx 1</td>
+<td align="center">Master</td>
+<td align="center">192.168.33.150</td>
+<td align="center">WebSite 1、WebSite 2</td>
+<td align="center">192.168.33.1</td>
+<td align="center">9001</td>
 </tr>
 <tr>
-<td style="text-align:left">Nginx 2</td>
-<td style="text-align:center">Backup</td>
-<td style="text-align:center">192.168.33.150</td>
-<td style="text-align:center">WebSite 1、WebSite 2</td>
-<td style="text-align:center">192.168.33.2</td>
-<td style="text-align:center">9002</td>
+<td align="left">Nginx 2</td>
+<td align="center">Backup</td>
+<td align="center">192.168.33.150</td>
+<td align="center">WebSite 1、WebSite 2</td>
+<td align="center">192.168.33.2</td>
+<td align="center">9002</td>
 </tr>
 <tr>
-<td style="text-align:left">WebSite 1</td>
-<td style="text-align:center">–</td>
-<td style="text-align:center">–</td>
-<td style="text-align:center">–</td>
-<td style="text-align:center">192.168.33.11</td>
-<td style="text-align:center">8011</td>
+<td align="left">WebSite 1</td>
+<td align="center">–</td>
+<td align="center">–</td>
+<td align="center">–</td>
+<td align="center">192.168.33.11</td>
+<td align="center">8011</td>
 </tr>
 <tr>
-<td style="text-align:left">WebSite 2</td>
-<td style="text-align:center">–</td>
-<td style="text-align:center">–</td>
-<td style="text-align:center">–</td>
-<td style="text-align:center">192.168.33.12</td>
-<td style="text-align:center">8011</td>
+<td align="left">WebSite 2</td>
+<td align="center">–</td>
+<td align="center">–</td>
+<td align="center">–</td>
+<td align="center">192.168.33.12</td>
+<td align="center">8011</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <h3 id="Install-Nginx"><a href="#Install-Nginx" class="headerlink" title="Install Nginx"></a>Install Nginx</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y nginx</span><br></pre></td></tr></table></figure>
+
 <h3 id="Nginx-configuration"><a href="#Nginx-configuration" class="headerlink" title="Nginx configuration"></a>Nginx configuration</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ cd /etc/nginx/sites-enabled/</span><br><span class="line">$ sudo rm -f default </span><br><span class="line">$ sudo vim site.conf</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">upstream apache &#123;</span><br><span class="line">    server 192.168.33.11:8011 weight=1;</span><br><span class="line">    server 192.168.33.12:8011 weight=1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">  server_name _</span><br><span class="line">  listen 80;</span><br><span class="line"></span><br><span class="line">  location / &#123;</span><br><span class="line">    proxy_pass http://apache;</span><br><span class="line">    proxy_set_header X-NGINX &quot;NGINX-1&quot;;     // Just add a header info to distinguish</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Restart nginx<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service nginx restart</span><br></pre></td></tr></table></figure></p>
+
+<p>Restart nginx</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service nginx restart</span><br></pre></td></tr></table></figure>
+
 <h3 id="Install-Keepalived"><a href="#Install-Keepalived" class="headerlink" title="Install Keepalived"></a>Install Keepalived</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y keepalived</span><br></pre></td></tr></table></figure>
+
 <h3 id="Config-Keepalived"><a href="#Config-Keepalived" class="headerlink" title="Config Keepalived"></a>Config Keepalived</h3><p>Nginx Master <code>192.168.33.1</code> :</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/keepalived/keepalived.conf</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">vrrp_script chk_nginx &#123;</span><br><span class="line">    script &quot;/etc/keepalived/check_nginx.sh&quot; //check nginx process script </span><br><span class="line">    interval 2</span><br><span class="line">    weight -20</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line">    notification_email &#123;</span><br><span class="line">      //something to notify by mail</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    state MASTER                           // Mark this one is the master server</span><br><span class="line">    interface eth0                         // Your NIC &apos;s name</span><br><span class="line">    virtual_router_id 51                   // Virtual router, whether master or backup keepalived, it must be the same</span><br><span class="line">    mcast_src_ip 192.168.33.1              // Master nginx machine &apos;s ip</span><br><span class="line">    priority 250                           // Master priority must higher than backup</span><br><span class="line">    advert_int 1</span><br><span class="line"></span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 123456                // Password for communication in keepalived</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    track_script &#123;</span><br><span class="line">        chk_nginx</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        192.168.33.150                  // Virtual public ip </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Check nginx process script<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/keepalived/check_nginx.sh</span><br></pre></td></tr></table></figure></p>
+
+<p>Check nginx process script</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/keepalived/check_nginx.sh</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash  </span><br><span class="line">A=`ps -C nginx --no-header |wc -l`</span><br><span class="line">if [ $A -eq 0 ];then</span><br><span class="line"> /etc/init.d/nginx start</span><br><span class="line"> sleep 3</span><br><span class="line"> if [ `ps -C nginx --no-header |wc -l`-eq 0 ];then</span><br><span class="line">  killall keepalived</span><br><span class="line"> fi</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
 <p>Nginx Slave <code>192.168.33.2</code> :</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/keepalived/keepalived.conf</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">vrrp_script chk_nginx &#123;</span><br><span class="line">    script &quot;/etc/keepalived/check_nginx.sh&quot; //check nginx process script </span><br><span class="line">    interval 2</span><br><span class="line">    weight -20</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line">    notification_email &#123;</span><br><span class="line">      //something to notify by mail</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    state BACKUP                           // Mark this one is the backup server</span><br><span class="line">    interface eth0                         // Your NIC &apos;s name</span><br><span class="line">    virtual_router_id 51                   // Virtual router, whether master or backup keepalived, it must be the same</span><br><span class="line">    mcast_src_ip 192.168.33.2              // Slace nginx machine &apos;s ip</span><br><span class="line">    priority 240                           // Master priority must higher than backup</span><br><span class="line">    advert_int 1</span><br><span class="line"></span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 123456                    // Password for communication in keepalived</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    track_script &#123;</span><br><span class="line">        chk_nginx</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        192.168.33.150                      // Virtual public ip </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Check nginx process script<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/keepalived/check_nginx.sh</span><br></pre></td></tr></table></figure></p>
+
+<p>Check nginx process script</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/keepalived/check_nginx.sh</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash  </span><br><span class="line">A=`ps -C nginx --no-header |wc -l`</span><br><span class="line">if [ $A -eq 0 ];then</span><br><span class="line"> /etc/init.d/nginx start</span><br><span class="line"> sleep 3</span><br><span class="line"> if [ `ps -C nginx --no-header |wc -l`-eq 0 ];then</span><br><span class="line">  killall keepalived</span><br><span class="line"> fi</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
 <h3 id="Start-Keepalived-And-Check-the-process"><a href="#Start-Keepalived-And-Check-the-process" class="headerlink" title="Start Keepalived And Check the process"></a>Start Keepalived And Check the process</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service keepalived start</span><br><span class="line">$ ps aux | grep keepalived</span><br><span class="line">$ ps -ef | grep nginx</span><br></pre></td></tr></table></figure>
-<h3 id="Check-Virtual-IP-192-168-33-150-Has-Been-Bound"><a href="#Check-Virtual-IP-192-168-33-150-Has-Been-Bound" class="headerlink" title="Check Virtual IP (192.168.33.150) Has Been Bound"></a>Check Virtual IP (192.168.33.150) Has Been Bound</h3><p><code>192.168.33.1</code><br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ ip add</span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default </span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 ::1/128 scope host </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000</span><br><span class="line">    link/ether 08:00:27:80:6e:f8 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet 192.168.33.150/32 scope global eth0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 fe80::a00:27ff:fe80:6ef8/64 scope link </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure></p>
+
+<h3 id="Check-Virtual-IP-192-168-33-150-Has-Been-Bound"><a href="#Check-Virtual-IP-192-168-33-150-Has-Been-Bound" class="headerlink" title="Check Virtual IP (192.168.33.150) Has Been Bound"></a>Check Virtual IP (192.168.33.150) Has Been Bound</h3><p><code>192.168.33.1</code></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ ip add</span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default </span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 ::1/128 scope host </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000</span><br><span class="line">    link/ether 08:00:27:80:6e:f8 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet 192.168.33.150/32 scope global eth0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 fe80::a00:27ff:fe80:6ef8/64 scope link </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure>
+
 <p>Look at <code>line 12</code>, the virtual ip is bound on this machine.</p>
 <p>Also try on backup server <code>192.168.33.2</code>.</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ ip add</span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default </span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 ::1/128 scope host </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000</span><br><span class="line">    link/ether 08:00:27:80:6e:f8 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 fe80::a00:27ff:fe80:6ef8/64 scope link </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure>
+
 <p>You can find that <code>the virtual IP is not bound to the backup server</code>.</p>
-<h3 id="Visit-The-Virtual-Public-IP"><a href="#Visit-The-Virtual-Public-IP" class="headerlink" title="Visit The Virtual Public IP"></a>Visit The Virtual Public IP</h3><p>Visit this link several times to check if there is any change<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ curl http://192.168.33.150</span><br></pre></td></tr></table></figure></p>
+<h3 id="Visit-The-Virtual-Public-IP"><a href="#Visit-The-Virtual-Public-IP" class="headerlink" title="Visit The Virtual Public IP"></a>Visit The Virtual Public IP</h3><p>Visit this link several times to check if there is any change</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ curl http://192.168.33.150</span><br></pre></td></tr></table></figure>
+
 <h3 id="Keepalived-Non-Preempt-Mode"><a href="#Keepalived-Non-Preempt-Mode" class="headerlink" title="Keepalived Non-Preempt Mode"></a>Keepalived Non-Preempt Mode</h3><p>Change Keepalived configuration</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vrrp_instance VI_1 &#123;  </span><br><span class="line">    state BACKUP        // All machines&apos; state change to &apos;BACKUP&apos;</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">    nopreempt           // Add non-preempt mode keyword</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>The master keepalived machine is decided by priority</p>
 <h3 id="The-Meaning-Of-Non-Preempt-Mode"><a href="#The-Meaning-Of-Non-Preempt-Mode" class="headerlink" title="The Meaning Of Non-Preempt Mode"></a>The Meaning Of Non-Preempt Mode</h3><p><code>MASTER</code> provides service, <code>BACKUP</code> waiting.<br><code>MASTER</code> crash, <code>BACKUP</code> provides service instead of <code>MASTER</code>.<br><code>MASTER</code> resume, <code>MASTER</code> waiting, <code>BACKUP</code> still provides service.<br><code>BACKUP</code> crash, <code>MASTER</code> rebinds virtual IP and provides service.</p>
 
@@ -563,7 +587,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

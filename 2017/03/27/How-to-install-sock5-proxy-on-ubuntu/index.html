@@ -161,14 +161,23 @@
         </h1>
         <div class="content">
             <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">Ubuntu 14.04.4 LTS</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <h3 id="Install-dante"><a href="#Install-dante" class="headerlink" title="Install dante"></a>Install dante</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ apt-get install dante-server</span><br></pre></td></tr></table></figure>
+
 <h3 id="If-System-is-64-bits"><a href="#If-System-is-64-bits" class="headerlink" title="If System is 64-bits"></a>If System is 64-bits</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd /lib/x86_64-linux-gnu/</span><br><span class="line">$ ln -s libc.so.6 libc.so</span><br></pre></td></tr></table></figure>
+
 <h3 id="Add-a-user-for-dante"><a href="#Add-a-user-for-dante" class="headerlink" title="Add a user for dante"></a>Add a user for dante</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ useradd proxyuser</span><br><span class="line">$ passwd proxyuser</span><br></pre></td></tr></table></figure>
+
 <h3 id="Create-log-directory"><a href="#Create-log-directory" class="headerlink" title="Create log directory"></a>Create log directory</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir /var/log/sockd</span><br></pre></td></tr></table></figure>
+
 <h3 id="Config-Dante"><a href="#Config-Dante" class="headerlink" title="Config Dante"></a>Config Dante</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim /etc/danted.conf</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">logoutput: /var/log/sockd/sockd.log</span><br><span class="line">internal: 112.74.79.4 port = 1080</span><br><span class="line">external: 112.74.79.4</span><br><span class="line">method: username none</span><br><span class="line">user.privileged: proxyuser</span><br><span class="line">user.notprivileged: nobody</span><br><span class="line">user.libwrap: nobody</span><br><span class="line">client pass &#123;</span><br><span class="line">    from: 0.0.0.0/0 to: 0.0.0.0/0</span><br><span class="line">    log: connect disconnect</span><br><span class="line">&#125;</span><br><span class="line">pass &#123;</span><br><span class="line">    from: 0.0.0.0/0 to: 0.0.0.0/0 port gt 1023</span><br><span class="line">    command: bind</span><br><span class="line">    log: connect disconnect</span><br><span class="line">&#125;</span><br><span class="line">pass &#123;</span><br><span class="line">    from: 0.0.0.0/0 to: 0.0.0.0/0</span><br><span class="line">    command: connect udpassociate</span><br><span class="line">    log: connect disconnect</span><br><span class="line">&#125;</span><br><span class="line">block &#123;</span><br><span class="line">    from: 0.0.0.0/0 to: 0.0.0.0/0</span><br><span class="line">    log: connect error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h3 id="Start-Dante"><a href="#Start-Dante" class="headerlink" title="Start Dante"></a>Start Dante</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ /etc/init.d/danted start</span><br></pre></td></tr></table></figure>
+
 <h3 id="Check-listen-success"><a href="#Check-listen-success" class="headerlink" title="Check listen success"></a>Check listen success</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ netstat -anp | grep 10080</span><br></pre></td></tr></table></figure>
         </div>
         
@@ -498,7 +507,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

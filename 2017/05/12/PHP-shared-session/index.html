@@ -9,7 +9,7 @@
 
 
     <meta name="description" content="Server environment12345$ cat /etc/issue  Ubuntu 14.04.5 LTS    $ php -v  PHP 5.6.32-1+ubuntu14.04.1+deb.sury.org+2 (cli)">
-<meta name="keywords" content="PHP,Ubuntu,nginx,domain,Redis,NFS">
+<meta name="keywords" content="Ubuntu,nginx,PHP,domain,Redis,NFS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PHP shared session">
 <meta property="og:url" content="https://liyuliang.cc/2017/05/12/PHP-shared-session/index.html">
@@ -161,29 +161,34 @@
         </h1>
         <div class="content">
             <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">  Ubuntu 14.04.5 LTS</span><br><span class="line">    </span><br><span class="line">$ php -v</span><br><span class="line">  PHP 5.6.32-1+ubuntu14.04.1+deb.sury.org+2 (cli)</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <p>Session in PHP has two problem in a web project.</p>
 <ul>
 <li>If cookie is disable in client browser</li>
-<li>How to synchronize session   </li>
+<li>How to synchronize session</li>
 </ul>
 <h3 id="Session-base-usage-in-PHP"><a href="#Session-base-usage-in-PHP" class="headerlink" title="Session base usage in PHP"></a>Session base usage in PHP</h3><figure class="highlight php hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">session_start();                        <span class="hljs-comment">//Start session</span></span><br><span class="line">$_SESSION[<span class="hljs-string">'name'</span>] = <span class="hljs-string">"liyuliang"</span>;</span><br></pre></td></tr></table></figure>
+
 <h3 id="Different-sub-domains-direct-to-the-same-server"><a href="#Different-sub-domains-direct-to-the-same-server" class="headerlink" title="Different sub-domains direct to the same server:"></a>Different sub-domains direct to the same server:</h3><p>There are three way to do this.</p>
 <ol>
 <li>Add this code at the beginning of the php page (before any output and before the method session_start() )</li>
 </ol>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ini_set(&apos;session.cookie_path&apos;, &apos;/&apos;);</span><br><span class="line">ini_set(&apos;session.cookie_domain&apos;, &apos;.mydomain.com&apos;);</span><br><span class="line">ini_set(&apos;session.cookie_lifetime&apos;, &apos;1800&apos;);</span><br></pre></td></tr></table></figure>
-<p>or<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">session_set_cookie_params(1800 , &apos;/&apos;, &apos;.mydomain.com&apos;);</span><br></pre></td></tr></table></figure></p>
+
+<p>or </p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">session_set_cookie_params(1800 , &apos;/&apos;, &apos;.mydomain.com&apos;);</span><br></pre></td></tr></table></figure>
+
 <ol start="2">
-<li>Point to domain forever in php configuration file php.ini:<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">session.cookie_path = /</span><br><span class="line">session.cookie_domain = .mydomain.com</span><br><span class="line">session.cookie_lifetime = 1800</span><br></pre></td></tr></table></figure>
-</li>
+<li>Point to domain forever in php configuration file php.ini:<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">session.cookie_path = /</span><br><span class="line">session.cookie_domain = .mydomain.com</span><br><span class="line">session.cookie_lifetime = 1800</span><br></pre></td></tr></table></figure></li>
 </ol>
 <p>The above methods have the same effect. </p>
 <h3 id="Different-sub-domains-direct-to-different-server"><a href="#Different-sub-domains-direct-to-different-server" class="headerlink" title="Different sub-domains direct to different server:"></a>Different sub-domains direct to different server:</h3><p>Use NFS to share session</p>
 <ul>
 <li>If session number is relatively large and all session files are under the same directory</li>
 <li>If NFS Server get malfunction</li>
-<li>If NFS network can not be connected </li>
+<li>If NFS network can not be connected</li>
 </ul>
 <p><code>It may causes a serious load problem</code> </p>
 <p>There will be three server machine</p>
@@ -195,8 +200,7 @@
 <th>IP</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>Server</td>
 <td>site1</td>
 <td>192.168.33.10</td>
@@ -211,36 +215,67 @@
 <td>site3</td>
 <td>192.168.33.12</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>Step 1. Change PHP session storage directory<br>Step 2. Install NFS on each server machine<br>Step 3. NFS clients mount to the main server then share the main server ‘s session directory</p>
-<h4 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h4><p>Use /tmp/php_sess as the session sharing directory</p>
+<h4 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h4><p>Use &#x2F;tmp&#x2F;php_sess as the session sharing directory</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir /tmp/php_sess</span><br></pre></td></tr></table></figure>
+
 <p>Direct php session save path to redis</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/php/5.6/apache2/php.ini</span><br><span class="line"></span><br><span class="line">session.save_handler = files</span><br><span class="line">session.save_path = &quot;/tmp/php_sess&quot;</span><br><span class="line">session.cookie_path = /</span><br><span class="line">session.cookie_domain = .mydomain.com</span><br><span class="line">session.cookie_lifetime = 1800</span><br></pre></td></tr></table></figure>
+
 <p>Restart apache</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service apache2 restart</span><br></pre></td></tr></table></figure>
-<p>Install NFS client<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y nfs-kernel-server</span><br></pre></td></tr></table></figure></p>
-<p>Limit NFS client connecting ip<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/exports </span><br><span class="line">/tmp/php_sess   192.168.33.11(rw,sync,no_root_squash,no_subtree_check)</span><br><span class="line">/tmp/php_sess   192.168.33.12(rw,sync,no_root_squash,no_subtree_check)</span><br></pre></td></tr></table></figure></p>
-<p>Restart NFS service<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service nfs-kernel-server restart</span><br></pre></td></tr></table></figure></p>
-<h4 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h4><p>Use /tmp/php_sess as the session sharing directory</p>
+
+<p>Install NFS client</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y nfs-kernel-server</span><br></pre></td></tr></table></figure>
+
+<p>Limit NFS client connecting ip </p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/exports </span><br><span class="line">/tmp/php_sess   192.168.33.11(rw,sync,no_root_squash,no_subtree_check)</span><br><span class="line">/tmp/php_sess   192.168.33.12(rw,sync,no_root_squash,no_subtree_check)</span><br></pre></td></tr></table></figure>
+
+<p>Restart NFS service</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service nfs-kernel-server restart</span><br></pre></td></tr></table></figure>
+
+<h4 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h4><p>Use &#x2F;tmp&#x2F;php_sess as the session sharing directory</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir /tmp/php_sess</span><br></pre></td></tr></table></figure>
-<p>Install NFS client<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt install -y nfs-common</span><br></pre></td></tr></table></figure></p>
-<p>Show NFS server info<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo showmount -e 192.168.33.10</span><br><span class="line">Export list for 192.168.33.10:</span><br><span class="line">/tmp/php_sess 192.168.33.12,192.168.33.11</span><br></pre></td></tr></table></figure></p>
-<p>Mount the directory<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo mount 192.168.33.10:/tmp/php_sess /tmp/php_sess</span><br></pre></td></tr></table></figure></p>
-<p>Check NFS mount result<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ls -lh /tmp/php_sess/</span><br></pre></td></tr></table></figure></p>
+
+<p>Install NFS client</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt install -y nfs-common</span><br></pre></td></tr></table></figure>
+
+<p>Show NFS server info</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo showmount -e 192.168.33.10</span><br><span class="line">Export list for 192.168.33.10:</span><br><span class="line">/tmp/php_sess 192.168.33.12,192.168.33.11</span><br></pre></td></tr></table></figure>
+
+<p>Mount the directory</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo mount 192.168.33.10:/tmp/php_sess /tmp/php_sess</span><br></pre></td></tr></table></figure>
+
+<p>Check NFS mount result</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ls -lh /tmp/php_sess/</span><br></pre></td></tr></table></figure>
+
 <p>Direct php session save path to redis</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/php/5.6/apache2/php.ini</span><br><span class="line"></span><br><span class="line">session.save_handler = files</span><br><span class="line">session.save_path = &quot;/tmp/php_sess&quot;</span><br><span class="line">session.cookie_path = /</span><br><span class="line">session.cookie_domain = .mydomain.com</span><br><span class="line">session.cookie_lifetime = 1800</span><br></pre></td></tr></table></figure>
-<p>Restart apache<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service apache2 restart</span><br></pre></td></tr></table></figure></p>
-<p>Mount NFS share directory automatically as machine boot<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/fstab</span><br><span class="line">192.168.33.10:/tmp/php_sess    /tmp/php_sess   nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0</span><br></pre></td></tr></table></figure></p>
+
+<p>Restart apache</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service apache2 restart</span><br></pre></td></tr></table></figure>
+
+<p>Mount NFS share directory automatically as machine boot  </p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/fstab</span><br><span class="line">192.168.33.10:/tmp/php_sess    /tmp/php_sess   nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0</span><br></pre></td></tr></table></figure>
+
 <h3 id="Different-domains-direct-to-different-server"><a href="#Different-domains-direct-to-different-server" class="headerlink" title="Different domains direct to different server:"></a>Different domains direct to different server:</h3><p>Install redis</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y redis-server</span><br></pre></td></tr></table></figure>
-<p>Bind redis ip<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/redis/redis.conf </span><br><span class="line">bind 192.168.33.10</span><br></pre></td></tr></table></figure></p>
-<p>Restart redis<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service redis-server restart</span><br></pre></td></tr></table></figure></p>
-<p>Install php-redis extension<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y php5.6-redis</span><br></pre></td></tr></table></figure></p>
-<p>Direct the session save path to redis in php<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/php/5.6/apache2/php.ini</span><br><span class="line">session.save_handler = Redis</span><br><span class="line">session.save_path = &quot;tcp://192.168.33.10:6379&quot;</span><br></pre></td></tr></table></figure></p>
-<p>Restart apache<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service apache2 restart</span><br></pre></td></tr></table></figure></p>
 
+<p>Bind redis ip</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/redis/redis.conf </span><br><span class="line">bind 192.168.33.10</span><br></pre></td></tr></table></figure>
+
+<p>Restart redis </p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service redis-server restart</span><br></pre></td></tr></table></figure>
+
+<p>Install php-redis extension </p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y php5.6-redis</span><br></pre></td></tr></table></figure>
+
+<p>Direct the session save path to redis in php  </p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/php/5.6/apache2/php.ini</span><br><span class="line">session.save_handler = Redis</span><br><span class="line">session.save_path = &quot;tcp://192.168.33.10:6379&quot;</span><br></pre></td></tr></table></figure>
+
+<p>Restart apache </p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service apache2 restart</span><br></pre></td></tr></table></figure>
         </div>
         
         <div class="level is-size-7 is-uppercase">
@@ -569,7 +604,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

@@ -162,10 +162,15 @@
         <div class="content">
             <p>This is an article about how to solve the error i meet in using MySQL</p>
 <a id="more"></a>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ERROR 1064 (42000) at line 22: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;json DEFAULT NULL,</span><br><span class="line">  `avatar` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NU&apos; at line 9</span><br></pre></td></tr></table></figure>
+
 <p>About this error, you can <a href="/2017/08/27/Mysql-data-optimization/#db-character" target="_blank">change your database character</a></p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show processlist;</span><br><span class="line">+----+----------------------+------------------+------+---------+------+----------+------------------+</span><br><span class="line">| Id | User                 | Host             | db   | Command | Time | State    | Info             |</span><br><span class="line">+----+----------------------+------------------+------+---------+------+----------+------------------+</span><br><span class="line">|  4 | root                 | 172.17.0.1:55022 | NULL | Query   |    0 | starting | show processlist |</span><br><span class="line">| 15 | unauthenticated user | 172.17.0.1:55324 | NULL | Connect |   16 | login    | NULL             |</span><br><span class="line">| 16 | unauthenticated user | 172.17.0.1:55342 | NULL | Connect |    6 | login    | NULL             |</span><br><span class="line">| 17 | unauthenticated user | 172.17.0.1:55340 | NULL | Connect |    6 | login    | NULL             |</span><br><span class="line">+----+----------------------+------------------+------+---------+------+----------+------------------+</span><br><span class="line">4 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
-<p>I have run a mysql docker container for a symfony website.<br>But all of the pages open are very slow, even if loading a blank page.<br>So i check the blank page speed before mysql start and after mysql stop.<br>I found that every time there are these database connection during the page loading.<br>About this error ,you can add following code to solve it.<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">skip-name-resolve</span><br></pre></td></tr></table></figure></p>
+
+<p>I have run a mysql docker container for a symfony website.<br>But all of the pages open are very slow, even if loading a blank page.<br>So i check the blank page speed before mysql start and after mysql stop.<br>I found that every time there are these database connection during the page loading.<br>About this error ,you can add following code to solve it.</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">skip-name-resolve</span><br></pre></td></tr></table></figure>
+
 <p>This prevents MySQL trying to resolve the host name for each thread, bypassing the name server problem.</p>
 
         </div>
@@ -496,7 +501,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

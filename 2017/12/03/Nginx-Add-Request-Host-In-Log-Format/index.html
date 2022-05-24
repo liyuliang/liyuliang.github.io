@@ -161,9 +161,12 @@
         </h1>
         <div class="content">
             <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">Ubuntu 16.04.3 LTS</span><br><span class="line"></span><br><span class="line">$ nginx -v</span><br><span class="line">nginx version: nginx/1.10.3 (Ubuntu)</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># cat nginx.conf </span><br><span class="line"></span><br><span class="line">user www-data;</span><br><span class="line">worker_processes auto;</span><br><span class="line">...</span><br><span class="line">http &#123;</span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">	##</span><br><span class="line">	# Logging Settings</span><br><span class="line">	##</span><br><span class="line"></span><br><span class="line">	log_format main &apos;$host - $remote_addr - [$time_local] &quot;$request&quot; &apos;</span><br><span class="line">                &apos;$status $upstream_response_time $request_time &quot;$http_referer&quot;&apos;</span><br><span class="line">                &apos;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot; $body_bytes_sent &apos;;</span><br><span class="line">	access_log /var/log/nginx/access.log main;</span><br></pre></td></tr></table></figure>
-<p>It only take effect that <code>main</code> in <code>access_log /var/log/nginx/access.log main;</code> match the log format name.</p>
+
+<p>It only take effect that <code>main </code> in <code>access_log /var/log/nginx/access.log main;</code> match the log format name.</p>
 
         </div>
         
@@ -493,7 +496,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

@@ -161,16 +161,24 @@
         </h1>
         <div class="content">
             <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">  Ubuntu 16.04.2 LTS</span><br><span class="line">$ logrotate --version</span><br><span class="line">  logrotate 3.8.7</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
+
 <p>Logrotate is the default Linux system installation tool</p>
-<h3 id="Create-logrotate-config-file"><a href="#Create-logrotate-config-file" class="headerlink" title="Create logrotate config file"></a>Create logrotate config file</h3><p>Create file /etc/logrotate.d/3306_error.conf</p>
+<h3 id="Create-logrotate-config-file"><a href="#Create-logrotate-config-file" class="headerlink" title="Create logrotate config file"></a>Create logrotate config file</h3><p>Create file &#x2F;etc&#x2F;logrotate.d&#x2F;3306_error.conf</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim /etc/logrotate.d/3306_error</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/var/log/mysql/error.log &#123;  # log absolute path </span><br><span class="line">    monthly                 # cut once a month</span><br><span class="line">    rotate 13               # save 13 times then rotate, the thirteenth will cover the first file</span><br><span class="line">    dateext                 # log file named as &quot;origin file name + 20170821&quot;</span><br><span class="line">    compress                # using gzip to compress  </span><br><span class="line">    delaycompress           # the last file without compress (easy to analyze)</span><br><span class="line">    missingok               # during log rotation, any errors will be ignored,such as &quot;File no found&quot;  </span><br><span class="line">    notifempty              # it will not be split if no new log after last split</span><br><span class="line">    </span><br><span class="line">    postrotate              # command will be executed between label &apos;postrotate&apos; and &apos;endscript&apos;  </span><br><span class="line">    mysql -h127.0.0.1 -uroot -puman73 --login-path=3306 -e &apos;flush error logs;&apos;      # mysql flush the error logs</span><br><span class="line">    endscript</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Create file /etc/logrotate.d/3306_slow</p>
+
+<p>Create file &#x2F;etc&#x2F;logrotate.d&#x2F;3306_slow</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim /etc/logrotate.d/3306_slow</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/var/log/mysql/slow-queries.log &#123;     # log absolute path</span><br><span class="line">    daily                       # cut once a month</span><br><span class="line">    rotate 13                   # save 13 times then rotate, the thirteenth will cover the first file</span><br><span class="line">    dateext                     # log file named as &quot;origin file name + 20170821&quot;    </span><br><span class="line">    compress                    # using gzip to compress</span><br><span class="line">    delaycompress               # the last file without compress (easy to analyze)</span><br><span class="line">    missingok                   # during log rotation, any errors will be ignored,such as &quot;File no found&quot;</span><br><span class="line">    notifempty                  # it will not be split if no new log after last split</span><br><span class="line">    </span><br><span class="line">    postrotate                  # command will be executed between label &apos;postrotate&apos; and &apos;endscript&apos;</span><br><span class="line">    mysql -h127.0.0.1 -uroot -puman73 --login-path=3306 -e &apos;flush slow logs;&apos;</span><br><span class="line">    endscript</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Manual-cutting-the-log"><a href="#Manual-cutting-the-log" class="headerlink" title="Manual cutting the log"></a>Manual cutting the log</h3><p>logrotate -f /etc/logrotate.d/3306_error</p>
+
+<h3 id="Manual-cutting-the-log"><a href="#Manual-cutting-the-log" class="headerlink" title="Manual cutting the log"></a>Manual cutting the log</h3><p>logrotate -f &#x2F;etc&#x2F;logrotate.d&#x2F;3306_error</p>
 <h3 id="Check-result"><a href="#Check-result" class="headerlink" title="Check result"></a>Check result</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ ls -lh /var/log/mysql/error.log*</span><br><span class="line">  -rw-r----- 1 mysql adm    0 Aug 21 21:06 /var/log/mysql/error.log</span><br><span class="line">  -rw-r----- 1 mysql adm 107K Aug 21 21:05 /var/log/mysql/error.log-20171227</span><br></pre></td></tr></table></figure>
+
 
         </div>
         
@@ -500,7 +508,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

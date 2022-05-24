@@ -9,7 +9,7 @@
 
 
     <meta name="description" content="Server environment12345$ cat /etc/issueUbuntu 16.04.1 LTS$ php -vPHP 7.0.30-0ubuntu0.16.04.1 (cli) ( NTS )">
-<meta name="keywords" content="PHP,Ubuntu,composer">
+<meta name="keywords" content="Ubuntu,PHP,composer">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Composer Memory Limit">
 <meta property="og:url" content="https://liyuliang.cc/2017/11/07/Composer-Memory-Limit/index.html">
@@ -161,13 +161,21 @@
         </h1>
         <div class="content">
             <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">Ubuntu 16.04.1 LTS</span><br><span class="line"></span><br><span class="line">$ php -v</span><br><span class="line">PHP 7.0.30-0ubuntu0.16.04.1 (cli) ( NTS )</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
-<p>Maybe you have been meet this problem<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">Reading /home/ubuntu/.cache/....json from cache</span><br><span class="line">Reading /home/ubuntu/.cache/....json from cache</span><br><span class="line">Reading /home/ubuntu/.cache/....json from cache</span><br><span class="line">Killed</span><br></pre></td></tr></table></figure></p>
-<p>Or<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">mmap() failed: [12] Cannot allocate memory</span><br><span class="line">PHP Fatal error:  Out of memory (allocated 762322944) (tried to allocate 20480 bytes) in phar:///usr/local/bin/composer/src/Composer/DependencyResolver/GenericRule.php on line 36</span><br><span class="line">Fatal error: Out of memory (allocated 762322944) (tried to allocate 20480 bytes) in phar:///usr/local/bin/composer/src/Composer/DependencyResolver/GenericRule.php on line 36</span><br></pre></td></tr></table></figure></p>
+
+<p>Maybe you have been meet this problem</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">Reading /home/ubuntu/.cache/....json from cache</span><br><span class="line">Reading /home/ubuntu/.cache/....json from cache</span><br><span class="line">Reading /home/ubuntu/.cache/....json from cache</span><br><span class="line">Killed</span><br></pre></td></tr></table></figure>
+
+<p>Or </p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">mmap() failed: [12] Cannot allocate memory</span><br><span class="line">PHP Fatal error:  Out of memory (allocated 762322944) (tried to allocate 20480 bytes) in phar:///usr/local/bin/composer/src/Composer/DependencyResolver/GenericRule.php on line 36</span><br><span class="line">Fatal error: Out of memory (allocated 762322944) (tried to allocate 20480 bytes) in phar:///usr/local/bin/composer/src/Composer/DependencyResolver/GenericRule.php on line 36</span><br></pre></td></tr></table></figure>
+
 <p>These problems are all due to the need of memory during composer running.</p>
 <p>Here are two solution.  </p>
 <h3 id="Limit-PHP-Memory"><a href="#Limit-PHP-Memory" class="headerlink" title="Limit PHP Memory"></a>Limit PHP Memory</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim /etc/php/7.0/cli/php.ini</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">memory_limit = 1024M</span><br></pre></td></tr></table></figure>
+
 <p><code>memory_limit</code> is not limited default in PHP.</p>
 <h3 id="Increase-Virtual-Memory"><a href="#Increase-Virtual-Memory" class="headerlink" title="Increase Virtual Memory"></a>Increase Virtual Memory</h3><p>You can see my another <a href="/2017/09/18/How-to-Add-Virtual-Memory-In-Linux/">blog</a><br>It will show you how to increase the virtual memory in Ubuntu</p>
 
@@ -499,7 +507,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

@@ -161,7 +161,9 @@
         </h1>
         <div class="content">
             <h3 id="My-computer-develop-environment"><a href="#My-computer-develop-environment" class="headerlink" title="My computer develop environment"></a>My computer develop environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ php -v</span><br><span class="line">PHP 7.0.26</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <h3 id="Difference-between-“include”-and-“require”"><a href="#Difference-between-“include”-and-“require”" class="headerlink" title="Difference between “include” and “require”"></a>Difference between “include” and “require”</h3><p>Different ways to deal with failure:</p>
 <p>require is identical to include except upon failure it will also produce a fatal E_COMPILE_ERROR level error. In other words,<br>it will halt the script whereas include only emits a warning (E_WARNING) which allows the script to continue.</p>
 <p>Require:</p>
@@ -170,7 +172,9 @@
 <li>File is just processed only once which is be included, because the file ‘s content will be replaced into the script.</li>
 <li><del>Conditional include function</del></li>
 </ol>
-<p>Somebody think the ‘a.php’ will be include whether $some is true or not.<br><figure class="highlight php hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">if</span> ($come) &#123; </span><br><span class="line">    <span class="hljs-keyword">require</span> <span class="hljs-string">'a.php'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Somebody think the ‘a.php’ will be include whether $some is true or not.  </p>
+<figure class="highlight php hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">if</span> ($come) &#123; </span><br><span class="line">    <span class="hljs-keyword">require</span> <span class="hljs-string">'a.php'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><code>But i have try this is not work</code></p>
 <p>Include:</p>
 <ol>
@@ -178,7 +182,7 @@
 <li>File will be read and processed each time when file is been included.  </li>
 <li><del>Unconditional include function</del></li>
 </ol>
-<h3 id="Difference-between-“include-require”-and-“include-once-require-once”"><a href="#Difference-between-“include-require”-and-“include-once-require-once”" class="headerlink" title="Difference between “include / require” and “include_once / require_once”"></a>Difference between “include / require” and “include_once / require_once”</h3><p>“_once” suffix means that file will not be loaded again if it is loaded</p>
+<h3 id="Difference-between-“include-x2F-require”-and-“include-once-x2F-require-once”"><a href="#Difference-between-“include-x2F-require”-and-“include-once-x2F-require-once”" class="headerlink" title="Difference between “include &#x2F; require” and “include_once &#x2F; require_once”"></a>Difference between “include &#x2F; require” and “include_once &#x2F; require_once”</h3><p>“_once” suffix means that file will not be loaded again if it is loaded</p>
 
         </div>
         
@@ -508,7 +512,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

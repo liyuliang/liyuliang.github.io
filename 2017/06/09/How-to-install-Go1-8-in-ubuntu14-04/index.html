@@ -161,11 +161,17 @@
         </h1>
         <div class="content">
             <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">  Ubuntu 14.04.5 LTS</span><br><span class="line"></span><br><span class="line"># go version</span><br><span class="line">  go version go1.8.4 linux/amd64</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <h3 id="Download-Install-package"><a href="#Download-Install-package" class="headerlink" title="Download Install package"></a>Download Install package</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ wget https://storage.googleapis.com/golang/go1.8.4.linux-amd64.tar.gz</span><br><span class="line">$ tar -zxvf go1.8.4.linux-amd64.tar.gz</span><br><span class="line">$ sudo mv go /usr/local</span><br></pre></td></tr></table></figure>
+
 <h3 id="Create-the-GOPATH-directory"><a href="#Create-the-GOPATH-directory" class="headerlink" title="Create the GOPATH directory"></a>Create the GOPATH directory</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p /home/liang/code/golang</span><br></pre></td></tr></table></figure>
-<h3 id="Add-this-code-in-file-bash-profile"><a href="#Add-this-code-in-file-bash-profile" class="headerlink" title="Add this code in file:  ~/.bash_profile"></a>Add this code in file:  ~/.bash_profile</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim ~/.bash_profile</span><br></pre></td></tr></table></figure>
+
+<h3 id="Add-this-code-in-file-x2F-bash-profile"><a href="#Add-this-code-in-file-x2F-bash-profile" class="headerlink" title="Add this code in file:  ~&#x2F;.bash_profile"></a>Add this code in file:  ~&#x2F;.bash_profile</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim ~/.bash_profile</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">export GOROOT=/usr/local/go </span><br><span class="line">export GOPATH=$HOME/code/golang </span><br><span class="line">export PATH=$GOPATH/bin:$GOROOT/bin:$PATH</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ source ~/.bash_profile</span><br></pre></td></tr></table></figure>
         </div>
         
@@ -495,7 +501,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

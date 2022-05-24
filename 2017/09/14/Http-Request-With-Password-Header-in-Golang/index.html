@@ -161,8 +161,12 @@
         </h1>
         <div class="content">
             <h3 id="My-computer-develop-environment"><a href="#My-computer-develop-environment" class="headerlink" title="My computer develop environment"></a>My computer develop environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ sw_vers </span><br><span class="line">ProductName:    Mac OS X</span><br><span class="line">ProductVersion: 10.12.6</span><br><span class="line">BuildVersion:   16G29</span><br><span class="line"></span><br><span class="line">$ go version</span><br><span class="line">go version go1.8.3 darwin/amd64</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
+
 <h3 id="Request-with-office-golang-http-package"><a href="#Request-with-office-golang-http-package" class="headerlink" title="Request with office golang http package"></a>Request with office golang http package</h3><figure class="highlight golang hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> (</span><br><span class="line">	<span class="hljs-string">"net/http"</span></span><br><span class="line">	<span class="hljs-string">"log"</span></span><br><span class="line">	<span class="hljs-string">"io/ioutil"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;</span><br><span class="line">	</span><br><span class="line">	url := <span class="hljs-string">"http://localhost:9112"</span></span><br><span class="line">	username := <span class="hljs-string">"liyuliang"</span></span><br><span class="line">	password := <span class="hljs-string">"password"</span></span><br><span class="line">	request, err := http.NewRequest(<span class="hljs-string">"GET"</span>, url, <span class="hljs-literal">nil</span>)</span><br><span class="line">	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;</span><br><span class="line">		log.Println(<span class="hljs-string">"error"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-keyword">if</span> username != <span class="hljs-string">""</span> || password != <span class="hljs-string">""</span> &#123;</span><br><span class="line">		request.SetBasicAuth(username, password)</span><br><span class="line">	&#125;</span><br><span class="line">	cli := &amp;http.Client&#123;</span><br><span class="line">	&#125;</span><br><span class="line">	response, _ := cli.Do(request)</span><br><span class="line">	body, err := ioutil.ReadAll(response.Body)</span><br><span class="line">	<span class="hljs-built_in">println</span>(<span class="hljs-keyword">string</span>(body))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h3 id="HTTP-Basic-Authentication"><a href="#HTTP-Basic-Authentication" class="headerlink" title="HTTP Basic Authentication"></a>HTTP Basic Authentication</h3><p>When http request was sent that this request could use http basic auth to access the permission validation by providing a username and password<br>It’s the easiest way to verify permissions because it does not depend on any external factors such as cookies ,sessions<br>It must add authorization header each request but it does not encrypt username or password unfortunately</p>
 <p>Formatted as the following structure:</p>
 <ul>
@@ -170,7 +174,7 @@
 <li>base64 encoded it </li>
 <li>then be placed after the keyword “Basic”</li>
 </ul>
-<p>Sometime the header looks like “Basic ZGVtbzpwQDU1dzByZA==” </p>
+<p>Sometime the header looks like “Basic ZGVtbzpwQDU1dzByZA&#x3D;&#x3D;” </p>
 <ul>
 <li>Notice that there is a space behind the keyword “Basic”</li>
 </ul>
@@ -503,7 +507,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

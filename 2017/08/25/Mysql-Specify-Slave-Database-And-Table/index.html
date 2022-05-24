@@ -161,12 +161,15 @@
         </h1>
         <div class="content">
             <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">Ubuntu 16.04 LTS</span><br><span class="line"></span><br><span class="line">$ mysqld --version</span><br><span class="line">mysqld  Ver 5.7.22-0ubuntu0.16.04.1 for Linux on x86_64 ((Ubuntu))</span><br></pre></td></tr></table></figure>
+
 <p>Before this tutorial, your database whatever master or slave , should be connected and synchronize successful.<br>About the slave config, you can find on this <a href="/2017/08/20/Mysql-Slave-Config-With-Docker/">blog</a>.</p>
 <h3 id="Specify-the-master-database-which-should-be-synced"><a href="#Specify-the-master-database-which-should-be-synced" class="headerlink" title="Specify the master database which should be synced"></a>Specify the master database which should be synced</h3><figure class="highlight yaml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-string">[mysqld]</span></span><br><span class="line"><span class="hljs-string">...</span></span><br><span class="line"><span class="hljs-comment"># The binlog about this database named 'website' will be sent to all slave mysql</span></span><br><span class="line"><span class="hljs-comment"># If you do not specify this option, all database's binlog will be sent out</span></span><br><span class="line"><span class="hljs-comment"># Using ',' as delimiters to specify multi database</span></span><br><span class="line"><span class="hljs-string">binlog-do-db</span> <span class="hljs-string">=</span> <span class="hljs-string">website</span></span><br><span class="line"><span class="hljs-comment"># Ignore be synced</span></span><br><span class="line"><span class="hljs-string">binlog-ignore-db</span> <span class="hljs-string">=</span> <span class="hljs-string">performance_schema,</span> <span class="hljs-string">information_schema</span></span><br></pre></td></tr></table></figure>
+
 <h3 id="Configuration-in-slave-mysql"><a href="#Configuration-in-slave-mysql" class="headerlink" title="Configuration in slave mysql"></a>Configuration in slave mysql</h3><ul>
 <li>Only Sync Database In Slave</li>
 </ul>
 <figure class="highlight yaml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-string">[mysqld]</span></span><br><span class="line"><span class="hljs-string">...</span></span><br><span class="line"><span class="hljs-comment"># Synchronize the specified database</span></span><br><span class="line"><span class="hljs-string">binlog-do-db</span> <span class="hljs-string">=</span> <span class="hljs-string">website,</span> <span class="hljs-string">app</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>Sync Tables In Slave<figure class="highlight yaml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-string">[mysqld]</span></span><br><span class="line"><span class="hljs-string">...</span></span><br><span class="line"><span class="hljs-string">replicate-do-table</span> <span class="hljs-string">=</span> <span class="hljs-string">website.user</span></span><br><span class="line"><span class="hljs-string">replicate-do-table</span> <span class="hljs-string">=</span> <span class="hljs-string">website.article</span></span><br><span class="line"><span class="hljs-string">replicate-do-table</span> <span class="hljs-string">=</span> <span class="hljs-string">app.message</span></span><br></pre></td></tr></table></figure></li>
 </ul>
@@ -499,7 +502,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

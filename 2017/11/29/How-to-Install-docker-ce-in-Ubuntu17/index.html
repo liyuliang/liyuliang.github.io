@@ -161,12 +161,20 @@
         </h1>
         <div class="content">
             <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">Ubuntu 17.10</span><br><span class="line"></span><br><span class="line">$ docker -v</span><br><span class="line">Docker version 17.09.0-ce, build afdb6d4</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <h3 id="Install-using-the-repository"><a href="#Install-using-the-repository" class="headerlink" title="Install using the repository"></a>Install using the repository</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common</span><br></pre></td></tr></table></figure>
+
 <h3 id="Add-Docker’s-official-GPG-key"><a href="#Add-Docker’s-official-GPG-key" class="headerlink" title="Add Docker’s official GPG key"></a>Add Docker’s official GPG key</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -</span><br><span class="line">$ sudo apt-key fingerprint 0EBFCD88</span><br><span class="line">$ sudo add-apt-repository &quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu zesty stable&quot;</span><br></pre></td></tr></table></figure>
+
 <h3 id="Install-Docker-ce"><a href="#Install-Docker-ce" class="headerlink" title="Install Docker-ce"></a>Install Docker-ce</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install -y docker-ce</span><br></pre></td></tr></table></figure>
+
 <h3 id="Update-registry-source"><a href="#Update-registry-source" class="headerlink" title="Update registry source"></a>Update registry source</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/systemd/system/multi-user.target.wants/docker.service</span><br></pre></td></tr></table></figure>
-<p>Specified the registry source<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#ExecStart=/usr/bin/dockerd -H fd://</span><br><span class="line">ExecStart=/usr/bin/dockerd -H fd:// --registry-mirror=https://registry.docker-cn.com</span><br></pre></td></tr></table></figure></p>
+
+<p>Specified the registry source </p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#ExecStart=/usr/bin/dockerd -H fd://</span><br><span class="line">ExecStart=/usr/bin/dockerd -H fd:// --registry-mirror=https://registry.docker-cn.com</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service docker restart</span><br><span class="line">$ sudo systemctl daemon-reload</span><br></pre></td></tr></table></figure>
         </div>
         
@@ -496,7 +504,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

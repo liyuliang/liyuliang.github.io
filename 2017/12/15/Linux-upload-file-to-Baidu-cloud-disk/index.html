@@ -161,18 +161,29 @@
         </h1>
         <div class="content">
             <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">  Ubuntu 16.04.2 LTS</span><br><span class="line"></span><br><span class="line">$ pip -V</span><br><span class="line">  pip 9.0.1 from /usr/local/lib/python2.7/dist-packages (python 2.7)</span><br><span class="line">  </span><br><span class="line">$ php -v</span><br><span class="line">  PHP 7.0.22-0ubuntu0.16.04.1 (cli) ( NTS )</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
+
 <h3 id="Install-bypy"><a href="#Install-bypy" class="headerlink" title="Install bypy"></a>Install bypy</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pip install requests bypy</span><br></pre></td></tr></table></figure>
+
 <h3 id="Authorized-Login"><a href="#Authorized-Login" class="headerlink" title="Authorized Login"></a>Authorized Login</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ bypy info</span><br><span class="line">Please visit:</span><br><span class="line">https://openapi.baidu.com/oauth/2.0/authorize?scope=basic+netdisk&amp;redirect_uri=oob&amp;response_type=code&amp;client_id=q8WE4EpCsau1oS0MplgMKNBn</span><br><span class="line">And authorize this app</span><br><span class="line">Paste the Authorization Code here within 10 minutes.</span><br><span class="line">Press [Enter] when you are done</span><br></pre></td></tr></table></figure>
-<p>Visit the url then copy the code in terminal and entry<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bc773b9b3884019d284b59c21fccf449</span><br></pre></td></tr></table></figure></p>
+
+<p>Visit the url then copy the code in terminal and entry</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bc773b9b3884019d284b59c21fccf449</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Authorizing, please be patient, it may take upto None seconds...</span><br><span class="line">Authorizing/refreshing with the OpenShift server ...</span><br><span class="line">OpenShift server failed, authorizing/refreshing with the Heroku server ...</span><br><span class="line">Successfully authorized</span><br><span class="line">Quota: 2.008TB</span><br><span class="line">Used: 192.089GB</span><br></pre></td></tr></table></figure>
+
 <p>Authorized success.</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ bypy list</span><br><span class="line">/apps/bypy ($t $f $s $m $d):</span><br></pre></td></tr></table></figure>
-<p>Limited by Baidu PCS api, files just can be accessed under the /apps/bypy directory in Baidu cloud disk    </p>
+
+<p>Limited by Baidu PCS api, files just can be accessed under the &#x2F;apps&#x2F;bypy directory in Baidu cloud disk    </p>
 <h3 id="Upload-to-cloud-disk"><a href="#Upload-to-cloud-disk" class="headerlink" title="Upload to cloud disk"></a>Upload to cloud disk</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ cd ~/data/</span><br><span class="line">$ bypy upload</span><br><span class="line">[____________________] 0% (85.2MB/1.3GB)</span><br></pre></td></tr></table></figure>
+
 <p>All files under the data directory are uploading.</p>
 <h3 id="Download-file-from-cloud-disk"><a href="#Download-file-from-cloud-disk" class="headerlink" title="Download file from cloud disk"></a>Download file from cloud disk</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bypy downdir</span><br></pre></td></tr></table></figure>
-<p>Files under the directory /apps/bypy will be downloaded now.</p>
+
+<p>Files under the directory &#x2F;apps&#x2F;bypy will be downloaded now.</p>
 
         </div>
         
@@ -502,7 +513,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

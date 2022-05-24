@@ -161,17 +161,25 @@
         </h1>
         <div class="content">
             <h3 id="Server-Environment"><a href="#Server-Environment" class="headerlink" title="Server Environment"></a>Server Environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">  Ubuntu 14.04.4 LTS</span><br><span class="line">$ nginx -v</span><br><span class="line">  nginx version: nginx/1.10.3 (Ubuntu)</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <h3 id="Install-Nginx"><a href="#Install-Nginx" class="headerlink" title="Install Nginx"></a>Install Nginx</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y apache2-utils nginx</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>apache2-utils is a tool that generate a password file</li>
 </ul>
 <h3 id="Create-A-Nginx-User-Named-“liyuliang”"><a href="#Create-A-Nginx-User-Named-“liyuliang”" class="headerlink" title="Create A Nginx User Named “liyuliang”"></a>Create A Nginx User Named “liyuliang”</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo htpasswd -c /etc/nginx/.htpasswd liyuliang</span><br><span class="line">New password:</span><br></pre></td></tr></table></figure>
+
 <p>Entry your password after this command</p>
 <h3 id="Add-Auth-Type-In-Your-Nginx-Config"><a href="#Add-Auth-Type-In-Your-Nginx-Config" class="headerlink" title="Add Auth Type In Your Nginx Config"></a>Add Auth Type In Your Nginx Config</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/nginx/sites-enabled/default</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">location / &#123;</span><br><span class="line">        # First attempt to serve request as file, then</span><br><span class="line">        # as directory, then fall back to displaying a 404.</span><br><span class="line">        try_files $uri $uri/ =404;</span><br><span class="line">        # Uncomment to enable naxsi on this location</span><br><span class="line">        # include /etc/nginx/naxsi.rules</span><br><span class="line">        </span><br><span class="line">        auth_basic &quot;Private Property&quot;;</span><br><span class="line">        auth_basic_user_file /etc/nginx/.htpasswd;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h3 id="Restart-Nginx"><a href="#Restart-Nginx" class="headerlink" title="Restart Nginx"></a>Restart Nginx</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service nginx restart</span><br></pre></td></tr></table></figure>
+
 <h3 id="Proxy-Pass-With-Auth"><a href="#Proxy-Pass-With-Auth" class="headerlink" title="Proxy Pass With Auth"></a>Proxy Pass With Auth</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        server_name _</span><br><span class="line">        listen 80;</span><br><span class="line">        client_max_body_size 100M;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  location / &#123;</span><br><span class="line">        proxy_pass http://127.0.0.1:3030;</span><br><span class="line">        proxy_set_header Host $host:80;</span><br><span class="line">        proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line"></span><br><span class="line">        auth_basic &quot;Private Property&quot;;</span><br><span class="line">        auth_basic_user_file /etc/nginx/.htpasswd;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>It must be passed to proxy before checking authorization</p>
 
         </div>
@@ -502,7 +510,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

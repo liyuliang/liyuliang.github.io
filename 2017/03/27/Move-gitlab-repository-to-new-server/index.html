@@ -161,31 +161,50 @@
         </h1>
         <div class="content">
             <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">Ubuntu 14.04.4 LTS</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <h4 id="It-was-using-gitlab-rake-to-backup-and-restore-the-gitlab-repository-in-this-tutorial"><a href="#It-was-using-gitlab-rake-to-backup-and-restore-the-gitlab-repository-in-this-tutorial" class="headerlink" title="It was using gitlab-rake to backup and restore the gitlab repository in this tutorial"></a>It was using gitlab-rake to backup and restore the gitlab repository in this tutorial</h4><hr>
 <h3 id="First-of-all-you-must-check-the-gitlab-version-in-old-server"><a href="#First-of-all-you-must-check-the-gitlab-version-in-old-server" class="headerlink" title="First of all, you must check the gitlab version in old server!!"></a>First of all, you must check the gitlab version in old server!!</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cat /opt/gitlab/embedded/service/gitlab-rails/VERSION</span><br><span class="line">8.7.0</span><br></pre></td></tr></table></figure>
+
 <p>The old gitlab server version is 8.7.0.</p>
 <p>So the new machine gitlab version must be 8.7.0, because the data backup by gitlab tool named ‘gitlab-rake’ which can only be recovery in same version.<br>It was worked for me as well.</p>
 <h3 id="Install-dependant-library-and-tools-in-new-machine"><a href="#Install-dependant-library-and-tools-in-new-machine" class="headerlink" title="Install dependant library and tools in new machine"></a>Install dependant library and tools in new machine</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install -y curl openssh-server ca-certificates postfix</span><br></pre></td></tr></table></figure>
-<h3 id="Install-gitlab-ce-in-new-machine"><a href="#Install-gitlab-ce-in-new-machine" class="headerlink" title="Install gitlab-ce in new machine"></a>Install gitlab-ce in new machine</h3><p>In china, it may be slowly to download, so you can use another apt resource image. Of course you can pass this step with a fast network.<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo sh -c &quot;echo &apos;deb https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/debian jessie main&apos; &gt;&gt; /etc/apt/sources.list.d/gitlab-ce.list&quot;</span><br></pre></td></tr></table></figure></p>
+
+<h3 id="Install-gitlab-ce-in-new-machine"><a href="#Install-gitlab-ce-in-new-machine" class="headerlink" title="Install gitlab-ce in new machine"></a>Install gitlab-ce in new machine</h3><p>In china, it may be slowly to download, so you can use another apt resource image. Of course you can pass this step with a fast network. </p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo sh -c &quot;echo &apos;deb https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/debian jessie main&apos; &gt;&gt; /etc/apt/sources.list.d/gitlab-ce.list&quot;</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get update</span><br></pre></td></tr></table></figure>
-<p>then search gitlab 8.7.0 version<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-cache policy gitlab-ce | grep 8.7.0</span><br><span class="line">  Installed: 8.7.0-ce.0</span><br><span class="line"> *** 8.7.0-ce.0 0</span><br></pre></td></tr></table></figure></p>
+
+<p>then search gitlab 8.7.0 version</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-cache policy gitlab-ce | grep 8.7.0</span><br><span class="line">  Installed: 8.7.0-ce.0</span><br><span class="line"> *** 8.7.0-ce.0 0</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install gitlab-ce=8.7.0-ce.0</span><br></pre></td></tr></table></figure>
+
 <h3 id="Backup-gitlab-repository-as-a-tar-package-in-old-server"><a href="#Backup-gitlab-repository-as-a-tar-package-in-old-server" class="headerlink" title="Backup gitlab repository as a tar package in old server"></a>Backup gitlab repository as a tar package in old server</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gitlab-rake gitlab:backup:create RAILS_ENV=production</span><br></pre></td></tr></table></figure>
-<p>In general, backup files are usually stored in directory ‘/var/opt/gitlab/backups’, check the tar file named ‘1490248589_gitlab_backup.tar’. The number 1490248589 was timestamp.<br>Distinguish different backup version.<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scp /var/opt/gitlab/backups/1490248589_gitlab_backup.tar username@new-server:/var/opt/gitlab/backups/</span><br></pre></td></tr></table></figure></p>
+
+<p>In general, backup files are usually stored in directory ‘&#x2F;var&#x2F;opt&#x2F;gitlab&#x2F;backups’, check the tar file named ‘1490248589_gitlab_backup.tar’. The number 1490248589 was timestamp.<br>Distinguish different backup version. </p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scp /var/opt/gitlab/backups/1490248589_gitlab_backup.tar username@new-server:/var/opt/gitlab/backups/</span><br></pre></td></tr></table></figure>
+
 <p>Copy the gitlab repository backup file to new server</p>
 <h3 id="Restore-repositofy-in-new-server"><a href="#Restore-repositofy-in-new-server" class="headerlink" title="Restore repositofy in new server"></a>Restore repositofy in new server</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gitlab-rake gitlab:backup:restore RAILS_ENV=production   BACKUP=1490248589</span><br></pre></td></tr></table></figure>
+
 <h3 id="If-something-went-wrong"><a href="#If-something-went-wrong" class="headerlink" title="If something went wrong"></a>If something went wrong</h3><ul>
-<li>/usr/lib/x86_64-linux-gnu/libstdc++.so.6: version `CXXABI_1.3.8’ not found (required by …</li>
+<li>&#x2F;usr&#x2F;lib&#x2F;x86_64-linux-gnu&#x2F;libstdc++.so.6: version &#96;CXXABI_1.3.8’ not found (required by …</li>
 </ul>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo add-apt-repository ppa:ubuntu-toolchain-r/test </span><br><span class="line">$ sudo apt-get update </span><br><span class="line">$ sudo apt-get install g++-4.9</span><br></pre></td></tr></table></figure>
-<p>Or you can install by apt-fast when apt install g++ as a snails<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-fast install gcc-4.9 g++-4.9</span><br></pre></td></tr></table></figure></p>
+
+<p>Or you can install by apt-fast when apt install g++ as a snails</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-fast install gcc-4.9 g++-4.9</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>Repositories backup successfully but getting a 500 page after click the project name in the web view, and gitlab error log shows that</li>
 </ul>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gitlab-ctl tail</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gitlab ErrorPage: serving predefined error page: 500</span><br></pre></td></tr></table></figure>
-<p>It caused by the gitlab security file ‘/etc/gitlab/gitlab-secrets.json’, you should copy this file in old server to new server at this time</p>
+
+<p>It caused by the gitlab security file ‘&#x2F;etc&#x2F;gitlab&#x2F;gitlab-secrets.json’, you should copy this file in old server to new server at this time</p>
 
         </div>
         
@@ -515,7 +534,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

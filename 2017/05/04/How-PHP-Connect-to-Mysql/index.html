@@ -9,7 +9,7 @@
 
 
     <meta name="description" content="My computer develop environment12$ php -vPHP 7.0.26">
-<meta name="keywords" content="PHP,Mysql">
+<meta name="keywords" content="Mysql,PHP">
 <meta property="og:type" content="article">
 <meta property="og:title" content="How PHP Connect to Mysql">
 <meta property="og:url" content="https://liyuliang.cc/2017/05/04/How-PHP-Connect-to-Mysql/index.html">
@@ -161,7 +161,9 @@
         </h1>
         <div class="content">
             <h3 id="My-computer-develop-environment"><a href="#My-computer-develop-environment" class="headerlink" title="My computer develop environment"></a>My computer develop environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ php -v</span><br><span class="line">PHP 7.0.26</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <table>
 <thead>
 <tr>
@@ -171,8 +173,7 @@
 <th>PDO</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>PHP Support Version</td>
 <td>Before 3.0</td>
 <td>5.0</td>
@@ -232,8 +233,7 @@
 <td>Yes</td>
 <td>Most</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <h3 id="PHP-Mysql-extension"><a href="#PHP-Mysql-extension" class="headerlink" title="PHP Mysql extension"></a>PHP Mysql extension</h3><ul>
 <li>Just MySQL database</li>
 <li>Most primitive mysql database extension of PHP</li>
@@ -241,6 +241,7 @@
 <li>Procedure Oriented</li>
 </ul>
 <figure class="highlight php hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">header(<span class="hljs-string">'Content-Type: text/html; charset=utf-8'</span>);</span><br><span class="line"></span><br><span class="line">$username = <span class="hljs-string">"liyuliang"</span>;</span><br><span class="line">$password = <span class="hljs-string">"123456"</span>;</span><br><span class="line">$database = <span class="hljs-string">"testDB"</span>;</span><br><span class="line"></span><br><span class="line">$conn = @mysql_connect(<span class="hljs-string">"localhost:3306"</span>,$username,$password) <span class="hljs-keyword">or</span> <span class="hljs-keyword">die</span>(<span class="hljs-string">"connect mysql failed"</span>);</span><br><span class="line"></span><br><span class="line">mysql_select_db($database,$conn);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">echo</span> <span class="hljs-string">"database connect success"</span>;</span><br></pre></td></tr></table></figure>
+
 <h3 id="PHP-mysqli-extension"><a href="#PHP-mysqli-extension" class="headerlink" title="PHP mysqli extension"></a>PHP mysqli extension</h3><ul>
 <li>Just MySQL database</li>
 <li>Mysql 4.1.3+</li>
@@ -248,10 +249,9 @@
 <li>Pre-processing statements support (Prevent SQL injection)</li>
 <li>Procedure Oriented + Object Oriented</li>
 </ul>
-<p><code>It will open a new connection process each time when running PHP mysql extension 
-but Mysqli extension will use the same connection.
-Because mysqli uses a persistent connection function and mysql is not</code></p>
+<p><code>It will open a new connection process each time when running PHP mysql extension  but Mysqli extension will use the same connection. Because mysqli uses a persistent connection function and mysql is not</code></p>
 <figure class="highlight php hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">header(<span class="hljs-string">'Content-Type: text/html; charset=utf-8'</span>);</span><br><span class="line"></span><br><span class="line">$username = <span class="hljs-string">"liyuliang"</span>;</span><br><span class="line">$password = <span class="hljs-string">"123456"</span>;</span><br><span class="line">$database = <span class="hljs-string">"testDB"</span>;</span><br><span class="line"></span><br><span class="line">$conn = mysqli_connect(<span class="hljs-string">"localhost"</span>, $username, $password, $database, <span class="hljs-string">"3306"</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> (!$conn) &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-keyword">die</span>(<span class="hljs-string">"connect mysql failed"</span> . mysqli_connect_error());</span><br><span class="line">&#125;<span class="hljs-keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">echo</span> <span class="hljs-string">"database connect success"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h3 id="PHP-Data-Object-PDO"><a href="#PHP-Data-Object-PDO" class="headerlink" title="PHP Data Object(PDO)"></a>PHP Data Object(PDO)</h3><ul>
 <li>PDO can be used in 12 different database</li>
 <li>Database abstract standard</li>
@@ -587,7 +587,7 @@ Because mysqli uses a persistent connection function and mysql is not</code></p>
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

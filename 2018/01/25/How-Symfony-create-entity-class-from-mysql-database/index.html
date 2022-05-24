@@ -161,18 +161,24 @@
         </h1>
         <div class="content">
             <h3 id="My-computer-develop-environment"><a href="#My-computer-develop-environment" class="headerlink" title="My computer develop environment"></a>My computer develop environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ cat composer.json</span><br><span class="line">    ...</span><br><span class="line">    &quot;require&quot;: &#123;</span><br><span class="line">           &quot;php&quot;: &quot;&gt;=5.5.9&quot;,</span><br><span class="line">           &quot;symfony/symfony&quot;: &quot;2.8.*&quot;,</span><br><span class="line">           ...</span><br><span class="line">       &#125;,</span><br><span class="line">       </span><br><span class="line">$ mysqld -V</span><br><span class="line"> mysqld  Ver 5.7.18 for Linux on x86_64 (MySQL Community Server (GPL))</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <p>In some case, you will meet a secondary development project based on mysql.It has a complete database and your new project bases on Symfony framework.<br>As you know, if there are entities mapping class will speed up your development. So this is why this tutorial exist.   </p>
-<p>First of all: this converter doesn’t support some basic MySQL data types by default, so you have to edit your app/config/config.yml file as follows:</p>
+<p>First of all: this converter doesn’t support some basic MySQL data types by default, so you have to edit your app&#x2F;config&#x2F;config.yml file as follows:</p>
 <h3 id="Update-Doctrine-Configuration"><a href="#Update-Doctrine-Configuration" class="headerlink" title="Update Doctrine Configuration"></a>Update Doctrine Configuration</h3><figure class="highlight yaml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-attr">doctrine:</span></span><br><span class="line">    <span class="hljs-attr">dbal:</span></span><br><span class="line">        <span class="hljs-attr">mapping_types:</span></span><br><span class="line">            <span class="hljs-attr">enum:</span> <span class="hljs-string">string</span></span><br><span class="line">            <span class="hljs-attr">bit:</span> <span class="hljs-string">integer</span></span><br></pre></td></tr></table></figure>
+
 <p>You might need to add some other types, too.<br>As Doctrine does not support any of these: </p>
 <blockquote>
 <p>BIT, BINARY, VARBINARY, TINYBLOB, MEDIUMBLOB, BLOB, LONGBLOB, ENUM, SET, GEOMETRY, POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, POLYGON, MULTIPOLYGON.</p>
 </blockquote>
 <h3 id="Make-sure-all-tables-have-primary-keys"><a href="#Make-sure-all-tables-have-primary-keys" class="headerlink" title="Make sure all tables have primary keys"></a>Make sure all tables have primary keys</h3><p>OK, that might sound obvious.<br>But I real had some tables without the key.</p>
 <h3 id="Generate-the-mapping-file"><a href="#Generate-the-mapping-file" class="headerlink" title="Generate the mapping file"></a>Generate the mapping file</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ php app/console doctrine:mapping:import --force AppBundle xml -vvv</span><br></pre></td></tr></table></figure>
-<h3 id="Generate-Entities-under-directory-‘src-AppBundle-Entity’"><a href="#Generate-Entities-under-directory-‘src-AppBundle-Entity’" class="headerlink" title="Generate Entities under directory ‘src/AppBundle/Entity’"></a>Generate Entities under directory ‘src/AppBundle/Entity’</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ php app/console doctrine:mapping:convert annotation ./src</span><br></pre></td></tr></table></figure>
+
+<h3 id="Generate-Entities-under-directory-‘src-x2F-AppBundle-x2F-Entity’"><a href="#Generate-Entities-under-directory-‘src-x2F-AppBundle-x2F-Entity’" class="headerlink" title="Generate Entities under directory ‘src&#x2F;AppBundle&#x2F;Entity’"></a>Generate Entities under directory ‘src&#x2F;AppBundle&#x2F;Entity’</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ php app/console doctrine:mapping:convert annotation ./src</span><br></pre></td></tr></table></figure>
+
 <h3 id="Generate-the-Get-and-Set-method-in-entity"><a href="#Generate-the-Get-and-Set-method-in-entity" class="headerlink" title="Generate the Get and Set method in entity"></a>Generate the Get and Set method in entity</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ php app/console generate:doctrine:entities AppBundle</span><br></pre></td></tr></table></figure>
+
 <p>Ok, entities will all be done! </p>
 
         </div>
@@ -503,7 +509,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

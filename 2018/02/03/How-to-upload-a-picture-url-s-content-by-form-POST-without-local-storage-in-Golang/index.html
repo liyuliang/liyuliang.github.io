@@ -161,7 +161,9 @@
         </h1>
         <div class="content">
             <h3 id="Server-environment"><a href="#Server-environment" class="headerlink" title="Server environment"></a>Server environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">  Ubuntu 16.04 LTS</span><br><span class="line"></span><br><span class="line"># go version</span><br><span class="line">  go version go1.8.4 linux/amd64</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <p>Recently, i want to download a few pictures as my souvenirs, but these pictures all comes from other people’s website link.<br>And i have a personal image server which have form post api.<br>So this program will finished these steps in this tutorial with a few line code.</p>
 <ul>
 <li>Download a picture and save in memory temporary as byte buffer</li>
@@ -171,19 +173,27 @@
 <p><code>The key is to set a new multipart.Writer</code></p>
 <h3 id="Download-a-picture"><a href="#Download-a-picture" class="headerlink" title="Download a picture"></a>Download a picture</h3><p>It ‘s so sample to do this.</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">resp, err := req.Get(imageUrl)</span><br></pre></td></tr></table></figure>
+
 <h3 id="Init-a-empty-byte-buffer"><a href="#Init-a-empty-byte-buffer" class="headerlink" title="Init a empty byte buffer"></a>Init a empty byte buffer</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">body = &amp;bytes.Buffer&#123;&#125;</span><br></pre></td></tr></table></figure>
+
 <h3 id="Init-a-writer"><a href="#Init-a-writer" class="headerlink" title="Init a writer"></a>Init a writer</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">writer := multipart.NewWriter(body)</span><br></pre></td></tr></table></figure>
+
 <p>The <code>mime/multipart</code> package hides all the complexity of creating a multipart request.</p>
 <h3 id="Create-a-writer-form-and-init-a-fired-for-picture"><a href="#Create-a-writer-form-and-init-a-fired-for-picture" class="headerlink" title="Create a writer form and init a fired for picture"></a>Create a writer form and init a fired for picture</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">writerField, err := writer.CreateFormField(&quot;file&quot;)</span><br></pre></td></tr></table></figure>
+
 <p>Create a part for the file form entry with the name of the file param and the name of the file.</p>
 <h3 id="Translate-the-picture-as-byte-buffer"><a href="#Translate-the-picture-as-byte-buffer" class="headerlink" title="Translate the picture as byte buffer"></a>Translate the picture as byte buffer</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">_, err = io.Copy(writerField, resp.Response().Body)</span><br><span class="line">if err != nil &#123;</span><br><span class="line">	return body, &quot;&quot;, err</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">writer.Close()</span><br></pre></td></tr></table></figure>
+
 <p>We need to add the content of the file to the file part, we use the <code>io.Copy()</code> to do so.<br>The <code>multipart.Writer</code> takes care of setting the boundary and formatting the form data for us, nice isn’t it?!</p>
 <ul>
 <li>Don’t forget to close our writer.</li>
 </ul>
 <h3 id="One-last-thing-before-post-form-request-you-should-know-the-form-content-type"><a href="#One-last-thing-before-post-form-request-you-should-know-the-form-content-type" class="headerlink" title="One last thing before post form request, you should know the form content type"></a>One last thing before post form request, you should know the form content type</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">contentType := writer.FormDataContentType()</span><br></pre></td></tr></table></figure>
+
 <h3 id="New-a-Post-form-request"><a href="#New-a-Post-form-request" class="headerlink" title="New a Post form request"></a>New a Post form request</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">request, err := http.NewRequest(&quot;POST&quot;, apiUrl, body)</span><br><span class="line">request.Header.Set(&quot;Content-Type&quot;, contentType)</span><br></pre></td></tr></table></figure>
+
 <h3 id="Send-this-request"><a href="#Send-this-request" class="headerlink" title="Send this request"></a>Send this request</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">client := &amp;http.Client&#123;&#125;</span><br><span class="line">response, err := client.Do(request)</span><br></pre></td></tr></table></figure>
+
 <p>This tutorial is written based on <code>Static file upload</code>.<br>Hopefully this example will be helpful to some of you.</p>
 
         </div>
@@ -514,7 +524,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

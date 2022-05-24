@@ -161,14 +161,19 @@
         </h1>
         <div class="content">
             <h1 id="My-computer-develop-environment"><a href="#My-computer-develop-environment" class="headerlink" title="My computer develop environment"></a>My computer develop environment</h1><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&quot;require&quot;: &#123;</span><br><span class="line">    &quot;php&quot;: &quot;&gt;=5.6.10&quot;,</span><br><span class="line">    &quot;symfony/symfony&quot;: &quot;2.8.*&quot;,</span><br><span class="line">    &quot;twig/twig&quot;: &quot;1.35.*&quot;,</span><br><span class="line">    ...</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <p>In project development, you will often need to display the user’s name, avatar, etc. in the top navigation bar of the website.<br>By default, Symfony using the Twig template engine to store account information into the <code>app.user.username</code> after logging in, but it will not be able to get other user information in app.user.</p>
 <p>I have a few solutions for this problem </p>
 <h3 id="Using-PHP-SESSION"><a href="#Using-PHP-SESSION" class="headerlink" title="Using PHP $_SESSION"></a>Using PHP $_SESSION</h3><p>storing the user’s account information into the session as key-value pair after the user logs in.</p>
 <h3 id="Using-Twig-Extension-Query-user-information-by-user-account"><a href="#Using-Twig-Extension-Query-user-information-by-user-account" class="headerlink" title="Using Twig Extension, Query user information by user account"></a>Using Twig Extension, Query user information by user account</h3><p>Twig Extension can refer to my previous <a href="/2017/07/09/Using-customer-function-in-Twig/">blog</a></p>
 <h3 id="Add-variables-using-Symfony’s-global-method"><a href="#Add-variables-using-Symfony’s-global-method" class="headerlink" title="Add variables using Symfony’s global method"></a>Add variables using Symfony’s global method</h3><p>I think this is the most beautiful way.</p>
 <figure class="highlight php hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">$this</span>-&gt;get(<span class="hljs-string">'twig'</span>)-&gt;addGlobal(<span class="hljs-string">'header'</span>, <span class="hljs-string">"http://xxx.jpg"</span><span class="hljs-string">");</span></span><br></pre></td></tr></table></figure>
-<p>When you want to use it in a twig file, you only need a simple output.<br><figure class="highlight twig hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-template-variable">&#123;&#123; header &#125;&#125;</span></span><br></pre></td></tr></table></figure></p>
+
+<p>When you want to use it in a twig file, you only need a simple output.</p>
+<figure class="highlight twig hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-template-variable">&#123;&#123; header &#125;&#125;</span></span><br></pre></td></tr></table></figure>
+
 
         </div>
         
@@ -498,7 +503,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>

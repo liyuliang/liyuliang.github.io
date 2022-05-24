@@ -161,9 +161,12 @@
         </h1>
         <div class="content">
             <h3 id="Server-Environment"><a href="#Server-Environment" class="headerlink" title="Server Environment"></a>Server Environment</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/issue</span><br><span class="line">  Ubuntu 14.04.4 LTS</span><br><span class="line">$ nginx -v</span><br><span class="line">  nginx version: nginx/1.4.6 (Ubuntu)</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
+
 <p>A simple demo to build a google mirror.</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/nginx/sites-enabled/google.conf</span><br><span class="line"> </span><br><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  _;</span><br><span class="line"> </span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass https://www.google.com.hk;</span><br><span class="line">        proxy_connect_timeout 120;</span><br><span class="line">        proxy_read_timeout 600;</span><br><span class="line">        proxy_send_timeout 600;</span><br><span class="line"> </span><br><span class="line">        send_timeout 600;</span><br><span class="line">        proxy_redirect    off;</span><br><span class="line">        proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">           # proxy_set_header Host $host;</span><br><span class="line"> </span><br><span class="line">        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
         </div>
         
@@ -493,7 +496,7 @@
 
                 <p class="is-size-7">
                     <a href="/copyright" target="_blank">Copyright</a>
-                    &copy; 2021 Liyuliang&nbsp;
+                    &copy; 2022 Liyuliang&nbsp;
 
 		    <a target="_blank" href="https://beian.miit.gov.cn">粤ICP备18120141号</a>
                 </p>
