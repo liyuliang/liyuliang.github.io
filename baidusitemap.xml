@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://liyuliang.cc/2018/06/20/Varnish-For-Wordpress/</loc>
+    <lastmod>2022-05-25</lastmod>
+  </url>
+  <url>
     <loc>https://liyuliang.cc/2017/06/23/Some-tips-in-Alipay-development-process/</loc>
     <lastmod>2021-06-14</lastmod>
   </url>
@@ -38,10 +42,6 @@
   </url>
   <url>
     <loc>https://liyuliang.cc/2017/07/09/Using-customer-function-in-Twig/</loc>
-    <lastmod>2021-06-14</lastmod>
-  </url>
-  <url>
-    <loc>https://liyuliang.cc/2018/06/20/Varnish-For-Wordpress/</loc>
     <lastmod>2021-06-14</lastmod>
   </url>
   <url>
